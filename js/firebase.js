@@ -206,12 +206,20 @@ export async function undoLastSale(roomCode) {
 // Bidding (mobile)
 // ---------------------------------------------------------------------------
 
-// Transactional bid: refuses to overwrite a higher bid. Resets timer.
-export async function placeBid(roomCode, bidderId, bidderName, amount) {
+// Transactional bid: refuses to overwrite a higher bid, refuses if the auction
+// has moved to a different player since the bidder saw it. Resets timer.
+export async function placeBid(roomCode, bidderId, bidderName, amount, expectedPlayerId) {
   const r = ref(db, `rooms/${roomCode}/currentAuction`);
   let result = { ok: false, reason: 'unknown' };
   await runTransaction(r, (auction) => {
-    if (!auction) { result = { ok: false, reason: 'No active auction.' }; return; }
+    if (!auction) {
+      result = { ok: false, reason: 'Auction already ended — too late.' };
+      return;
+    }
+    if (expectedPlayerId && auction.playerId !== expectedPlayerId) {
+      result = { ok: false, reason: 'Auction moved to a different player.' };
+      return;
+    }
     if (auction.paused) { result = { ok: false, reason: 'Auction is paused.' }; return; }
     const minNext = nextMinBid(auction.currentBid);
     if (amount < minNext) { result = { ok: false, reason: 'Bid too low.' }; return; }

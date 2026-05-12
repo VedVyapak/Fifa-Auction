@@ -438,6 +438,7 @@ function squadGridHTML(squad) {
           <span class="rate">${p.overall}</span>
           <span class="pos-tag">${p.position}</span>
           <div class="pname">${escapeHtml(p.name)}</div>
+          <div class="pclub">${escapeHtml(p.club || '')}</div>
           <div class="pprice">${formatMoney(p.price)}</div>
         </div>`);
     } else {

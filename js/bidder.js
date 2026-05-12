@@ -238,6 +238,7 @@ function renderDrawer() {
           <span class="rate">${p.overall}</span>
           <span class="pos-tag">${p.position}</span>
           <div class="pname">${escapeHtml(p.name)}</div>
+          <div class="pclub">${escapeHtml(p.club || '')}</div>
           <div class="pprice">${formatMoney(p.price)}</div>
         </div>
       `);
@@ -263,7 +264,8 @@ async function submitBid(amount) {
     showBidStatus(v.reason, true);
     return;
   }
-  const res = await placeBid(roomCode, myId, me.name, amount);
+  const expectedPlayerId = room.currentAuction.playerId;
+  const res = await placeBid(roomCode, myId, me.name, amount, expectedPlayerId);
   if (!res.ok) {
     showBidStatus(res.reason || 'Bid rejected.', true);
   } else {
