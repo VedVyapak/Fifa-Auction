@@ -1,0 +1,11 @@
+node_modules/
+.DS_Store
+*.log
+.vscode/
+.idea/
+scraper/node_modules/
+
+# Claude Code local metadata
+.agents/
+.claude/
+skills-lock.json

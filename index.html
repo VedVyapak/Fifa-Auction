@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FIFA Auction — Host</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+<body>
+  <!-- ============================== SETUP SCREEN ============================== -->
+  <section id="setupScreen" class="setup-screen panel">
+    <div class="bc-bar" style="background:transparent;border:none;padding:0 0 24px 0;">
+      <span class="live-dot"></span>
+      <span class="bc-tag">Host Console</span>
+    </div>
+    <h1>FIFA<br/>Auction <span style="color:var(--pitch)">'26</span></h1>
+    <p class="sub">
+      Start a new auction room. Friends join from their phones using the code + QR.
+      You control pacing from this screen.
+    </p>
+
+    <div id="setupError" class="banner danger hide" style="margin-bottom:16px;"></div>
+
+    <div class="col">
+      <button id="btnCreateRoom" class="btn btn-primary" style="padding:18px 24px;font-size:16px;">
+        Create new room
+      </button>
+      <div class="row" style="gap:12px;margin-top:8px;">
+        <span class="eyebrow text-dim">or rejoin existing</span>
+      </div>
+      <div class="row">
+        <input id="rejoinCode" class="input" placeholder="ROOM CODE" maxlength="4" style="text-transform:uppercase;" />
+        <button id="btnRejoin" class="btn btn-ghost">Rejoin</button>
+      </div>
+    </div>
+
+    <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border);">
+      <div class="eyebrow" style="margin-bottom:8px;">Rules tonight</div>
+      <ul style="list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:8px;color:var(--text-dim);font-size:13px;line-height:1.6;">
+        <li>· 7 bidders × 100M budget</li>
+        <li>· Top 150 players</li>
+        <li>· Squad of 15, no positions required</li>
+        <li>· 10s timer, resets on each bid</li>
+        <li>· Min increment 100K</li>
+        <li>· Random next player</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================== LOBBY SCREEN ============================== -->
+  <section id="lobbyScreen" class="setup-screen panel hide">
+    <div class="bc-bar" style="background:transparent;border:none;padding:0 0 16px 0;">
+      <span class="live-dot"></span>
+      <span class="bc-tag">Lobby</span>
+      <span class="eyebrow">waiting for bidders</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;">
+      <div class="qr-card">
+        <div class="eyebrow">Scan to join</div>
+        <div id="qrSlot" style="width:240px;height:240px;display:flex;align-items:center;justify-content:center;background:white;border-radius:12px;">
+          <span style="font-family:var(--mono);color:#0a0d14;font-size:11px;">generating…</span>
+        </div>
+        <div class="eyebrow">or enter code</div>
+        <div id="roomCodeBig" class="room-code-big">----</div>
+        <div class="mono" style="font-size:12px;color:var(--text-dim);text-align:center;">
+          <span id="joinUrlDisplay"></span>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="display" style="font-size:48px;margin-bottom:4px;">Bidders</h2>
+        <p class="text-dim" style="font-size:13px;margin-bottom:16px;">
+          <span id="bidderCount">0</span> joined · need 7 (or however many you have)
+        </p>
+
+        <div id="lobbyBidders" class="leaderboard" style="margin-bottom:24px;"></div>
+
+        <button id="btnStartAuction" class="btn btn-primary" style="width:100%;padding:18px;font-size:16px;" disabled>
+          Start auction →
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== LIVE SCREEN ============================== -->
+  <section id="liveScreen" class="hide">
+    <div class="bc-bar">
+      <span class="live-dot"></span>
+      <span class="bc-tag">Live Auction</span>
+      <span class="eyebrow"><span id="liveSoldCount">0</span> / <span id="livePoolCount">0</span> sold</span>
+      <div class="spacer"></div>
+      <span class="eyebrow">room</span>
+      <span class="bc-room-code" id="liveRoomCode">----</span>
+    </div>
+
+    <div class="host-shell">
+      <main class="host-main">
+        <!-- player + bid -->
+        <div id="playerSlot" class="panel" style="padding:0;overflow:hidden;">
+          <div id="playerCardWrap"></div>
+          <div id="bidDisplayWrap"></div>
+        </div>
+
+        <!-- host controls -->
+        <div class="panel host-controls">
+          <button id="btnNextPlayer" class="btn btn-primary">Auction next player →</button>
+          <button id="btnPause" class="btn btn-ghost">Pause</button>
+          <button id="btnSkip" class="btn btn-ghost">Skip</button>
+          <button id="btnUndo" class="btn btn-danger">Undo last sale</button>
+          <button id="btnFinish" class="btn btn-ghost">Finish auction</button>
+        </div>
+
+        <!-- recently sold ticker -->
+        <div class="panel">
+          <div class="section-title">
+            <h2>Last Sold</h2>
+            <span class="meta">Most recent 6</span>
+          </div>
+          <div id="recentSold" class="leaderboard"></div>
+        </div>
+      </main>
+
+      <aside class="host-side">
+        <div class="panel">
+          <div class="section-title">
+            <h2>Bidders</h2>
+            <span class="meta">tap for squad</span>
+          </div>
+          <div id="hostLeaderboard" class="leaderboard"></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============================== FINISHED SCREEN ============================== -->
+  <section id="finishedScreen" class="hide" style="padding:32px;position:relative;z-index:2;">
+    <div class="bc-bar" style="margin-bottom:24px;border-radius:12px;">
+      <span class="bc-tag" style="background:var(--gold);color:#2a1d00;">Final Squads</span>
+      <span class="eyebrow">Auction complete</span>
+      <div class="spacer"></div>
+      <button id="btnExportAll" class="btn btn-primary">Save image of all teams</button>
+      <button id="btnNewAuction" class="btn btn-ghost">New auction</button>
+    </div>
+    <div id="finalGrid" class="final-grid"></div>
+  </section>
+
+  <!-- ============================== SQUAD MODAL ============================== -->
+  <div id="squadModal" class="drawer-backdrop hide" style="z-index:50;">
+    <div class="panel" style="max-width:520px;width:90%;margin:5vh auto;max-height:90vh;overflow:auto;position:relative;">
+      <div class="drawer-header">
+        <h2 id="squadModalTitle">Squad</h2>
+        <button class="drawer-close" id="squadModalClose">✕</button>
+      </div>
+      <div id="squadModalBody"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script type="module" src="./js/host.js"></script>
+</body>
+</html>

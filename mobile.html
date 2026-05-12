@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#0a0d14" />
+  <title>FIFA Auction</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <main class="mobile-shell">
+
+    <!-- header -->
+    <header class="mobile-header">
+      <button class="hamburger" id="btnHamburger" aria-label="Open squad">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <div>
+        <div class="eyebrow" id="whoami">—</div>
+        <div class="mono" style="font-size:11px;color:var(--text-dim);" id="roomLabel">ROOM —</div>
+      </div>
+      <div class="balance">
+        <div class="label">Budget</div>
+        <div class="num" id="balanceNum">0</div>
+      </div>
+    </header>
+
+    <!-- live banner / waiting state -->
+    <section id="liveSection">
+
+      <!-- player card -->
+      <div id="playerArea"></div>
+
+      <!-- bid box -->
+      <div id="bidBox" class="mobile-bid-box hide"></div>
+
+      <!-- position warnings -->
+      <div id="positionWarnings" class="position-warnings"></div>
+
+      <!-- quick bids -->
+      <div id="quickBids" class="quick-bids hide"></div>
+
+      <!-- custom bid -->
+      <div id="customBidArea" class="hide">
+        <div class="custom-bid-row">
+          <input id="customBidInput" class="input" inputmode="decimal" placeholder="custom amount" />
+          <button id="btnCustomBid" class="btn btn-primary">Bid</button>
+        </div>
+        <div class="bid-help">
+          Type amounts like <code>1.5M</code>, <code>500k</code>, or <code>2000000</code>.
+          Min raise <strong>100K</strong>. Your cap reserves 100K per remaining squad slot.
+        </div>
+        <div id="bidStatus" style="margin-top:10px;"></div>
+      </div>
+
+      <!-- non-active state -->
+      <div id="idleArea" class="panel text-center" style="padding:48px 24px;">
+        <div class="eyebrow" style="margin-bottom:12px;">Standing by</div>
+        <div class="display" style="font-size:36px;line-height:1;color:var(--text-dim);">
+          Host will pick<br/>the next player.
+        </div>
+      </div>
+
+      <div id="lockedArea" class="hide panel" style="padding:24px;text-align:center;border-color:rgba(255,45,85,0.4);">
+        <div class="eyebrow text-broadcast" style="margin-bottom:8px;">You're out</div>
+        <div style="font-size:14px;color:var(--text-dim);" id="lockedReason"></div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- squad drawer -->
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <h2>Your squad</h2>
+      <button class="drawer-close" id="drawerClose" aria-label="Close">✕</button>
+    </div>
+    <div class="squad-stats">
+      <div class="stat"><div class="label">Players</div><div class="val" id="drawerCount">0</div></div>
+      <div class="stat"><div class="label">Spent</div><div class="val" id="drawerSpent">0</div></div>
+      <div class="stat"><div class="label">Left</div><div class="val" id="drawerLeft">0</div></div>
+    </div>
+    <div id="drawerWarnings" class="position-warnings"></div>
+    <div id="drawerSquad"></div>
+  </aside>
+
+  <script type="module" src="./js/bidder.js"></script>
+</body>
+</html>

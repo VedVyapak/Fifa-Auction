@@ -1,0 +1,14 @@
+{
+  "name": "fifa-auction-scraper",
+  "version": "1.0.0",
+  "description": "One-off scraper for EA Sports FC player ratings",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "scrape": "node scrape.js",
+    "postinstall": "playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.45.0"
+  }
+}

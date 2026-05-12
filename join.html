@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>FIFA Auction — Join</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <section class="mobile-shell" style="display:flex;flex-direction:column;justify-content:center;min-height:100vh;">
+    <div class="bc-bar" style="background:transparent;border:none;padding:0 0 24px 0;">
+      <span class="live-dot"></span>
+      <span class="bc-tag">Join Auction</span>
+    </div>
+
+    <h1 class="display" style="font-size:64px;line-height:0.85;margin-bottom:8px;">
+      Get in<br/><span class="text-pitch">the room.</span>
+    </h1>
+    <p class="text-dim" style="margin-bottom:24px;font-size:14px;line-height:1.5;">
+      Type the 4-character code from the host laptop, then your name.
+    </p>
+
+    <div id="joinError" class="banner danger hide" style="margin-bottom:16px;"></div>
+
+    <label class="field">
+      <span class="eyebrow">Room code</span>
+      <input id="codeInput" class="input" maxlength="4" autocomplete="off"
+             autocapitalize="characters" placeholder="A1B2"
+             style="text-align:center;font-size:28px;letter-spacing:0.4em;text-transform:uppercase;" />
+    </label>
+
+    <label class="field" style="margin-top:14px;">
+      <span class="eyebrow">Your name</span>
+      <input id="nameInput" class="input" maxlength="20" placeholder="e.g. Ved" autocomplete="off" />
+    </label>
+
+    <button id="btnJoin" class="btn btn-primary" style="margin-top:20px;padding:18px;font-size:16px;">
+      Join →
+    </button>
+
+    <p class="text-dim text-center" style="margin-top:32px;font-size:11px;font-family:var(--mono);letter-spacing:0.15em;text-transform:uppercase;">
+      100M budget · 15 players · 10s bids
+    </p>
+  </section>
+
+  <script type="module">
+    import { joinRoom, getRoomOnce } from './js/firebase.js';
+    import { makeBidderId } from './js/auction.js';
+
+    const $ = (id) => document.getElementById(id);
+
+    // Prefill from QR / URL
+    const params = new URLSearchParams(location.search);
+    const fromUrl = (params.get('room') || '').toUpperCase();
+    if (fromUrl) $('codeInput').value = fromUrl;
+
+    // Restore name if previously joined
+    const lastName = localStorage.getItem('fifa.name');
+    if (lastName) $('nameInput').value = lastName;
+
+    $('codeInput').addEventListener('input', (e) => {
+      e.target.value = e.target.value.toUpperCase().replace(/[^A-Z2-9]/g, '');
+    });
+
+    $('btnJoin').addEventListener('click', async () => {
+      const code = $('codeInput').value.trim().toUpperCase();
+      const name = $('nameInput').value.trim();
+      const err = $('joinError');
+      err.classList.add('hide');
+
+      if (!/^[A-Z2-9]{4}$/.test(code)) {
+        err.textContent = 'Room code is 4 letters/numbers.';
+        err.classList.remove('hide');
+        return;
+      }
+      if (!name) {
+        err.textContent = 'Enter your name.';
+        err.classList.remove('hide');
+        return;
+      }
+
+      try {
+        const room = await getRoomOnce(code);
+        if (!room) {
+          err.textContent = 'Room not found. Check the code.';
+          err.classList.remove('hide');
+          return;
+        }
+
+        // Reuse bidder id if we already joined this room
+        const key = `fifa.bidderId.${code}`;
+        let id = localStorage.getItem(key);
+        if (!id) {
+          id = makeBidderId();
+          localStorage.setItem(key, id);
+        }
+        localStorage.setItem('fifa.name', name);
+
+        await joinRoom(code, id, name);
+        location.href = `./mobile.html?room=${code}&id=${id}`;
+      } catch (e) {
+        console.error(e);
+        err.textContent = 'Could not join. Check that firebase-config.js is set.';
+        err.classList.remove('hide');
+      }
+    });
+  </script>
+</body>
+</html>
