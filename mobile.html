@@ -3,99 +3,157 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-  <meta name="theme-color" content="#0a0d14" />
+  <meta name="theme-color" content="#05070d" />
   <title>FIFA Auction</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./css/styles.css" />
 </head>
-<body>
+<body class="mobile-body">
   <div class="offline-banner">reconnecting · check your wifi</div>
 
-  <main class="mobile-shell">
+  <!-- data-state: bidding | leading | idle | locked | finished -->
+  <div class="bp-mobile-screen" id="screen" data-state="idle">
 
-    <!-- header -->
-    <header class="mobile-header">
-      <button class="hamburger" id="btnHamburger" aria-label="Open squad">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+    <!-- ============ HEADER ============ -->
+    <header class="bp-mobile-header">
+      <button class="bp-mobile-hamburger" id="btnOpenDrawer" aria-label="Open squad">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
           <line x1="3" y1="6" x2="21" y2="6"/>
           <line x1="3" y1="12" x2="21" y2="12"/>
           <line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
       </button>
-      <div>
-        <div class="eyebrow" id="whoami">—</div>
-        <div class="mono" style="font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:6px;">
-          <span id="connDot" class="conn-dot"></span>
-          <span id="roomLabel">ROOM —</span>
-        </div>
+      <div class="bp-mobile-me">
+        <span class="name" id="bidderName">—</span>
+        <span class="conn"><span class="dot" id="connDot"></span><span id="roomLabel">Room —</span></span>
       </div>
-      <div class="balance">
-        <div class="label">Budget</div>
-        <div class="num" id="balanceNum">0</div>
+      <div class="bp-mobile-budget">
+        <span class="num" id="budgetNum">0</span>
+        <span class="lbl">Budget</span>
       </div>
     </header>
 
-    <!-- live banner / waiting state -->
-    <section id="liveSection">
-
-      <!-- player card -->
-      <div id="playerArea"></div>
-
-      <!-- bid box -->
-      <div id="bidBox" class="mobile-bid-box hide"></div>
-
-      <!-- position warnings -->
-      <div id="positionWarnings" class="position-warnings"></div>
-
-      <!-- quick bids -->
-      <div id="quickBids" class="quick-bids hide"></div>
-
-      <!-- custom bid -->
-      <div id="customBidArea" class="hide">
-        <div class="custom-bid-row">
-          <input id="customBidInput" class="input" inputmode="decimal" placeholder="custom amount" />
-          <button id="btnCustomBid" class="btn btn-primary">Bid</button>
+    <!-- ============ PLAYER CARD (visible in bidding/leading) ============ -->
+    <section class="bp-mobile-player" id="playerCard">
+      <div class="col-left">
+        <div class="meta" id="playerMeta"></div>
+        <div class="nm" id="playerNameBlock">
+          <span class="first" id="playerFirst"></span>
+          <span id="playerLast"></span>
         </div>
-        <div class="bid-help">
-          Type amounts like <code>1.5M</code>, <code>500k</code>, or <code>2000000</code>.
-          Min raise <strong>100K</strong>. Your cap reserves 100K per remaining squad slot.
-        </div>
-        <div id="bidStatus" style="margin-top:10px;"></div>
+        <div class="stats" id="playerStats"></div>
       </div>
-
-      <!-- non-active state -->
-      <div id="idleArea" class="panel text-center" style="padding:48px 24px;">
-        <div class="eyebrow" style="margin-bottom:12px;">Standing by</div>
-        <div class="display" style="font-size:36px;line-height:1;color:var(--text-dim);">
-          Host will pick<br/>the next player.
-        </div>
-      </div>
-
-      <div id="lockedArea" class="hide panel" style="padding:24px;text-align:center;border-color:rgba(255,45,85,0.4);">
-        <div class="eyebrow text-broadcast" style="margin-bottom:8px;">You're out</div>
-        <div style="font-size:14px;color:var(--text-dim);" id="lockedReason"></div>
-      </div>
-
+      <img class="photo" id="playerPhoto" alt="" />
     </section>
 
-  </main>
+    <!-- ============ BID HERO ============ -->
+    <section class="bp-mobile-bid-hero" id="bidHero">
+      <div class="row">
+        <span class="leader-flag" id="leaderFlag">—</span>
+        <span class="timer-num" id="timerNum">0:00</span>
+      </div>
+      <div class="amt" id="bidAmount">—</div>
+      <div class="meta-row">
+        <span>Current bid</span>
+        <span>·</span>
+        <span id="bidAgo">—</span>
+        <span>·</span>
+        <span id="bidCount">0 bids</span>
+      </div>
+      <div class="timer-bar"><i id="timerFill"></i></div>
+    </section>
 
-  <!-- squad drawer -->
-  <div class="drawer-backdrop" id="drawerBackdrop"></div>
-  <aside class="drawer" id="drawer">
-    <div class="drawer-header">
+    <!-- ============ IDLE STATE ============ -->
+    <section class="bp-mobile-idle" id="idleArea">
+      <div class="bp-eyebrow" style="margin-bottom:12px;">Standing by</div>
+      <div class="bp-idle-title" style="font-size:36px;line-height:1;">Host will pick<br/>the next player.</div>
+    </section>
+
+    <!-- ============ LOCKED STATE ============ -->
+    <section class="bp-mobile-locked" id="lockedArea">
+      <div class="bp-eyebrow" style="color:var(--red);margin-bottom:8px;">You're out</div>
+      <div class="reason" id="lockedReason">—</div>
+    </section>
+
+    <!-- spacer pushes actions to bottom -->
+    <div class="grow"></div>
+
+    <!-- ============ ACTIONS ============ -->
+    <div class="bp-mobile-actions" id="actions">
+      <div class="warn" id="warning">
+        <span class="ico">⚠</span>
+        <span class="txt" id="warningText"></span>
+      </div>
+
+      <div class="qb-head">
+        <span>Quick bid</span>
+        <span class="min">next min · <span id="minNextBid">—</span></span>
+      </div>
+      <div class="qb-grid" id="quickBids">
+        <button class="bp-qb" data-delta="100000">+100K</button>
+        <button class="bp-qb" data-delta="500000">+500K</button>
+        <button class="bp-qb" data-delta="1000000">+1M</button>
+        <button class="bp-qb" data-delta="2000000">+2M</button>
+      </div>
+
+      <div class="custom-row">
+        <input id="customBidInput" placeholder="custom · e.g. 23.5M" inputmode="decimal" />
+        <button class="bp-bid-btn" id="btnCustomBid">Bid</button>
+      </div>
+
+      <div class="bid-status" id="bidStatus"></div>
+    </div>
+
+  </div>
+
+  <!-- ============ DRAWER ============ -->
+  <div class="bp-mobile-drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="bp-mobile-drawer" id="drawer">
+    <div class="drawer-head">
       <h2>Your squad</h2>
-      <button class="drawer-close" id="drawerClose" aria-label="Close">✕</button>
+      <button class="drawer-close" id="btnCloseDrawer" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
-    <div class="squad-stats">
-      <div class="stat"><div class="label">Players</div><div class="val" id="drawerCount">0</div></div>
-      <div class="stat"><div class="label">Spent</div><div class="val" id="drawerSpent">0</div></div>
-      <div class="stat"><div class="label">Left</div><div class="val" id="drawerLeft">0</div></div>
+
+    <div class="drawer-stats">
+      <div class="ds"><span class="v" id="dPlayers">0</span><span class="l">Players</span></div>
+      <div class="ds gold"><span class="v" id="dSpent">0</span><span class="l">Spent</span></div>
+      <div class="ds green"><span class="v" id="dLeft">0</span><span class="l">Left</span></div>
     </div>
-    <div id="drawerWarnings" class="position-warnings"></div>
-    <div id="drawerSquad"></div>
+
+    <div class="pos-counts">
+      <div class="pc gk"><div class="v" id="dGK">0</div><div class="l">GK</div></div>
+      <div class="pc def"><div class="v" id="dDEF">0</div><div class="l">DEF</div></div>
+      <div class="pc mid"><div class="v" id="dMID">0</div><div class="l">MID</div></div>
+      <div class="pc fwd"><div class="v" id="dFWD">0</div><div class="l">FWD</div></div>
+    </div>
+
+    <div class="drawer-tabs" id="drawerTabs">
+      <button class="active" data-dtab="list">List</button>
+      <button data-dtab="formation" data-fmt="4-3-3">4-3-3</button>
+      <button data-dtab="formation" data-fmt="4-4-2">4-4-2</button>
+      <button data-dtab="formation" data-fmt="4-2-3-1">4-2-3-1</button>
+      <button data-dtab="formation" data-fmt="3-2-4-1">3-2-4-1</button>
+    </div>
+
+    <div class="drawer-body">
+      <div class="dpanel active" data-dtab="list">
+        <div class="bp-mobile-squad-list" id="squadList"></div>
+      </div>
+      <div class="dpanel" data-dtab="formation">
+        <div class="bp-mobile-pitch-wrap">
+          <div class="bp-mobile-pitch bp-pitch" id="mobilePitch">
+            <div class="half-line"></div>
+            <div class="center-circle"></div>
+            <div class="box-top"></div><div class="six-top"></div>
+            <div class="box-bottom"></div><div class="six-bottom"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </aside>
 
   <script type="module" src="./js/bidder.js"></script>
