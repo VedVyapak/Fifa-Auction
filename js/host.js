@@ -960,31 +960,227 @@ function renderPitchInto(pitchEl, squad, formationKey) {
 
 function renderFinished() {
   if (room.status !== 'finished') return;
-  const bidders = Object.values(room.bidders || {});
-  $('finalGrid').innerHTML = bidders.map(b => {
-    const spent = (b.squad || []).reduce((s, p) => s + (p.price || 0), 0);
-    const avg = (b.squad || []).length
-      ? Math.round((b.squad.reduce((s, p) => s + (p.overall || 0), 0) / b.squad.length) * 10) / 10
-      : 0;
+
+  const bidders = Object.values(room.bidders || {}).filter(b => b.name);
+  const history = room.history || [];
+  const sales = history.filter(h => h.type === 'sold');
+
+  // hero stats
+  const totalVolume = sales.reduce((s, h) => s + (h.price || 0), 0);
+  const avgPrice = sales.length ? totalVolume / sales.length : 0;
+  const topSale = sales.length ? sales.reduce((m, h) => h.price > m.price ? h : m, sales[0]) : null;
+  const topPlayer = topSale ? room.pool[topSale.playerId] : null;
+  const startedAt = room.startedAt || room.createdAt || (sales[0]?.at) || Date.now();
+  const finishedAt = room.finishedAt || (sales[sales.length - 1]?.at) || Date.now();
+  const durationMs = Math.max(0, finishedAt - startedAt);
+
+  // eyebrow
+  const today = new Date().toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' });
+  $('finalHeroEyebrow').textContent = `Auction complete · ${today}`;
+  $('finalHeroSub').innerHTML =
+    `${bidders.length} managers · <b>${sales.length} players</b> · ${formatDuration(durationMs)} on the clock · <b>${formatMoney(totalVolume)}</b> in total value moved`;
+
+  $('finalEyebrow').textContent = `Room ${roomCode} · ${sales.length} sold · auction complete`;
+
+  // hero stats cells
+  $('finalHeroStats').innerHTML = `
+    <div class="cell accent-gold">
+      <span class="val">${formatMoney(totalVolume)}</span>
+      <span class="key">Total volume</span>
+    </div>
+    <div class="cell">
+      <span class="val">${formatMoney(Math.round(avgPrice))}</span>
+      <span class="key">Avg price</span>
+    </div>
+    <div class="cell accent-green">
+      <span class="val">${topSale ? formatMoney(topSale.price) : '—'}</span>
+      <span class="key">${topPlayer ? `Top sale · ${escapeHtml(topPlayer.name.split(' ').pop())}` : 'Top sale'}</span>
+    </div>
+    <div class="cell">
+      <span class="val">${formatDuration(durationMs)}</span>
+      <span class="key">Duration</span>
+    </div>
+  `;
+
+  // awards
+  const awards = computeAwards(bidders, sales);
+  $('finalAwards').innerHTML = `
+    ${awardCardHTML('gold', '🏆', 'Best squad', awards.bestSquad)}
+    ${awardCardHTML('green', '🎯', 'Steal of the night', awards.steal)}
+    ${awardCardHTML('blue', '💰', 'Biggest spender', awards.spender)}
+    ${awardCardHTML('red', '🔥', 'Top buy', awards.topBuy)}
+  `;
+
+  // standings — rank by avg OVR desc, tiebreak by spent desc
+  const standings = bidders.map(b => {
+    const squad = b.squad || [];
+    const avgOvr = squad.length ? squad.reduce((s, p) => s + (p.overall || 0), 0) / squad.length : 0;
+    const spent = squad.reduce((s, p) => s + (p.price || 0), 0);
+    return { b, squad, avgOvr, spent };
+  }).sort((a, b) => (b.avgOvr - a.avgOvr) || (b.spent - a.spent));
+
+  $('finalStandings').innerHTML = standings.map((row, i) => {
+    const c = squadPositionCounts(row.squad);
+    const rankClass = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : '';
+    const champ = i === 0 ? '<span class="tag">Champion</span>' : '';
     return `
-      <div class="final-team-card" id="team-${b.id}">
-        <h3>${escapeHtml(b.name)}</h3>
-        <div class="stats-row">
-          <span>spent ${formatMoney(spent)}</span>
-          <span>left ${formatMoney(b.budget)}</span>
-          <span>avg ${avg}</span>
-          <span>${(b.squad||[]).length} players</span>
-        </div>
-        ${squadGridHTML(b.squad)}
-        <div style="margin-top:12px;text-align:right;">
-          <button class="btn btn-ghost" data-export="${b.id}">Save as image</button>
-        </div>
-      </div>
+      <tr>
+        <td><span class="bp-rank-pill ${rankClass}">${i + 1}</span></td>
+        <td><div class="bp-bidder-cell"><span class="nm">${escapeHtml((row.b.name || '?').toUpperCase())}</span>${champ}</div></td>
+        <td class="bp-spent-cell">${row.squad.length} players · ${c.GK} GK · ${c.DEF} DEF · ${c.MID} MID · ${c.FWD} FWD</td>
+        <td class="r bp-spent-cell">${formatMoney(row.spent)}</td>
+        <td class="r bp-spent-cell">${formatMoney(row.b.budget || 0)}</td>
+        <td class="r"><span class="bp-ovr-cell">${row.avgOvr.toFixed(1)}</span></td>
+      </tr>
     `;
   }).join('');
-  $('finalGrid').querySelectorAll('[data-export]').forEach(el => {
-    el.addEventListener('click', () => exportOne(el.dataset.export));
+
+  // squad cards
+  $('finalGrid').innerHTML = standings.map((row, i) => {
+    const squad = row.squad;
+    const top3 = [...squad].sort((a, b) => (b.overall || 0) - (a.overall || 0)).slice(0, 3);
+    const cardClass = i === 0 ? 'first' : i === 1 ? 'second' : i === 2 ? 'third' : '';
+    const rankClass = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : '';
+    const avgBuy = squad.length ? row.spent / squad.length : 0;
+    const link = `./squad.html?room=${encodeURIComponent(roomCode || '')}&bidder=${encodeURIComponent(row.b.id)}`;
+    return `
+      <a href="${link}" class="bp-squad-card ${cardClass}" id="team-${row.b.id}">
+        <div class="head">
+          <div class="left">
+            <span class="bp-rank-pill ${rankClass}">${i + 1}</span>
+            <span class="nm">${escapeHtml((row.b.name || '?').toUpperCase())}</span>
+          </div>
+          <div class="ovr-block">
+            <span class="num">${row.avgOvr.toFixed(1)}</span>
+            <span class="lbl">avg OVR</span>
+          </div>
+        </div>
+        <div class="bp-top-players">
+          ${top3.length === 0 ? '<div class="empty">no players</div>' : top3.map(p => `
+            <div class="row">
+              <span class="o">${p.overall || '—'}</span>
+              <div>
+                <div class="n">${escapeHtml(p.name || '?')}</div>
+                <div class="meta">${escapeHtml(p.position || '')} · ${escapeHtml(p.club || '')}</div>
+              </div>
+              <span class="p">${formatMoney(p.price)}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="bp-squad-foot">
+          <div class="ft"><span class="v">${squad.length}</span><span class="l">Players</span></div>
+          <div class="ft spent"><span class="v">${formatMoney(row.spent)}</span><span class="l">Spent</span></div>
+          <div class="ft eff"><span class="v">${squad.length ? formatMoney(Math.round(avgBuy)) : '—'}</span><span class="l">Avg buy</span></div>
+        </div>
+        <div class="view-link">View full squad →</div>
+      </a>
+    `;
+  }).join('');
+}
+
+function awardCardHTML(color, icon, label, award) {
+  if (!award) {
+    return `
+      <div class="bp-award ${color}">
+        <span class="award-tag"><span class="ico">${icon}</span>${label}</span>
+        <div class="winner-name">—</div>
+        <div class="winner-line">no data yet</div>
+        <div class="award-stat"><span class="empty-line">awaiting sales</span></div>
+      </div>
+    `;
+  }
+  return `
+    <div class="bp-award ${color}">
+      <span class="award-tag"><span class="ico">${icon}</span>${label}</span>
+      <div class="winner-name">${escapeHtml(award.winner)}</div>
+      <div class="winner-line">${escapeHtml(award.line)}</div>
+      <div class="award-stat">
+        <span class="num">${award.stat}</span>
+        <span class="label">${escapeHtml(award.statLabel)}</span>
+      </div>
+    </div>
+  `;
+}
+
+function computeAwards(bidders, sales) {
+  // Best squad — highest avg OVR (min 1 player)
+  let bestSquad = null;
+  bidders.forEach(b => {
+    const squad = b.squad || [];
+    if (squad.length === 0) return;
+    const avg = squad.reduce((s, p) => s + (p.overall || 0), 0) / squad.length;
+    if (!bestSquad || avg > bestSquad.avg) {
+      bestSquad = { winner: (b.name || '?').toUpperCase(), avg, count: squad.length };
+    }
   });
+  if (bestSquad) {
+    bestSquad = {
+      winner: bestSquad.winner,
+      line: `avg ${bestSquad.avg.toFixed(1)} OVR · ${bestSquad.count} player${bestSquad.count === 1 ? '' : 's'}`,
+      stat: bestSquad.avg.toFixed(1),
+      statLabel: 'average overall',
+    };
+  }
+
+  // Steal of the night — highest overall / max(price, 0.1) (in millions)
+  let steal = null;
+  sales.forEach(h => {
+    const p = room.pool[h.playerId];
+    if (!p) return;
+    const priceM = Math.max(h.price / 1_000_000, 0.1);
+    const ratio = (p.overall || 0) / priceM;
+    if (!steal || ratio > steal.ratio) {
+      steal = {
+        ratio,
+        winner: (h.winnerName || '?').toUpperCase(),
+        line: `${p.name} · ${p.overall} OVR · ${formatMoney(h.price)}`,
+        stat: `${ratio.toFixed(1)}<span style="font-family:var(--sans);font-weight:700;font-size:18px;margin-left:1px;">×</span>`,
+        statLabel: 'OVR per million',
+      };
+    }
+  });
+
+  // Biggest spender — highest sum of squad prices
+  let spender = null;
+  bidders.forEach(b => {
+    const spent = (b.squad || []).reduce((s, p) => s + (p.price || 0), 0);
+    if (!spender || spent > spender.spentN) {
+      spender = {
+        spentN: spent,
+        winner: (b.name || '?').toUpperCase(),
+        line: `${formatMoney(spent)} of ${formatMoney(STARTING_BUDGET)} deployed`,
+        stat: formatMoney(spent),
+        statLabel: 'total spent',
+      };
+    }
+  });
+
+  // Top buy — highest single sale
+  let topBuy = null;
+  sales.forEach(h => {
+    if (!topBuy || h.price > topBuy.priceN) {
+      const p = room.pool[h.playerId];
+      topBuy = {
+        priceN: h.price,
+        winner: (h.winnerName || '?').toUpperCase(),
+        line: p ? `${p.name} · ${p.overall} OVR · ${p.position || ''}` : 'unknown player',
+        stat: formatMoney(h.price),
+        statLabel: 'highest sale',
+      };
+    }
+  });
+
+  return { bestSquad, steal, spender, topBuy };
+}
+
+function formatDuration(ms) {
+  const totalSec = Math.round(Math.max(0, ms) / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  if (h > 0) return `${h}<span class="unit" style="font-family:var(--sans);font-size:13px;font-weight:700;color:var(--dim);margin-left:2px;">h</span> ${String(m).padStart(2,'0')}<span class="unit" style="font-family:var(--sans);font-size:13px;font-weight:700;color:var(--dim);margin-left:2px;">m</span>`;
+  if (m > 0) return `${m}<span class="unit" style="font-family:var(--sans);font-size:13px;font-weight:700;color:var(--dim);margin-left:2px;">m</span> ${String(s).padStart(2,'0')}<span class="unit" style="font-family:var(--sans);font-size:13px;font-weight:700;color:var(--dim);margin-left:2px;">s</span>`;
+  return `${s}<span class="unit" style="font-family:var(--sans);font-size:13px;font-weight:700;color:var(--dim);margin-left:2px;">s</span>`;
 }
 
 async function exportOne(bidderId) {

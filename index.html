@@ -222,15 +222,65 @@
   </section>
 
   <!-- ============================== FINISHED SCREEN ============================== -->
-  <section id="finishedScreen" class="hide" style="padding:32px;position:relative;z-index:2;">
-    <div class="bc-bar" style="margin-bottom:24px;border-radius:12px;">
-      <span class="bc-tag" style="background:var(--gold);color:#2a1d00;">Final Squads</span>
-      <span class="eyebrow">Auction complete</span>
-      <div class="spacer"></div>
-      <button id="btnExportAll" class="btn btn-primary">Save image of all teams</button>
-      <button id="btnNewAuction" class="btn btn-ghost">New auction</button>
-    </div>
-    <div id="finalGrid" class="final-grid"></div>
+  <section id="finishedScreen" class="hide">
+    <header class="bp-chrome">
+      <div class="bp-net-logo">FIFA·AUCT</div>
+      <span class="bp-eyebrow" id="finalEyebrow" style="color:var(--gold);">Auction complete</span>
+      <div></div>
+      <div></div>
+      <div style="display:flex;gap:8px;">
+        <button id="btnExportAll" class="bp-btn" style="padding:10px 16px;font-size:12px;background:linear-gradient(180deg,var(--gold),#c69a2a);color:#2a1d00;border-color:transparent;">⤓ Save image of all teams</button>
+        <button id="btnNewAuction" class="bp-btn" style="padding:10px 16px;font-size:12px;">+ New auction</button>
+      </div>
+    </header>
+
+    <main class="bp-final-stage">
+      <section class="bp-final-hero">
+        <div class="bp-eyebrow" id="finalHeroEyebrow">Auction complete</div>
+        <h1 id="finalHeroTitle">That's a <em>wrap</em>.</h1>
+        <div class="sub" id="finalHeroSub">—</div>
+      </section>
+
+      <section class="bp-hero-stats" id="finalHeroStats"></section>
+
+      <section>
+        <div class="bp-section-head">
+          <h2>Awards of the Night</h2>
+          <span class="meta">unofficial · vibes-based</span>
+        </div>
+        <div class="bp-awards" id="finalAwards"></div>
+      </section>
+
+      <section>
+        <div class="bp-section-head">
+          <h2>Final Standings</h2>
+          <span class="meta">ranked by avg OVR</span>
+        </div>
+        <div class="bp-standings">
+          <table class="bp-standings-tbl">
+            <thead>
+              <tr>
+                <th style="width: 60px;">Rank</th>
+                <th>Manager</th>
+                <th>Squad</th>
+                <th class="r">Spent</th>
+                <th class="r">Left</th>
+                <th class="r">Avg OVR</th>
+              </tr>
+            </thead>
+            <tbody id="finalStandings"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <div class="bp-section-head">
+          <h2>All Squads</h2>
+          <span class="meta">click → squad detail</span>
+        </div>
+        <div class="bp-squad-card-grid" id="finalGrid"></div>
+      </section>
+    </main>
   </section>
 
   <!-- ============================== QR MODAL ============================== -->
