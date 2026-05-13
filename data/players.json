@@ -1,152 +1,2852 @@
 [
-  { "id": "p_1",  "name": "Kylian Mbappé",       "overall": 91, "position": "ST",  "club": "Real Madrid",       "nation": "France",       "photo": "" },
-  { "id": "p_2",  "name": "Erling Haaland",      "overall": 91, "position": "ST",  "club": "Man City",          "nation": "Norway",       "photo": "" },
-  { "id": "p_3",  "name": "Rodri",               "overall": 91, "position": "CDM", "club": "Man City",          "nation": "Spain",        "photo": "" },
-  { "id": "p_4",  "name": "Jude Bellingham",     "overall": 90, "position": "CAM", "club": "Real Madrid",       "nation": "England",      "photo": "" },
-  { "id": "p_5",  "name": "Vinicius Jr.",        "overall": 90, "position": "LW",  "club": "Real Madrid",       "nation": "Brazil",       "photo": "" },
-  { "id": "p_6",  "name": "Kevin De Bruyne",     "overall": 90, "position": "CAM", "club": "Man City",          "nation": "Belgium",      "photo": "" },
-  { "id": "p_7",  "name": "Thibaut Courtois",    "overall": 90, "position": "GK",  "club": "Real Madrid",       "nation": "Belgium",      "photo": "" },
-  { "id": "p_8",  "name": "Alisson",             "overall": 89, "position": "GK",  "club": "Liverpool",         "nation": "Brazil",       "photo": "" },
-  { "id": "p_9",  "name": "Lionel Messi",        "overall": 89, "position": "RW",  "club": "Inter Miami",       "nation": "Argentina",    "photo": "" },
-  { "id": "p_10", "name": "Mohamed Salah",       "overall": 89, "position": "RW",  "club": "Liverpool",         "nation": "Egypt",        "photo": "" },
-  { "id": "p_11", "name": "Harry Kane",          "overall": 89, "position": "ST",  "club": "Bayern Munich",     "nation": "England",      "photo": "" },
-  { "id": "p_12", "name": "Phil Foden",          "overall": 89, "position": "CAM", "club": "Man City",          "nation": "England",      "photo": "" },
-  { "id": "p_13", "name": "Bukayo Saka",         "overall": 89, "position": "RW",  "club": "Arsenal",           "nation": "England",      "photo": "" },
-  { "id": "p_14", "name": "Virgil van Dijk",     "overall": 89, "position": "CB",  "club": "Liverpool",         "nation": "Netherlands",  "photo": "" },
-  { "id": "p_15", "name": "Antoine Griezmann",   "overall": 88, "position": "CAM", "club": "Atletico Madrid",   "nation": "France",       "photo": "" },
-  { "id": "p_16", "name": "Lautaro Martinez",    "overall": 88, "position": "ST",  "club": "Inter",             "nation": "Argentina",    "photo": "" },
-  { "id": "p_17", "name": "Federico Valverde",   "overall": 88, "position": "CM",  "club": "Real Madrid",       "nation": "Uruguay",      "photo": "" },
-  { "id": "p_18", "name": "Pedri",               "overall": 88, "position": "CM",  "club": "Barcelona",         "nation": "Spain",        "photo": "" },
-  { "id": "p_19", "name": "Antonio Rüdiger",     "overall": 88, "position": "CB",  "club": "Real Madrid",       "nation": "Germany",      "photo": "" },
-  { "id": "p_20", "name": "William Saliba",      "overall": 87, "position": "CB",  "club": "Arsenal",           "nation": "France",       "photo": "" },
-  { "id": "p_21", "name": "Marquinhos",          "overall": 87, "position": "CB",  "club": "PSG",               "nation": "Brazil",       "photo": "" },
-  { "id": "p_22", "name": "Joshua Kimmich",      "overall": 87, "position": "CDM", "club": "Bayern Munich",     "nation": "Germany",      "photo": "" },
-  { "id": "p_23", "name": "Florian Wirtz",       "overall": 87, "position": "CAM", "club": "Bayer Leverkusen",  "nation": "Germany",      "photo": "" },
-  { "id": "p_24", "name": "Lamine Yamal",        "overall": 87, "position": "RW",  "club": "Barcelona",         "nation": "Spain",        "photo": "" },
-  { "id": "p_25", "name": "Bruno Fernandes",     "overall": 87, "position": "CAM", "club": "Man United",        "nation": "Portugal",     "photo": "" },
-  { "id": "p_26", "name": "Gianluigi Donnarumma","overall": 87, "position": "GK",  "club": "PSG",               "nation": "Italy",        "photo": "" },
-  { "id": "p_27", "name": "Ederson",             "overall": 87, "position": "GK",  "club": "Man City",          "nation": "Brazil",       "photo": "" },
-  { "id": "p_28", "name": "Jan Oblak",           "overall": 87, "position": "GK",  "club": "Atletico Madrid",   "nation": "Slovenia",     "photo": "" },
-  { "id": "p_29", "name": "Marc-André ter Stegen","overall": 87, "position": "GK", "club": "Barcelona",         "nation": "Germany",      "photo": "" },
-  { "id": "p_30", "name": "Toni Kroos",          "overall": 87, "position": "CM",  "club": "Real Madrid",       "nation": "Germany",      "photo": "" },
-  { "id": "p_31", "name": "Luka Modric",         "overall": 87, "position": "CM",  "club": "Real Madrid",       "nation": "Croatia",      "photo": "" },
-  { "id": "p_32", "name": "Bernardo Silva",      "overall": 87, "position": "CAM", "club": "Man City",          "nation": "Portugal",     "photo": "" },
-  { "id": "p_33", "name": "Declan Rice",         "overall": 87, "position": "CDM", "club": "Arsenal",           "nation": "England",      "photo": "" },
-  { "id": "p_34", "name": "Martin Ødegaard",     "overall": 87, "position": "CAM", "club": "Arsenal",           "nation": "Norway",       "photo": "" },
-  { "id": "p_35", "name": "Robert Lewandowski",  "overall": 87, "position": "ST",  "club": "Barcelona",         "nation": "Poland",       "photo": "" },
-  { "id": "p_36", "name": "Khvicha Kvaratskhelia","overall": 86,"position": "LW",  "club": "Napoli",            "nation": "Georgia",      "photo": "" },
-  { "id": "p_37", "name": "Victor Osimhen",      "overall": 88, "position": "ST",  "club": "Galatasaray",       "nation": "Nigeria",      "photo": "" },
-  { "id": "p_38", "name": "Dayot Upamecano",     "overall": 86, "position": "CB",  "club": "Bayern Munich",     "nation": "France",       "photo": "" },
-  { "id": "p_39", "name": "Ruben Dias",          "overall": 88, "position": "CB",  "club": "Man City",          "nation": "Portugal",     "photo": "" },
-  { "id": "p_40", "name": "Eder Militão",        "overall": 86, "position": "CB",  "club": "Real Madrid",       "nation": "Brazil",       "photo": "" },
-  { "id": "p_41", "name": "Achraf Hakimi",       "overall": 86, "position": "RB",  "club": "PSG",               "nation": "Morocco",      "photo": "" },
-  { "id": "p_42", "name": "Theo Hernandez",      "overall": 86, "position": "LB",  "club": "AC Milan",          "nation": "France",       "photo": "" },
-  { "id": "p_43", "name": "Alphonso Davies",     "overall": 85, "position": "LB",  "club": "Bayern Munich",     "nation": "Canada",       "photo": "" },
-  { "id": "p_44", "name": "Trent Alexander-Arnold","overall": 87,"position": "RB", "club": "Liverpool",         "nation": "England",      "photo": "" },
-  { "id": "p_45", "name": "Andrew Robertson",    "overall": 86, "position": "LB",  "club": "Liverpool",         "nation": "Scotland",     "photo": "" },
-  { "id": "p_46", "name": "Joao Cancelo",        "overall": 85, "position": "RB",  "club": "Al-Hilal",          "nation": "Portugal",     "photo": "" },
-  { "id": "p_47", "name": "Casemiro",            "overall": 85, "position": "CDM", "club": "Man United",        "nation": "Brazil",       "photo": "" },
-  { "id": "p_48", "name": "N'Golo Kanté",        "overall": 85, "position": "CDM", "club": "Al-Ittihad",        "nation": "France",       "photo": "" },
-  { "id": "p_49", "name": "Frenkie de Jong",     "overall": 86, "position": "CM",  "club": "Barcelona",         "nation": "Netherlands",  "photo": "" },
-  { "id": "p_50", "name": "Aurélien Tchouaméni", "overall": 85, "position": "CDM", "club": "Real Madrid",       "nation": "France",       "photo": "" },
-  { "id": "p_51", "name": "Eduardo Camavinga",   "overall": 84, "position": "CM",  "club": "Real Madrid",       "nation": "France",       "photo": "" },
-  { "id": "p_52", "name": "Jamal Musiala",       "overall": 86, "position": "CAM", "club": "Bayern Munich",     "nation": "Germany",      "photo": "" },
-  { "id": "p_53", "name": "Cole Palmer",         "overall": 85, "position": "CAM", "club": "Chelsea",           "nation": "England",      "photo": "" },
-  { "id": "p_54", "name": "Rafael Leão",         "overall": 86, "position": "LW",  "club": "AC Milan",          "nation": "Portugal",     "photo": "" },
-  { "id": "p_55", "name": "Heung-min Son",       "overall": 87, "position": "LW",  "club": "Tottenham",         "nation": "South Korea",  "photo": "" },
-  { "id": "p_56", "name": "Marcus Rashford",     "overall": 84, "position": "LW",  "club": "Man United",        "nation": "England",      "photo": "" },
-  { "id": "p_57", "name": "Darwin Núñez",        "overall": 84, "position": "ST",  "club": "Liverpool",         "nation": "Uruguay",      "photo": "" },
-  { "id": "p_58", "name": "Julián Álvarez",      "overall": 84, "position": "ST",  "club": "Atletico Madrid",   "nation": "Argentina",    "photo": "" },
-  { "id": "p_59", "name": "Dusan Vlahovic",      "overall": 84, "position": "ST",  "club": "Juventus",          "nation": "Serbia",       "photo": "" },
-  { "id": "p_60", "name": "Romelu Lukaku",       "overall": 84, "position": "ST",  "club": "Napoli",            "nation": "Belgium",      "photo": "" },
-  { "id": "p_61", "name": "Olivier Giroud",      "overall": 82, "position": "ST",  "club": "LAFC",              "nation": "France",       "photo": "" },
-  { "id": "p_62", "name": "Kai Havertz",         "overall": 84, "position": "ST",  "club": "Arsenal",           "nation": "Germany",      "photo": "" },
-  { "id": "p_63", "name": "Gabriel Jesus",       "overall": 83, "position": "ST",  "club": "Arsenal",           "nation": "Brazil",       "photo": "" },
-  { "id": "p_64", "name": "Gabriel Martinelli",  "overall": 84, "position": "LW",  "club": "Arsenal",           "nation": "Brazil",       "photo": "" },
-  { "id": "p_65", "name": "Ousmane Dembélé",     "overall": 84, "position": "RW",  "club": "PSG",               "nation": "France",       "photo": "" },
-  { "id": "p_66", "name": "Bradley Barcola",     "overall": 81, "position": "LW",  "club": "PSG",               "nation": "France",       "photo": "" },
-  { "id": "p_67", "name": "Leroy Sané",          "overall": 85, "position": "RW",  "club": "Bayern Munich",     "nation": "Germany",      "photo": "" },
-  { "id": "p_68", "name": "Serge Gnabry",        "overall": 84, "position": "LW",  "club": "Bayern Munich",     "nation": "Germany",      "photo": "" },
-  { "id": "p_69", "name": "Riyad Mahrez",        "overall": 84, "position": "RW",  "club": "Al-Ahli",           "nation": "Algeria",      "photo": "" },
-  { "id": "p_70", "name": "Jack Grealish",       "overall": 83, "position": "LW",  "club": "Man City",          "nation": "England",      "photo": "" },
-  { "id": "p_71", "name": "Mason Mount",         "overall": 81, "position": "CAM", "club": "Man United",        "nation": "England",      "photo": "" },
-  { "id": "p_72", "name": "Christopher Nkunku",  "overall": 84, "position": "CAM", "club": "Chelsea",           "nation": "France",       "photo": "" },
-  { "id": "p_73", "name": "Enzo Fernández",      "overall": 83, "position": "CM",  "club": "Chelsea",           "nation": "Argentina",    "photo": "" },
-  { "id": "p_74", "name": "Moisés Caicedo",      "overall": 83, "position": "CDM", "club": "Chelsea",           "nation": "Ecuador",      "photo": "" },
-  { "id": "p_75", "name": "Bruno Guimarães",     "overall": 85, "position": "CDM", "club": "Newcastle",         "nation": "Brazil",       "photo": "" },
-  { "id": "p_76", "name": "Alexander Isak",      "overall": 85, "position": "ST",  "club": "Newcastle",         "nation": "Sweden",       "photo": "" },
-  { "id": "p_77", "name": "Anthony Gordon",      "overall": 82, "position": "LW",  "club": "Newcastle",         "nation": "England",      "photo": "" },
-  { "id": "p_78", "name": "Sandro Tonali",       "overall": 84, "position": "CM",  "club": "Newcastle",         "nation": "Italy",        "photo": "" },
-  { "id": "p_79", "name": "Nicolò Barella",      "overall": 86, "position": "CM",  "club": "Inter",             "nation": "Italy",        "photo": "" },
-  { "id": "p_80", "name": "Lorenzo Pellegrini",  "overall": 83, "position": "CAM", "club": "Roma",              "nation": "Italy",        "photo": "" },
-  { "id": "p_81", "name": "Paulo Dybala",        "overall": 85, "position": "CAM", "club": "Roma",              "nation": "Argentina",    "photo": "" },
-  { "id": "p_82", "name": "Mike Maignan",        "overall": 87, "position": "GK",  "club": "AC Milan",          "nation": "France",       "photo": "" },
-  { "id": "p_83", "name": "André Onana",         "overall": 84, "position": "GK",  "club": "Man United",        "nation": "Cameroon",     "photo": "" },
-  { "id": "p_84", "name": "Aaron Ramsdale",      "overall": 83, "position": "GK",  "club": "Southampton",       "nation": "England",      "photo": "" },
-  { "id": "p_85", "name": "David Raya",          "overall": 83, "position": "GK",  "club": "Arsenal",           "nation": "Spain",        "photo": "" },
-  { "id": "p_86", "name": "Diogo Costa",         "overall": 84, "position": "GK",  "club": "Porto",             "nation": "Portugal",     "photo": "" },
-  { "id": "p_87", "name": "Yann Sommer",         "overall": 84, "position": "GK",  "club": "Inter",             "nation": "Switzerland",  "photo": "" },
-  { "id": "p_88", "name": "Wojciech Szczęsny",   "overall": 85, "position": "GK",  "club": "Barcelona",         "nation": "Poland",       "photo": "" },
-  { "id": "p_89", "name": "Emiliano Martínez",   "overall": 85, "position": "GK",  "club": "Aston Villa",       "nation": "Argentina",    "photo": "" },
-  { "id": "p_90", "name": "Manuel Neuer",        "overall": 85, "position": "GK",  "club": "Bayern Munich",     "nation": "Germany",      "photo": "" },
-  { "id": "p_91", "name": "Alessandro Bastoni",  "overall": 85, "position": "CB",  "club": "Inter",             "nation": "Italy",        "photo": "" },
-  { "id": "p_92", "name": "Matthijs de Ligt",    "overall": 85, "position": "CB",  "club": "Man United",        "nation": "Netherlands",  "photo": "" },
-  { "id": "p_93", "name": "Ronald Araújo",       "overall": 86, "position": "CB",  "club": "Barcelona",         "nation": "Uruguay",      "photo": "" },
-  { "id": "p_94", "name": "Jules Koundé",        "overall": 85, "position": "RB",  "club": "Barcelona",         "nation": "France",       "photo": "" },
-  { "id": "p_95", "name": "Pau Cubarsí",         "overall": 81, "position": "CB",  "club": "Barcelona",         "nation": "Spain",        "photo": "" },
-  { "id": "p_96", "name": "Gabriel Magalhães",   "overall": 85, "position": "CB",  "club": "Arsenal",           "nation": "Brazil",       "photo": "" },
-  { "id": "p_97", "name": "Ben White",           "overall": 84, "position": "RB",  "club": "Arsenal",           "nation": "England",      "photo": "" },
-  { "id": "p_98", "name": "Kyle Walker",         "overall": 84, "position": "RB",  "club": "Man City",          "nation": "England",      "photo": "" },
-  { "id": "p_99", "name": "Joško Gvardiol",      "overall": 84, "position": "CB",  "club": "Man City",          "nation": "Croatia",      "photo": "" },
-  { "id": "p_100","name": "John Stones",         "overall": 84, "position": "CB",  "club": "Man City",          "nation": "England",      "photo": "" },
-  { "id": "p_101","name": "Lisandro Martínez",   "overall": 84, "position": "CB",  "club": "Man United",        "nation": "Argentina",    "photo": "" },
-  { "id": "p_102","name": "Ibrahima Konaté",     "overall": 84, "position": "CB",  "club": "Liverpool",         "nation": "France",       "photo": "" },
-  { "id": "p_103","name": "Ousmane Diomande",    "overall": 80, "position": "CB",  "club": "Sporting CP",       "nation": "Ivory Coast",  "photo": "" },
-  { "id": "p_104","name": "David Alaba",         "overall": 84, "position": "CB",  "club": "Real Madrid",       "nation": "Austria",      "photo": "" },
-  { "id": "p_105","name": "Pau Torres",          "overall": 82, "position": "CB",  "club": "Aston Villa",       "nation": "Spain",        "photo": "" },
-  { "id": "p_106","name": "Reece James",         "overall": 84, "position": "RB",  "club": "Chelsea",           "nation": "England",      "photo": "" },
-  { "id": "p_107","name": "Marc Cucurella",      "overall": 81, "position": "LB",  "club": "Chelsea",           "nation": "Spain",        "photo": "" },
-  { "id": "p_108","name": "Pedro Porro",         "overall": 83, "position": "RB",  "club": "Tottenham",         "nation": "Spain",        "photo": "" },
-  { "id": "p_109","name": "Destiny Udogie",      "overall": 81, "position": "LB",  "club": "Tottenham",         "nation": "Italy",        "photo": "" },
-  { "id": "p_110","name": "Cristian Romero",     "overall": 85, "position": "CB",  "club": "Tottenham",         "nation": "Argentina",    "photo": "" },
-  { "id": "p_111","name": "Micky van de Ven",    "overall": 82, "position": "CB",  "club": "Tottenham",         "nation": "Netherlands",  "photo": "" },
-  { "id": "p_112","name": "James Maddison",      "overall": 83, "position": "CAM", "club": "Tottenham",         "nation": "England",      "photo": "" },
-  { "id": "p_113","name": "Dejan Kulusevski",    "overall": 82, "position": "RW",  "club": "Tottenham",         "nation": "Sweden",       "photo": "" },
-  { "id": "p_114","name": "Rodrigo De Paul",     "overall": 84, "position": "CM",  "club": "Atletico Madrid",   "nation": "Argentina",    "photo": "" },
-  { "id": "p_115","name": "Koke",                "overall": 83, "position": "CM",  "club": "Atletico Madrid",   "nation": "Spain",        "photo": "" },
-  { "id": "p_116","name": "Memphis Depay",       "overall": 82, "position": "ST",  "club": "Corinthians",       "nation": "Netherlands",  "photo": "" },
-  { "id": "p_117","name": "Álvaro Morata",       "overall": 82, "position": "ST",  "club": "AC Milan",          "nation": "Spain",        "photo": "" },
-  { "id": "p_118","name": "Mikel Merino",        "overall": 82, "position": "CM",  "club": "Arsenal",           "nation": "Spain",        "photo": "" },
-  { "id": "p_119","name": "Mikel Oyarzabal",     "overall": 84, "position": "LW",  "club": "Real Sociedad",     "nation": "Spain",        "photo": "" },
-  { "id": "p_120","name": "Takefusa Kubo",       "overall": 83, "position": "RW",  "club": "Real Sociedad",     "nation": "Japan",        "photo": "" },
-  { "id": "p_121","name": "Nico Williams",       "overall": 84, "position": "LW",  "club": "Athletic Bilbao",   "nation": "Spain",        "photo": "" },
-  { "id": "p_122","name": "Iñaki Williams",      "overall": 81, "position": "ST",  "club": "Athletic Bilbao",   "nation": "Ghana",        "photo": "" },
-  { "id": "p_123","name": "Dani Olmo",           "overall": 85, "position": "CAM", "club": "Barcelona",         "nation": "Spain",        "photo": "" },
-  { "id": "p_124","name": "Raphinha",            "overall": 85, "position": "LW",  "club": "Barcelona",         "nation": "Brazil",       "photo": "" },
-  { "id": "p_125","name": "Robert Andrich",      "overall": 80, "position": "CDM", "club": "Bayer Leverkusen",  "nation": "Germany",      "photo": "" },
-  { "id": "p_126","name": "Granit Xhaka",        "overall": 83, "position": "CM",  "club": "Bayer Leverkusen",  "nation": "Switzerland",  "photo": "" },
-  { "id": "p_127","name": "Jonathan Tah",        "overall": 84, "position": "CB",  "club": "Bayer Leverkusen",  "nation": "Germany",      "photo": "" },
-  { "id": "p_128","name": "Alejandro Grimaldo",  "overall": 84, "position": "LB",  "club": "Bayer Leverkusen",  "nation": "Spain",        "photo": "" },
-  { "id": "p_129","name": "Victor Boniface",     "overall": 80, "position": "ST",  "club": "Bayer Leverkusen",  "nation": "Nigeria",      "photo": "" },
-  { "id": "p_130","name": "Patrik Schick",       "overall": 81, "position": "ST",  "club": "Bayer Leverkusen",  "nation": "Czechia",      "photo": "" },
-  { "id": "p_131","name": "Hakan Çalhanoğlu",    "overall": 85, "position": "CDM", "club": "Inter",             "nation": "Turkey",       "photo": "" },
-  { "id": "p_132","name": "Henrikh Mkhitaryan",  "overall": 82, "position": "CM",  "club": "Inter",             "nation": "Armenia",      "photo": "" },
-  { "id": "p_133","name": "Federico Dimarco",    "overall": 84, "position": "LB",  "club": "Inter",             "nation": "Italy",        "photo": "" },
-  { "id": "p_134","name": "Denzel Dumfries",     "overall": 82, "position": "RB",  "club": "Inter",             "nation": "Netherlands",  "photo": "" },
-  { "id": "p_135","name": "Khéphren Thuram",     "overall": 81, "position": "CM",  "club": "Juventus",          "nation": "France",       "photo": "" },
-  { "id": "p_136","name": "Manuel Locatelli",    "overall": 83, "position": "CDM", "club": "Juventus",          "nation": "Italy",        "photo": "" },
-  { "id": "p_137","name": "Bremer",              "overall": 83, "position": "CB",  "club": "Juventus",          "nation": "Brazil",       "photo": "" },
-  { "id": "p_138","name": "Kenan Yıldız",        "overall": 78, "position": "CAM", "club": "Juventus",          "nation": "Turkey",       "photo": "" },
-  { "id": "p_139","name": "Federico Chiesa",     "overall": 83, "position": "RW",  "club": "Liverpool",         "nation": "Italy",        "photo": "" },
-  { "id": "p_140","name": "Dominik Szoboszlai",  "overall": 83, "position": "CAM", "club": "Liverpool",         "nation": "Hungary",      "photo": "" },
-  { "id": "p_141","name": "Alexis Mac Allister", "overall": 84, "position": "CM",  "club": "Liverpool",         "nation": "Argentina",    "photo": "" },
-  { "id": "p_142","name": "Luis Díaz",           "overall": 84, "position": "LW",  "club": "Liverpool",         "nation": "Colombia",     "photo": "" },
-  { "id": "p_143","name": "Cody Gakpo",          "overall": 83, "position": "LW",  "club": "Liverpool",         "nation": "Netherlands",  "photo": "" },
-  { "id": "p_144","name": "Curtis Jones",        "overall": 80, "position": "CM",  "club": "Liverpool",         "nation": "England",      "photo": "" },
-  { "id": "p_145","name": "Sven Botman",         "overall": 81, "position": "CB",  "club": "Newcastle",         "nation": "Netherlands",  "photo": "" },
-  { "id": "p_146","name": "Nick Pope",           "overall": 82, "position": "GK",  "club": "Newcastle",         "nation": "England",      "photo": "" },
-  { "id": "p_147","name": "Sven Ulreich",        "overall": 76, "position": "GK",  "club": "Bayern Munich",     "nation": "Germany",      "photo": "" },
-  { "id": "p_148","name": "Aleksandar Mitrović", "overall": 81, "position": "ST",  "club": "Al-Hilal",          "nation": "Serbia",       "photo": "" },
-  { "id": "p_149","name": "Marco Reus",          "overall": 82, "position": "CAM", "club": "LA Galaxy",         "nation": "Germany",      "photo": "" },
-  { "id": "p_150","name": "Mats Hummels",        "overall": 82, "position": "CB",  "club": "Roma",              "nation": "Germany",      "photo": "" }
+  {
+    "id": "p_1",
+    "name": "Mohamed Salah",
+    "overall": 91,
+    "position": "RM",
+    "club": "Liverpool",
+    "clubImage": "https://drop-assets.ea.com/images/3mmzooNXBDCKuCy6kWcGQo/2e332a30fe2a7225a88fcb1898f48bbf/l9.png",
+    "nation": "Egypt",
+    "nationImage": "https://drop-assets.ea.com/images/3oaPJgnayo3Vq637niTdZs/2f31f32693e575ac1ae46a0651b1a8f7/f_111.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/209331.png?width=265",
+    "stats": {
+      "pac": 89,
+      "sho": 88,
+      "pas": 86,
+      "dri": 90,
+      "def": 45,
+      "phy": 76
+    }
+  },
+  {
+    "id": "p_2",
+    "name": "Alexia Putellas",
+    "overall": 91,
+    "position": "CM",
+    "club": "FC Barcelona",
+    "clubImage": "https://drop-assets.ea.com/images/1omg1GUYiuhDZzro6k79Gp/c3c15c873e984dae4e34fac491248b33/l116325.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/227203.png?width=265",
+    "stats": {
+      "pac": 82,
+      "sho": 89,
+      "pas": 90,
+      "dri": 91,
+      "def": 72,
+      "phy": 80
+    }
+  },
+  {
+    "id": "p_3",
+    "name": "Kylian Mbappé",
+    "overall": 91,
+    "position": "ST",
+    "club": "Real Madrid",
+    "clubImage": "https://drop-assets.ea.com/images/Pk8nYrWuRt895RlhJx8jI/445d98b711f413a3a1e70c41b19b0f95/l243.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/231747.png?width=265",
+    "stats": {
+      "pac": 97,
+      "sho": 90,
+      "pas": 81,
+      "dri": 92,
+      "def": 37,
+      "phy": 76
+    }
+  },
+  {
+    "id": "p_4",
+    "name": "Aitana Bonmatí",
+    "overall": 91,
+    "position": "CM",
+    "club": "FC Barcelona",
+    "clubImage": "https://drop-assets.ea.com/images/1omg1GUYiuhDZzro6k79Gp/c3c15c873e984dae4e34fac491248b33/l116325.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/241667.png?width=265",
+    "stats": {
+      "pac": 85,
+      "sho": 87,
+      "pas": 86,
+      "dri": 91,
+      "def": 77,
+      "phy": 75
+    }
+  },
+  {
+    "id": "p_5",
+    "name": "Ousmane Dembélé",
+    "overall": 90,
+    "position": "ST",
+    "club": "Paris SG",
+    "clubImage": "https://drop-assets.ea.com/images/2QwnhmHh5K7bjkfZAF7ZCi/7c53874542fb5c606ff810a4b1f6b88b/l73.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/231443.png?width=265",
+    "stats": {
+      "pac": 91,
+      "sho": 88,
+      "pas": 83,
+      "dri": 93,
+      "def": 50,
+      "phy": 69
+    }
+  },
+  {
+    "id": "p_6",
+    "name": "Rodri",
+    "overall": 90,
+    "position": "CDM",
+    "club": "Manchester City",
+    "clubImage": "https://drop-assets.ea.com/images/4asmNLic4aQn6cjlEg1t5u/88bea3ddd6c1f620bbf813041f248685/l10.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/231866.png?width=265",
+    "stats": {
+      "pac": 65,
+      "sho": 80,
+      "pas": 86,
+      "dri": 84,
+      "def": 86,
+      "phy": 85
+    }
+  },
+  {
+    "id": "p_7",
+    "name": "Caroline Graham Hansen",
+    "overall": 90,
+    "position": "RW",
+    "club": "FC Barcelona",
+    "clubImage": "https://drop-assets.ea.com/images/1omg1GUYiuhDZzro6k79Gp/c3c15c873e984dae4e34fac491248b33/l116325.png",
+    "nation": "Norway",
+    "nationImage": "https://drop-assets.ea.com/images/kyD8KeqfkpF4AODggVj9z/999272a9ed21faa0d79c9ed626b89ec2/f_36.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/227102.png?width=265",
+    "stats": {
+      "pac": 89,
+      "sho": 87,
+      "pas": 88,
+      "dri": 90,
+      "def": 47,
+      "phy": 76
+    }
+  },
+  {
+    "id": "p_8",
+    "name": "Virgil van Dijk",
+    "overall": 90,
+    "position": "CB",
+    "club": "Liverpool",
+    "clubImage": "https://drop-assets.ea.com/images/3mmzooNXBDCKuCy6kWcGQo/2e332a30fe2a7225a88fcb1898f48bbf/l9.png",
+    "nation": "Holland",
+    "nationImage": "https://drop-assets.ea.com/images/7LmdSUm2Ge4fzqcz0NElvq/d272142c80713dcf0e5ec0a47232aeee/f_34.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/203376.png?width=265",
+    "stats": {
+      "pac": 73,
+      "sho": 60,
+      "pas": 72,
+      "dri": 72,
+      "def": 90,
+      "phy": 87
+    }
+  },
+  {
+    "id": "p_9",
+    "name": "Jude Bellingham",
+    "overall": 90,
+    "position": "CAM",
+    "club": "Real Madrid",
+    "clubImage": "https://drop-assets.ea.com/images/Pk8nYrWuRt895RlhJx8jI/445d98b711f413a3a1e70c41b19b0f95/l243.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/252371.png?width=265",
+    "stats": {
+      "pac": 80,
+      "sho": 86,
+      "pas": 83,
+      "dri": 90,
+      "def": 78,
+      "phy": 85
+    }
+  },
+  {
+    "id": "p_10",
+    "name": "Erling Haaland",
+    "overall": 90,
+    "position": "ST",
+    "club": "Manchester City",
+    "clubImage": "https://drop-assets.ea.com/images/4asmNLic4aQn6cjlEg1t5u/88bea3ddd6c1f620bbf813041f248685/l10.png",
+    "nation": "Norway",
+    "nationImage": "https://drop-assets.ea.com/images/kyD8KeqfkpF4AODggVj9z/999272a9ed21faa0d79c9ed626b89ec2/f_36.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/239085.png?width=265",
+    "stats": {
+      "pac": 86,
+      "sho": 91,
+      "pas": 70,
+      "dri": 80,
+      "def": 45,
+      "phy": 88
+    }
+  },
+  {
+    "id": "p_11",
+    "name": "Raphinha",
+    "overall": 89,
+    "position": "LM",
+    "club": "FC Barcelona",
+    "clubImage": "https://drop-assets.ea.com/images/5VXhqALaBzgvb2YG8iJxlq/990024f3e3ecc9e6c37eae41ebef86bd/l241.png",
+    "nation": "Brazil",
+    "nationImage": "https://drop-assets.ea.com/images/1zdNn1R9tRlfQ3lsbAOecD/a606f742789b6306363383a6e20dd003/f_54.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/233419.png?width=265",
+    "stats": {
+      "pac": 91,
+      "sho": 84,
+      "pas": 85,
+      "dri": 87,
+      "def": 53,
+      "phy": 75
+    }
+  },
+  {
+    "id": "p_12",
+    "name": "Achraf Hakimi",
+    "overall": 89,
+    "position": "RB",
+    "club": "Paris SG",
+    "clubImage": "https://drop-assets.ea.com/images/2QwnhmHh5K7bjkfZAF7ZCi/7c53874542fb5c606ff810a4b1f6b88b/l73.png",
+    "nation": "Morocco",
+    "nationImage": "https://drop-assets.ea.com/images/47SGeQ7STCrJZQSKOVJaHA/1aa24a57a60f85051e34a5ad8205771d/f_129.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/235212.png?width=265",
+    "stats": {
+      "pac": 92,
+      "sho": 79,
+      "pas": 82,
+      "dri": 83,
+      "def": 82,
+      "phy": 79
+    }
+  },
+  {
+    "id": "p_13",
+    "name": "Alessia Russo",
+    "overall": 89,
+    "position": "ST",
+    "club": "Arsenal",
+    "clubImage": "https://drop-assets.ea.com/images/4rvnUS4EekAo5w8ckcUlW8/96274cde68a9488f484ec96d642941d0/l116009.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/258980.png?width=265",
+    "stats": {
+      "pac": 82,
+      "sho": 88,
+      "pas": 70,
+      "dri": 87,
+      "def": 39,
+      "phy": 73
+    }
+  },
+  {
+    "id": "p_14",
+    "name": "Lamine Yamal",
+    "overall": 89,
+    "position": "RM",
+    "club": "FC Barcelona",
+    "clubImage": "https://drop-assets.ea.com/images/5VXhqALaBzgvb2YG8iJxlq/990024f3e3ecc9e6c37eae41ebef86bd/l241.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/277643.png?width=265",
+    "stats": {
+      "pac": 85,
+      "sho": 81,
+      "pas": 86,
+      "dri": 90,
+      "def": 23,
+      "phy": 53
+    }
+  },
+  {
+    "id": "p_15",
+    "name": "Vitinha",
+    "overall": 89,
+    "position": "CM",
+    "club": "Paris SG",
+    "clubImage": "https://drop-assets.ea.com/images/2QwnhmHh5K7bjkfZAF7ZCi/7c53874542fb5c606ff810a4b1f6b88b/l73.png",
+    "nation": "Portugal",
+    "nationImage": "https://drop-assets.ea.com/images/3CxRD7XqY2NSlZ3628fY4S/abf38470644ee334e6a425b9272f7767/f_38.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/255253.png?width=265",
+    "stats": {
+      "pac": 72,
+      "sho": 80,
+      "pas": 86,
+      "dri": 90,
+      "def": 75,
+      "phy": 70
+    }
+  },
+  {
+    "id": "p_16",
+    "name": "Mariona",
+    "overall": 89,
+    "position": "CM",
+    "club": "Arsenal",
+    "clubImage": "https://drop-assets.ea.com/images/4rvnUS4EekAo5w8ckcUlW8/96274cde68a9488f484ec96d642941d0/l116009.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/237288.png?width=265",
+    "stats": {
+      "pac": 78,
+      "sho": 84,
+      "pas": 86,
+      "dri": 90,
+      "def": 76,
+      "phy": 79
+    }
+  },
+  {
+    "id": "p_17",
+    "name": "Patri Guijarro",
+    "overall": 89,
+    "position": "CDM",
+    "club": "FC Barcelona",
+    "clubImage": "https://drop-assets.ea.com/images/1omg1GUYiuhDZzro6k79Gp/c3c15c873e984dae4e34fac491248b33/l116325.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/237289.png?width=265",
+    "stats": {
+      "pac": 78,
+      "sho": 82,
+      "pas": 83,
+      "dri": 87,
+      "def": 86,
+      "phy": 83
+    }
+  },
+  {
+    "id": "p_18",
+    "name": "Gianluigi Donnarumma",
+    "overall": 89,
+    "position": "GK",
+    "club": "Manchester City",
+    "clubImage": "https://drop-assets.ea.com/images/4asmNLic4aQn6cjlEg1t5u/88bea3ddd6c1f620bbf813041f248685/l10.png",
+    "nation": "Italy",
+    "nationImage": "https://drop-assets.ea.com/images/2WtjWPqYzT7xcMCbvajGZH/d06e9ec4734a0d43d88f65386cc3a484/f_27.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/230621.png?width=250",
+    "stats": {
+      "pac": 90,
+      "sho": 83,
+      "pas": 70,
+      "dri": 90,
+      "def": 52,
+      "phy": 87
+    }
+  },
+  {
+    "id": "p_19",
+    "name": "Pedri",
+    "overall": 89,
+    "position": "CM",
+    "club": "FC Barcelona",
+    "clubImage": "https://drop-assets.ea.com/images/5VXhqALaBzgvb2YG8iJxlq/990024f3e3ecc9e6c37eae41ebef86bd/l241.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/251854.png?width=265",
+    "stats": {
+      "pac": 77,
+      "sho": 73,
+      "pas": 85,
+      "dri": 91,
+      "def": 78,
+      "phy": 77
+    }
+  },
+  {
+    "id": "p_20",
+    "name": "Joshua Kimmich",
+    "overall": 89,
+    "position": "CDM",
+    "club": "FC Bayern München",
+    "clubImage": "https://drop-assets.ea.com/images/3p0dv1pGWIH6lGAKZssZKH/4f70d2c5a3c147f3e006c863e85e4993/l21.png",
+    "nation": "Germany",
+    "nationImage": "https://drop-assets.ea.com/images/6IIMMGk0Uj1rcZ6DSHTpLL/93f95b602dc62594104f418c8f80ebb3/f_21.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/212622.png?width=265",
+    "stats": {
+      "pac": 72,
+      "sho": 74,
+      "pas": 89,
+      "dri": 84,
+      "def": 83,
+      "phy": 79
+    }
+  },
+  {
+    "id": "p_21",
+    "name": "Khadija Shaw",
+    "overall": 89,
+    "position": "ST",
+    "club": "Manchester City",
+    "clubImage": "https://drop-assets.ea.com/images/4ujf5zNmgTkQjfrGAT7583/be81b2a43abea89812157a320a3e7c0e/l116017.png",
+    "nation": "Jamaica",
+    "nationImage": "https://drop-assets.ea.com/images/7uTxlyxwozutfPtiDq58XA/34184ec288fead4c03b628acf2f83eb8/f_82.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/246219.png?width=265",
+    "stats": {
+      "pac": 71,
+      "sho": 89,
+      "pas": 71,
+      "dri": 81,
+      "def": 32,
+      "phy": 85
+    }
+  },
+  {
+    "id": "p_22",
+    "name": "Alisson",
+    "overall": 89,
+    "position": "GK",
+    "club": "Liverpool",
+    "clubImage": "https://drop-assets.ea.com/images/3mmzooNXBDCKuCy6kWcGQo/2e332a30fe2a7225a88fcb1898f48bbf/l9.png",
+    "nation": "Brazil",
+    "nationImage": "https://drop-assets.ea.com/images/1zdNn1R9tRlfQ3lsbAOecD/a606f742789b6306363383a6e20dd003/f_54.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/212831.png?width=250",
+    "stats": {
+      "pac": 86,
+      "sho": 85,
+      "pas": 86,
+      "dri": 89,
+      "def": 56,
+      "phy": 90
+    }
+  },
+  {
+    "id": "p_23",
+    "name": "Harry Kane",
+    "overall": 89,
+    "position": "ST",
+    "club": "FC Bayern München",
+    "clubImage": "https://drop-assets.ea.com/images/3p0dv1pGWIH6lGAKZssZKH/4f70d2c5a3c147f3e006c863e85e4993/l21.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/202126.png?width=265",
+    "stats": {
+      "pac": 64,
+      "sho": 92,
+      "pas": 83,
+      "dri": 82,
+      "def": 48,
+      "phy": 82
+    }
+  },
+  {
+    "id": "p_24",
+    "name": "Federico Valverde",
+    "overall": 89,
+    "position": "CM",
+    "club": "Real Madrid",
+    "clubImage": "https://drop-assets.ea.com/images/Pk8nYrWuRt895RlhJx8jI/445d98b711f413a3a1e70c41b19b0f95/l243.png",
+    "nation": "Uruguay",
+    "nationImage": "https://drop-assets.ea.com/images/GRwJwZ17RfDveZX4N4L78/25beda9babb2d93a8ff7bb5487eb263b/f_60.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/239053.png?width=265",
+    "stats": {
+      "pac": 88,
+      "sho": 84,
+      "pas": 84,
+      "dri": 84,
+      "def": 83,
+      "phy": 85
+    }
+  },
+  {
+    "id": "p_25",
+    "name": "Mapi León",
+    "overall": 89,
+    "position": "CB",
+    "club": "FC Barcelona",
+    "clubImage": "https://drop-assets.ea.com/images/1omg1GUYiuhDZzro6k79Gp/c3c15c873e984dae4e34fac491248b33/l116325.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/236479.png?width=265",
+    "stats": {
+      "pac": 75,
+      "sho": 68,
+      "pas": 79,
+      "dri": 76,
+      "def": 90,
+      "phy": 82
+    }
+  },
+  {
+    "id": "p_26",
+    "name": "Vini Jr.",
+    "overall": 89,
+    "position": "LW",
+    "club": "Real Madrid",
+    "clubImage": "https://drop-assets.ea.com/images/Pk8nYrWuRt895RlhJx8jI/445d98b711f413a3a1e70c41b19b0f95/l243.png",
+    "nation": "Brazil",
+    "nationImage": "https://drop-assets.ea.com/images/1zdNn1R9tRlfQ3lsbAOecD/a606f742789b6306363383a6e20dd003/f_54.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/238794.png?width=265",
+    "stats": {
+      "pac": 95,
+      "sho": 84,
+      "pas": 81,
+      "dri": 91,
+      "def": 29,
+      "phy": 69
+    }
+  },
+  {
+    "id": "p_27",
+    "name": "Florian Wirtz",
+    "overall": 89,
+    "position": "CAM",
+    "club": "Liverpool",
+    "clubImage": "https://drop-assets.ea.com/images/3mmzooNXBDCKuCy6kWcGQo/2e332a30fe2a7225a88fcb1898f48bbf/l9.png",
+    "nation": "Germany",
+    "nationImage": "https://drop-assets.ea.com/images/6IIMMGk0Uj1rcZ6DSHTpLL/93f95b602dc62594104f418c8f80ebb3/f_21.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/256630.png?width=265",
+    "stats": {
+      "pac": 80,
+      "sho": 82,
+      "pas": 88,
+      "dri": 90,
+      "def": 54,
+      "phy": 67
+    }
+  },
+  {
+    "id": "p_28",
+    "name": "Thibaut Courtois",
+    "overall": 89,
+    "position": "GK",
+    "club": "Real Madrid",
+    "clubImage": "https://drop-assets.ea.com/images/Pk8nYrWuRt895RlhJx8jI/445d98b711f413a3a1e70c41b19b0f95/l243.png",
+    "nation": "Belgium",
+    "nationImage": "https://drop-assets.ea.com/images/7eZLPoDDyxSlQoqcS4NVA2/6fc085dc7e85ccd7519be7ff2df875ee/f_7.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/192119.png?width=250",
+    "stats": {
+      "pac": 85,
+      "sho": 89,
+      "pas": 76,
+      "dri": 90,
+      "def": 46,
+      "phy": 88
+    }
+  },
+  {
+    "id": "p_29",
+    "name": "Marie Katoto",
+    "overall": 88,
+    "position": "ST",
+    "club": "OL Lyonnes",
+    "clubImage": "https://drop-assets.ea.com/images/6CoUOe5iw6EdXzTsRUgPhB/e3e12054d723a75cfc7331a8276e00a3/l116033.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/246272.png?width=265",
+    "stats": {
+      "pac": 85,
+      "sho": 87,
+      "pas": 77,
+      "dri": 84,
+      "def": 39,
+      "phy": 74
+    }
+  },
+  {
+    "id": "p_30",
+    "name": "Robert Lewandowski",
+    "overall": 88,
+    "position": "ST",
+    "club": "FC Barcelona",
+    "clubImage": "https://drop-assets.ea.com/images/5VXhqALaBzgvb2YG8iJxlq/990024f3e3ecc9e6c37eae41ebef86bd/l241.png",
+    "nation": "Poland",
+    "nationImage": "https://drop-assets.ea.com/images/2ldG0tWskgN4waD1fBmnk1/24cbe80f6af25d3ab745fd339b024988/f_37.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/188545.png?width=265",
+    "stats": {
+      "pac": 74,
+      "sho": 89,
+      "pas": 79,
+      "dri": 85,
+      "def": 44,
+      "phy": 84
+    }
+  },
+  {
+    "id": "p_31",
+    "name": "Kadidiatou Diani",
+    "overall": 88,
+    "position": "RW",
+    "club": "OL Lyonnes",
+    "clubImage": "https://drop-assets.ea.com/images/6CoUOe5iw6EdXzTsRUgPhB/e3e12054d723a75cfc7331a8276e00a3/l116033.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/227361.png?width=265",
+    "stats": {
+      "pac": 92,
+      "sho": 85,
+      "pas": 81,
+      "dri": 88,
+      "def": 56,
+      "phy": 79
+    }
+  },
+  {
+    "id": "p_32",
+    "name": "Sophia Wilson",
+    "overall": 88,
+    "position": "ST",
+    "club": "Portland Thorns",
+    "clubImage": "https://drop-assets.ea.com/images/1QVyGljhoPlookQa60JwNw/8b52c88009ce3c962657d588e57da70c/l116302.png",
+    "nation": "United States",
+    "nationImage": "https://drop-assets.ea.com/images/7ZVadlJQIutRH5P85wr76/c2456a2d76146d19f98c2c3071136dcf/f_95.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/264012.png?width=265",
+    "stats": {
+      "pac": 92,
+      "sho": 87,
+      "pas": 79,
+      "dri": 89,
+      "def": 45,
+      "phy": 81
+    }
+  },
+  {
+    "id": "p_33",
+    "name": "Guro Reiten",
+    "overall": 88,
+    "position": "LM",
+    "club": "Chelsea",
+    "clubImage": "https://drop-assets.ea.com/images/3vni1UAimBV1Ffc3NbgIJp/40f6d3391ea7b8a43f79ce4c118a8ca2/l116010.png",
+    "nation": "Norway",
+    "nationImage": "https://drop-assets.ea.com/images/kyD8KeqfkpF4AODggVj9z/999272a9ed21faa0d79c9ed626b89ec2/f_36.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/227323.png?width=265",
+    "stats": {
+      "pac": 88,
+      "sho": 82,
+      "pas": 85,
+      "dri": 87,
+      "def": 60,
+      "phy": 69
+    }
+  },
+  {
+    "id": "p_34",
+    "name": "Lautaro Martínez",
+    "overall": 88,
+    "position": "ST",
+    "club": "Lombardia FC",
+    "clubImage": "https://drop-assets.ea.com/images/1thPMvXN97JgFvt6ASWr4c/d2ca0a691a98c344305bc0975ab70314/l131682.png",
+    "nation": "Argentina",
+    "nationImage": "https://drop-assets.ea.com/images/4xMXjEt7CFJ6JENYeG45Sk/836d733dc1642c5e4ab3338d91481436/f_52.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/231478.png?width=265",
+    "stats": {
+      "pac": 81,
+      "sho": 88,
+      "pas": 75,
+      "dri": 84,
+      "def": 51,
+      "phy": 83
+    }
+  },
+  {
+    "id": "p_35",
+    "name": "Alexander Isak",
+    "overall": 88,
+    "position": "ST",
+    "club": "Liverpool",
+    "clubImage": "https://drop-assets.ea.com/images/3mmzooNXBDCKuCy6kWcGQo/2e332a30fe2a7225a88fcb1898f48bbf/l9.png",
+    "nation": "Sweden",
+    "nationImage": "https://drop-assets.ea.com/images/4ts7Tmr55hzylhHNBA5xsw/073e32f2c968ae9d531bb1d013a350a0/f_46.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/233731.png?width=265",
+    "stats": {
+      "pac": 83,
+      "sho": 89,
+      "pas": 73,
+      "dri": 85,
+      "def": 39,
+      "phy": 76
+    }
+  },
+  {
+    "id": "p_36",
+    "name": "Ewa Pajor",
+    "overall": 88,
+    "position": "ST",
+    "club": "FC Barcelona",
+    "clubImage": "https://drop-assets.ea.com/images/1omg1GUYiuhDZzro6k79Gp/c3c15c873e984dae4e34fac491248b33/l116325.png",
+    "nation": "Poland",
+    "nationImage": "https://drop-assets.ea.com/images/2ldG0tWskgN4waD1fBmnk1/24cbe80f6af25d3ab745fd339b024988/f_37.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/241846.png?width=265",
+    "stats": {
+      "pac": 87,
+      "sho": 88,
+      "pas": 64,
+      "dri": 88,
+      "def": 22,
+      "phy": 71
+    }
+  },
+  {
+    "id": "p_37",
+    "name": "Jamal Musiala",
+    "overall": 88,
+    "position": "CAM",
+    "club": "FC Bayern München",
+    "clubImage": "https://drop-assets.ea.com/images/3p0dv1pGWIH6lGAKZssZKH/4f70d2c5a3c147f3e006c863e85e4993/l21.png",
+    "nation": "Germany",
+    "nationImage": "https://drop-assets.ea.com/images/6IIMMGk0Uj1rcZ6DSHTpLL/93f95b602dc62594104f418c8f80ebb3/f_21.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/256790.png?width=265",
+    "stats": {
+      "pac": 80,
+      "sho": 82,
+      "pas": 80,
+      "dri": 90,
+      "def": 66,
+      "phy": 65
+    }
+  },
+  {
+    "id": "p_38",
+    "name": "Gabriel",
+    "overall": 88,
+    "position": "CB",
+    "club": "Arsenal",
+    "clubImage": "https://drop-assets.ea.com/images/2ng99bvkwKaA228PJje39i/09d2df89a78377d3f8d3f78469cbadc9/l1.png",
+    "nation": "Brazil",
+    "nationImage": "https://drop-assets.ea.com/images/1zdNn1R9tRlfQ3lsbAOecD/a606f742789b6306363383a6e20dd003/f_54.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/232580.png?width=265",
+    "stats": {
+      "pac": 64,
+      "sho": 44,
+      "pas": 64,
+      "dri": 65,
+      "def": 88,
+      "phy": 84
+    }
+  },
+  {
+    "id": "p_39",
+    "name": "Christiane Endler",
+    "overall": 88,
+    "position": "GK",
+    "club": "OL Lyonnes",
+    "clubImage": "https://drop-assets.ea.com/images/6CoUOe5iw6EdXzTsRUgPhB/e3e12054d723a75cfc7331a8276e00a3/l116033.png",
+    "nation": "Chile",
+    "nationImage": "https://drop-assets.ea.com/images/3oSt1AKWf8gJCT6jtMnZGJ/63a19100f7eb11e75ebaee5bbd04471c/f_55.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/245956.png?width=250",
+    "stats": {
+      "pac": 88,
+      "sho": 82,
+      "pas": 84,
+      "dri": 89,
+      "def": 42,
+      "phy": 89
+    }
+  },
+  {
+    "id": "p_40",
+    "name": "Debinha",
+    "overall": 88,
+    "position": "CAM",
+    "club": "KC Current",
+    "clubImage": "https://drop-assets.ea.com/images/5oBfGWrjMkXuapB6h7S1hP/83cb2611b2d29b53ab3e6f34c70e6351/l116309.png",
+    "nation": "Brazil",
+    "nationImage": "https://drop-assets.ea.com/images/1zdNn1R9tRlfQ3lsbAOecD/a606f742789b6306363383a6e20dd003/f_54.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/226893.png?width=265",
+    "stats": {
+      "pac": 85,
+      "sho": 79,
+      "pas": 86,
+      "dri": 91,
+      "def": 46,
+      "phy": 75
+    }
+  },
+  {
+    "id": "p_41",
+    "name": "Bukayo Saka",
+    "overall": 88,
+    "position": "RW",
+    "club": "Arsenal",
+    "clubImage": "https://drop-assets.ea.com/images/2ng99bvkwKaA228PJje39i/09d2df89a78377d3f8d3f78469cbadc9/l1.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/246669.png?width=265",
+    "stats": {
+      "pac": 84,
+      "sho": 82,
+      "pas": 85,
+      "dri": 88,
+      "def": 60,
+      "phy": 73
+    }
+  },
+  {
+    "id": "p_42",
+    "name": "Irene Paredes",
+    "overall": 88,
+    "position": "CB",
+    "club": "FC Barcelona",
+    "clubImage": "https://drop-assets.ea.com/images/1omg1GUYiuhDZzro6k79Gp/c3c15c873e984dae4e34fac491248b33/l116325.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/227190.png?width=265",
+    "stats": {
+      "pac": 71,
+      "sho": 52,
+      "pas": 67,
+      "dri": 68,
+      "def": 88,
+      "phy": 84
+    }
+  },
+  {
+    "id": "p_43",
+    "name": "Jan Oblak",
+    "overall": 88,
+    "position": "GK",
+    "club": "Atlético de Madrid",
+    "clubImage": "https://drop-assets.ea.com/images/vYcueolPvaGx8blMqhPZ5/5dc3479fc8b85d475fd980c53fc2056f/l240.png",
+    "nation": "Slovenia",
+    "nationImage": "https://drop-assets.ea.com/images/7g3QsAB4Ce0F2e92zozHCn/f34a8e91070d8151b1ce1330ca59b062/f_44.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/200389.png?width=250",
+    "stats": {
+      "pac": 85,
+      "sho": 90,
+      "pas": 78,
+      "dri": 87,
+      "def": 46,
+      "phy": 86
+    }
+  },
+  {
+    "id": "p_44",
+    "name": "Cole Palmer",
+    "overall": 87,
+    "position": "CAM",
+    "club": "Chelsea",
+    "clubImage": "https://drop-assets.ea.com/images/6T0vfhzb3y9R6YVtmVwYcD/b99723a87536e30979c7cbdb8bba9310/l5.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/257534.png?width=265",
+    "stats": {
+      "pac": 75,
+      "sho": 83,
+      "pas": 87,
+      "dri": 87,
+      "def": 50,
+      "phy": 65
+    }
+  },
+  {
+    "id": "p_45",
+    "name": "Khvicha Kvaratskhelia",
+    "overall": 87,
+    "position": "LW",
+    "club": "Paris SG",
+    "clubImage": "https://drop-assets.ea.com/images/2QwnhmHh5K7bjkfZAF7ZCi/7c53874542fb5c606ff810a4b1f6b88b/l73.png",
+    "nation": "Georgia",
+    "nationImage": "https://drop-assets.ea.com/images/3eic7SGyTgHir61pXVpugW/887da1b350fe627155eac0676d851ec3/f_20.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/247635.png?width=265",
+    "stats": {
+      "pac": 86,
+      "sho": 80,
+      "pas": 83,
+      "dri": 88,
+      "def": 58,
+      "phy": 78
+    }
+  },
+  {
+    "id": "p_46",
+    "name": "Chloe Kelly",
+    "overall": 87,
+    "position": "RM",
+    "club": "Arsenal",
+    "clubImage": "https://drop-assets.ea.com/images/4rvnUS4EekAo5w8ckcUlW8/96274cde68a9488f484ec96d642941d0/l116009.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/257001.png?width=265",
+    "stats": {
+      "pac": 88,
+      "sho": 84,
+      "pas": 85,
+      "dri": 84,
+      "def": 43,
+      "phy": 69
+    }
+  },
+  {
+    "id": "p_47",
+    "name": "Alessandro Bastoni",
+    "overall": 87,
+    "position": "CB",
+    "club": "Lombardia FC",
+    "clubImage": "https://drop-assets.ea.com/images/1thPMvXN97JgFvt6ASWr4c/d2ca0a691a98c344305bc0975ab70314/l131682.png",
+    "nation": "Italy",
+    "nationImage": "https://drop-assets.ea.com/images/2WtjWPqYzT7xcMCbvajGZH/d06e9ec4734a0d43d88f65386cc3a484/f_27.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/237383.png?width=265",
+    "stats": {
+      "pac": 74,
+      "sho": 46,
+      "pas": 75,
+      "dri": 76,
+      "def": 88,
+      "phy": 82
+    }
+  },
+  {
+    "id": "p_48",
+    "name": "Lindsey Heaps",
+    "overall": 87,
+    "position": "CAM",
+    "club": "OL Lyonnes",
+    "clubImage": "https://drop-assets.ea.com/images/6CoUOe5iw6EdXzTsRUgPhB/e3e12054d723a75cfc7331a8276e00a3/l116033.png",
+    "nation": "United States",
+    "nationImage": "https://drop-assets.ea.com/images/7ZVadlJQIutRH5P85wr76/c2456a2d76146d19f98c2c3071136dcf/f_95.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/231432.png?width=265",
+    "stats": {
+      "pac": 76,
+      "sho": 84,
+      "pas": 87,
+      "dri": 84,
+      "def": 64,
+      "phy": 80
+    }
+  },
+  {
+    "id": "p_49",
+    "name": "Lucy Bronze",
+    "overall": 87,
+    "position": "RB",
+    "club": "Chelsea",
+    "clubImage": "https://drop-assets.ea.com/images/3vni1UAimBV1Ffc3NbgIJp/40f6d3391ea7b8a43f79ce4c118a8ca2/l116010.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/227246.png?width=265",
+    "stats": {
+      "pac": 71,
+      "sho": 68,
+      "pas": 82,
+      "dri": 80,
+      "def": 87,
+      "phy": 87
+    }
+  },
+  {
+    "id": "p_50",
+    "name": "Serhou Guirassy",
+    "overall": 87,
+    "position": "ST",
+    "club": "Borussia Dortmund",
+    "clubImage": "https://drop-assets.ea.com/images/TmqxUZk2FrbFXOK1kdE89/3dce225926ac7cfd9f283ecd731fa710/l22.png",
+    "nation": "Guinea",
+    "nationImage": "https://drop-assets.ea.com/images/1jZz62efwnvqOx0jaHEN9Q/6cb3c202445e6236374c77e551404d11/f_118.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/215441.png?width=265",
+    "stats": {
+      "pac": 72,
+      "sho": 88,
+      "pas": 76,
+      "dri": 83,
+      "def": 45,
+      "phy": 83
+    }
+  },
+  {
+    "id": "p_51",
+    "name": "Kevin De Bruyne",
+    "overall": 87,
+    "position": "CM",
+    "club": "SSC Napoli",
+    "clubImage": "https://drop-assets.ea.com/images/2FIV26KpnSXl3Nv8Ar6jk3/d8461aa150da3d433fccc34bc80c978f/l48.png",
+    "nation": "Belgium",
+    "nationImage": "https://drop-assets.ea.com/images/7eZLPoDDyxSlQoqcS4NVA2/6fc085dc7e85ccd7519be7ff2df875ee/f_7.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/192985.png?width=265",
+    "stats": {
+      "pac": 66,
+      "sho": 83,
+      "pas": 92,
+      "dri": 84,
+      "def": 65,
+      "phy": 72
+    }
+  },
+  {
+    "id": "p_52",
+    "name": "Frenkie de Jong",
+    "overall": 87,
+    "position": "CM",
+    "club": "FC Barcelona",
+    "clubImage": "https://drop-assets.ea.com/images/5VXhqALaBzgvb2YG8iJxlq/990024f3e3ecc9e6c37eae41ebef86bd/l241.png",
+    "nation": "Holland",
+    "nationImage": "https://drop-assets.ea.com/images/7LmdSUm2Ge4fzqcz0NElvq/d272142c80713dcf0e5ec0a47232aeee/f_34.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/228702.png?width=265",
+    "stats": {
+      "pac": 82,
+      "sho": 71,
+      "pas": 85,
+      "dri": 87,
+      "def": 78,
+      "phy": 77
+    }
+  },
+  {
+    "id": "p_53",
+    "name": "Rose Lavelle",
+    "overall": 87,
+    "position": "CM",
+    "club": "Gotham FC",
+    "clubImage": "https://drop-assets.ea.com/images/46G74G4y4VZ9gbvlTEbI34/3852c2406fe2b4f27f210273ffcf16e0/l116310.png",
+    "nation": "United States",
+    "nationImage": "https://drop-assets.ea.com/images/7ZVadlJQIutRH5P85wr76/c2456a2d76146d19f98c2c3071136dcf/f_95.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/232075.png?width=265",
+    "stats": {
+      "pac": 85,
+      "sho": 81,
+      "pas": 84,
+      "dri": 87,
+      "def": 60,
+      "phy": 64
+    }
+  },
+  {
+    "id": "p_54",
+    "name": "Moisés Caicedo",
+    "overall": 87,
+    "position": "CDM",
+    "club": "Chelsea",
+    "clubImage": "https://drop-assets.ea.com/images/6T0vfhzb3y9R6YVtmVwYcD/b99723a87536e30979c7cbdb8bba9310/l5.png",
+    "nation": "Ecuador",
+    "nationImage": "https://drop-assets.ea.com/images/66PiFUp2Q6vRExGveELXgV/e8199bd0e00c5c544ac498d6424aafa0/f_57.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/256079.png?width=265",
+    "stats": {
+      "pac": 71,
+      "sho": 64,
+      "pas": 78,
+      "dri": 81,
+      "def": 84,
+      "phy": 82
+    }
+  },
+  {
+    "id": "p_55",
+    "name": "Declan Rice",
+    "overall": 87,
+    "position": "CDM",
+    "club": "Arsenal",
+    "clubImage": "https://drop-assets.ea.com/images/2ng99bvkwKaA228PJje39i/09d2df89a78377d3f8d3f78469cbadc9/l1.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/234378.png?width=265",
+    "stats": {
+      "pac": 72,
+      "sho": 73,
+      "pas": 84,
+      "dri": 80,
+      "def": 83,
+      "phy": 83
+    }
+  },
+  {
+    "id": "p_56",
+    "name": "Sakina Karchaoui",
+    "overall": 87,
+    "position": "CM",
+    "club": "Paris SG",
+    "clubImage": "https://drop-assets.ea.com/images/4KnkgPCceJxsnP6moBjWSf/279dbba2955a2d67713a4be23aab36ad/l116034.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/233662.png?width=265",
+    "stats": {
+      "pac": 89,
+      "sho": 76,
+      "pas": 87,
+      "dri": 88,
+      "def": 77,
+      "phy": 69
+    }
+  },
+  {
+    "id": "p_57",
+    "name": "Marquinhos",
+    "overall": 87,
+    "position": "CB",
+    "club": "Paris SG",
+    "clubImage": "https://drop-assets.ea.com/images/2QwnhmHh5K7bjkfZAF7ZCi/7c53874542fb5c606ff810a4b1f6b88b/l73.png",
+    "nation": "Brazil",
+    "nationImage": "https://drop-assets.ea.com/images/1zdNn1R9tRlfQ3lsbAOecD/a606f742789b6306363383a6e20dd003/f_54.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/207865.png?width=265",
+    "stats": {
+      "pac": 78,
+      "sho": 56,
+      "pas": 75,
+      "dri": 74,
+      "def": 89,
+      "phy": 80
+    }
+  },
+  {
+    "id": "p_58",
+    "name": "Yann Sommer",
+    "overall": 87,
+    "position": "GK",
+    "club": "Lombardia FC",
+    "clubImage": "https://drop-assets.ea.com/images/1thPMvXN97JgFvt6ASWr4c/d2ca0a691a98c344305bc0975ab70314/l131682.png",
+    "nation": "Switzerland",
+    "nationImage": "https://drop-assets.ea.com/images/4CseD8PxDZqObA1huFIws0/f30914625e329de69ffdd60f3c334a88/f_47.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/177683.png?width=250",
+    "stats": {
+      "pac": 83,
+      "sho": 82,
+      "pas": 85,
+      "dri": 89,
+      "def": 50,
+      "phy": 87
+    }
+  },
+  {
+    "id": "p_59",
+    "name": "Leah Williamson",
+    "overall": 87,
+    "position": "CB",
+    "club": "Arsenal",
+    "clubImage": "https://drop-assets.ea.com/images/4rvnUS4EekAo5w8ckcUlW8/96274cde68a9488f484ec96d642941d0/l116009.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/246426.png?width=265",
+    "stats": {
+      "pac": 74,
+      "sho": 48,
+      "pas": 73,
+      "dri": 72,
+      "def": 88,
+      "phy": 77
+    }
+  },
+  {
+    "id": "p_60",
+    "name": "Beth Mead",
+    "overall": 87,
+    "position": "RM",
+    "club": "Arsenal",
+    "clubImage": "https://drop-assets.ea.com/images/4rvnUS4EekAo5w8ckcUlW8/96274cde68a9488f484ec96d642941d0/l116009.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/245802.png?width=265",
+    "stats": {
+      "pac": 82,
+      "sho": 84,
+      "pas": 84,
+      "dri": 87,
+      "def": 67,
+      "phy": 73
+    }
+  },
+  {
+    "id": "p_61",
+    "name": "Mallory Swanson",
+    "overall": 87,
+    "position": "LM",
+    "club": "Chicago Stars FC",
+    "clubImage": "https://drop-assets.ea.com/images/3MBFGq1bUMxrU9R9qot4CV/7f64f565bf1bea2df08949f7a2a077da/l116305.png",
+    "nation": "United States",
+    "nationImage": "https://drop-assets.ea.com/images/7ZVadlJQIutRH5P85wr76/c2456a2d76146d19f98c2c3071136dcf/f_95.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/232073.png?width=265",
+    "stats": {
+      "pac": 88,
+      "sho": 82,
+      "pas": 81,
+      "dri": 85,
+      "def": 42,
+      "phy": 70
+    }
+  },
+  {
+    "id": "p_62",
+    "name": "Jules Koundé",
+    "overall": 87,
+    "position": "RB",
+    "club": "FC Barcelona",
+    "clubImage": "https://drop-assets.ea.com/images/5VXhqALaBzgvb2YG8iJxlq/990024f3e3ecc9e6c37eae41ebef86bd/l241.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/241486.png?width=265",
+    "stats": {
+      "pac": 84,
+      "sho": 47,
+      "pas": 74,
+      "dri": 79,
+      "def": 86,
+      "phy": 84
+    }
+  },
+  {
+    "id": "p_63",
+    "name": "Bruno Fernandes",
+    "overall": 87,
+    "position": "CAM",
+    "club": "Man Utd",
+    "clubImage": "https://drop-assets.ea.com/images/5xxJeUfFY6FEQZEJyJK35/990979becf88b88ecb6461dc441c2ebf/l11.png",
+    "nation": "Portugal",
+    "nationImage": "https://drop-assets.ea.com/images/3CxRD7XqY2NSlZ3628fY4S/abf38470644ee334e6a425b9272f7767/f_38.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/212198.png?width=265",
+    "stats": {
+      "pac": 67,
+      "sho": 83,
+      "pas": 89,
+      "dri": 83,
+      "def": 65,
+      "phy": 75
+    }
+  },
+  {
+    "id": "p_64",
+    "name": "William Saliba",
+    "overall": 87,
+    "position": "CB",
+    "club": "Arsenal",
+    "clubImage": "https://drop-assets.ea.com/images/2ng99bvkwKaA228PJje39i/09d2df89a78377d3f8d3f78469cbadc9/l1.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/243715.png?width=265",
+    "stats": {
+      "pac": 77,
+      "sho": 39,
+      "pas": 68,
+      "dri": 72,
+      "def": 87,
+      "phy": 83
+    }
+  },
+  {
+    "id": "p_65",
+    "name": "Ada Hegerberg",
+    "overall": 87,
+    "position": "ST",
+    "club": "OL Lyonnes",
+    "clubImage": "https://drop-assets.ea.com/images/6CoUOe5iw6EdXzTsRUgPhB/e3e12054d723a75cfc7331a8276e00a3/l116033.png",
+    "nation": "Norway",
+    "nationImage": "https://drop-assets.ea.com/images/kyD8KeqfkpF4AODggVj9z/999272a9ed21faa0d79c9ed626b89ec2/f_36.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/227310.png?width=265",
+    "stats": {
+      "pac": 72,
+      "sho": 86,
+      "pas": 76,
+      "dri": 85,
+      "def": 39,
+      "phy": 79
+    }
+  },
+  {
+    "id": "p_66",
+    "name": "Julián Alvarez",
+    "overall": 87,
+    "position": "ST",
+    "club": "Atlético de Madrid",
+    "clubImage": "https://drop-assets.ea.com/images/vYcueolPvaGx8blMqhPZ5/5dc3479fc8b85d475fd980c53fc2056f/l240.png",
+    "nation": "Argentina",
+    "nationImage": "https://drop-assets.ea.com/images/4xMXjEt7CFJ6JENYeG45Sk/836d733dc1642c5e4ab3338d91481436/f_52.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/246191.png?width=265",
+    "stats": {
+      "pac": 85,
+      "sho": 87,
+      "pas": 81,
+      "dri": 87,
+      "def": 57,
+      "phy": 79
+    }
+  },
+  {
+    "id": "p_67",
+    "name": "Jonathan Tah",
+    "overall": 87,
+    "position": "CB",
+    "club": "FC Bayern München",
+    "clubImage": "https://drop-assets.ea.com/images/3p0dv1pGWIH6lGAKZssZKH/4f70d2c5a3c147f3e006c863e85e4993/l21.png",
+    "nation": "Germany",
+    "nationImage": "https://drop-assets.ea.com/images/6IIMMGk0Uj1rcZ6DSHTpLL/93f95b602dc62594104f418c8f80ebb3/f_21.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/213331.png?width=265",
+    "stats": {
+      "pac": 63,
+      "sho": 38,
+      "pas": 60,
+      "dri": 63,
+      "def": 87,
+      "phy": 86
+    }
+  },
+  {
+    "id": "p_68",
+    "name": "Alexis Mac Allister",
+    "overall": 87,
+    "position": "CM",
+    "club": "Liverpool",
+    "clubImage": "https://drop-assets.ea.com/images/3mmzooNXBDCKuCy6kWcGQo/2e332a30fe2a7225a88fcb1898f48bbf/l9.png",
+    "nation": "Argentina",
+    "nationImage": "https://drop-assets.ea.com/images/4xMXjEt7CFJ6JENYeG45Sk/836d733dc1642c5e4ab3338d91481436/f_52.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/239837.png?width=265",
+    "stats": {
+      "pac": 66,
+      "sho": 82,
+      "pas": 85,
+      "dri": 85,
+      "def": 78,
+      "phy": 76
+    }
+  },
+  {
+    "id": "p_69",
+    "name": "Lauren Hemp",
+    "overall": 87,
+    "position": "LW",
+    "club": "Manchester City",
+    "clubImage": "https://drop-assets.ea.com/images/4ujf5zNmgTkQjfrGAT7583/be81b2a43abea89812157a320a3e7c0e/l116017.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/257008.png?width=265",
+    "stats": {
+      "pac": 91,
+      "sho": 77,
+      "pas": 84,
+      "dri": 87,
+      "def": 63,
+      "phy": 70
+    }
+  },
+  {
+    "id": "p_70",
+    "name": "Mike Maignan",
+    "overall": 87,
+    "position": "GK",
+    "club": "Milano FC",
+    "clubImage": "https://drop-assets.ea.com/images/6D3s1RlLRER3UOunC4Lofv/ec87a4178160a87521b0b7c688e7638e/l131681.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/215698.png?width=265",
+    "stats": {
+      "pac": 84,
+      "sho": 83,
+      "pas": 85,
+      "dri": 88,
+      "def": 64,
+      "phy": 84
+    }
+  },
+  {
+    "id": "p_71",
+    "name": "Millie Bright",
+    "overall": 87,
+    "position": "CB",
+    "club": "Chelsea",
+    "clubImage": "https://drop-assets.ea.com/images/3vni1UAimBV1Ffc3NbgIJp/40f6d3391ea7b8a43f79ce4c118a8ca2/l116010.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/238257.png?width=265",
+    "stats": {
+      "pac": 57,
+      "sho": 51,
+      "pas": 70,
+      "dri": 62,
+      "def": 87,
+      "phy": 88
+    }
+  },
+  {
+    "id": "p_72",
+    "name": "Martin Ødegaard",
+    "overall": 87,
+    "position": "CM",
+    "club": "Arsenal",
+    "clubImage": "https://drop-assets.ea.com/images/2ng99bvkwKaA228PJje39i/09d2df89a78377d3f8d3f78469cbadc9/l1.png",
+    "nation": "Norway",
+    "nationImage": "https://drop-assets.ea.com/images/kyD8KeqfkpF4AODggVj9z/999272a9ed21faa0d79c9ed626b89ec2/f_36.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/222665.png?width=265",
+    "stats": {
+      "pac": 68,
+      "sho": 79,
+      "pas": 88,
+      "dri": 87,
+      "def": 67,
+      "phy": 65
+    }
+  },
+  {
+    "id": "p_73",
+    "name": "Katie McCabe",
+    "overall": 87,
+    "position": "LB",
+    "club": "Arsenal",
+    "clubImage": "https://drop-assets.ea.com/images/4rvnUS4EekAo5w8ckcUlW8/96274cde68a9488f484ec96d642941d0/l116009.png",
+    "nation": "Republic of Ireland",
+    "nationImage": "https://drop-assets.ea.com/images/3kYEdtacSx6YJO1G3LJIGw/72d622eb085aecaa6ecfa86c30bc3015/f_25.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/265239.png?width=265",
+    "stats": {
+      "pac": 80,
+      "sho": 81,
+      "pas": 82,
+      "dri": 83,
+      "def": 83,
+      "phy": 82
+    }
+  },
+  {
+    "id": "p_74",
+    "name": "David Raya",
+    "overall": 87,
+    "position": "GK",
+    "club": "Arsenal",
+    "clubImage": "https://drop-assets.ea.com/images/2ng99bvkwKaA228PJje39i/09d2df89a78377d3f8d3f78469cbadc9/l1.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/220901.png?width=250",
+    "stats": {
+      "pac": 86,
+      "sho": 84,
+      "pas": 87,
+      "dri": 87,
+      "def": 62,
+      "phy": 85
+    }
+  },
+  {
+    "id": "p_75",
+    "name": "Viktor Gyökeres",
+    "overall": 87,
+    "position": "ST",
+    "club": "Arsenal",
+    "clubImage": "https://drop-assets.ea.com/images/2ng99bvkwKaA228PJje39i/09d2df89a78377d3f8d3f78469cbadc9/l1.png",
+    "nation": "Sweden",
+    "nationImage": "https://drop-assets.ea.com/images/4ts7Tmr55hzylhHNBA5xsw/073e32f2c968ae9d531bb1d013a350a0/f_46.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/241651.png?width=265",
+    "stats": {
+      "pac": 90,
+      "sho": 86,
+      "pas": 73,
+      "dri": 81,
+      "def": 36,
+      "phy": 91
+    }
+  },
+  {
+    "id": "p_76",
+    "name": "Sam Kerr",
+    "overall": 87,
+    "position": "ST",
+    "club": "Chelsea",
+    "clubImage": "https://drop-assets.ea.com/images/3vni1UAimBV1Ffc3NbgIJp/40f6d3391ea7b8a43f79ce4c118a8ca2/l116010.png",
+    "nation": "Australia",
+    "nationImage": "https://drop-assets.ea.com/images/1z4BxEaFLZ7lgOP3T5RVqv/99256126771f079224aadffd2f61ad94/f_195.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/227125.png?width=265",
+    "stats": {
+      "pac": 80,
+      "sho": 87,
+      "pas": 74,
+      "dri": 89,
+      "def": 42,
+      "phy": 83
+    }
+  },
+  {
+    "id": "p_77",
+    "name": "Nicolò Barella",
+    "overall": 87,
+    "position": "CM",
+    "club": "Lombardia FC",
+    "clubImage": "https://drop-assets.ea.com/images/1thPMvXN97JgFvt6ASWr4c/d2ca0a691a98c344305bc0975ab70314/l131682.png",
+    "nation": "Italy",
+    "nationImage": "https://drop-assets.ea.com/images/2WtjWPqYzT7xcMCbvajGZH/d06e9ec4734a0d43d88f65386cc3a484/f_27.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/224232.png?width=265",
+    "stats": {
+      "pac": 80,
+      "sho": 78,
+      "pas": 84,
+      "dri": 86,
+      "def": 81,
+      "phy": 76
+    }
+  },
+  {
+    "id": "p_78",
+    "name": "Victor Osimhen",
+    "overall": 87,
+    "position": "ST",
+    "club": "Galatasaray",
+    "clubImage": "https://drop-assets.ea.com/images/6P5sN0m3ZRE23vjlT8gh5q/f7f9acf3a7be5ea12f889d93dbdfd48f/l325.png",
+    "nation": "Nigeria",
+    "nationImage": "https://drop-assets.ea.com/images/7pdYOUzcOpsSLsQJqx6jq9/ab9bec93f27d4c42a76f2617073a6cce/f_133.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/232293.png?width=265",
+    "stats": {
+      "pac": 92,
+      "sho": 84,
+      "pas": 65,
+      "dri": 81,
+      "def": 42,
+      "phy": 84
+    }
+  },
+  {
+    "id": "p_79",
+    "name": "Nuno Mendes",
+    "overall": 86,
+    "position": "LB",
+    "club": "Paris SG",
+    "clubImage": "https://drop-assets.ea.com/images/2QwnhmHh5K7bjkfZAF7ZCi/7c53874542fb5c606ff810a4b1f6b88b/l73.png",
+    "nation": "Portugal",
+    "nationImage": "https://drop-assets.ea.com/images/3CxRD7XqY2NSlZ3628fY4S/abf38470644ee334e6a425b9272f7767/f_38.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/252145.png?width=265",
+    "stats": {
+      "pac": 95,
+      "sho": 65,
+      "pas": 76,
+      "dri": 82,
+      "def": 80,
+      "phy": 77
+    }
+  },
+  {
+    "id": "p_80",
+    "name": "Ann-Katrin Berger",
+    "overall": 86,
+    "position": "GK",
+    "club": "Gotham FC",
+    "clubImage": "https://drop-assets.ea.com/images/46G74G4y4VZ9gbvlTEbI34/3852c2406fe2b4f27f210273ffcf16e0/l116310.png",
+    "nation": "Germany",
+    "nationImage": "https://drop-assets.ea.com/images/6IIMMGk0Uj1rcZ6DSHTpLL/93f95b602dc62594104f418c8f80ebb3/f_21.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/258310.png?width=265",
+    "stats": {
+      "pac": 86,
+      "sho": 84,
+      "pas": 81,
+      "dri": 87,
+      "def": 45,
+      "phy": 81
+    }
+  },
+  {
+    "id": "p_81",
+    "name": "Antonio Rüdiger",
+    "overall": 86,
+    "position": "CB",
+    "club": "Real Madrid",
+    "clubImage": "https://drop-assets.ea.com/images/Pk8nYrWuRt895RlhJx8jI/445d98b711f413a3a1e70c41b19b0f95/l243.png",
+    "nation": "Germany",
+    "nationImage": "https://drop-assets.ea.com/images/6IIMMGk0Uj1rcZ6DSHTpLL/93f95b602dc62594104f418c8f80ebb3/f_21.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/205452.png?width=265",
+    "stats": {
+      "pac": 79,
+      "sho": 55,
+      "pas": 72,
+      "dri": 70,
+      "def": 84,
+      "phy": 86
+    }
+  },
+  {
+    "id": "p_82",
+    "name": "Grace Geyoro",
+    "overall": 86,
+    "position": "CM",
+    "club": "London City",
+    "clubImage": "https://drop-assets.ea.com/images/15nxEqVyr3Oy5ielyEshfS/4bcaf9e7842de90667d6b11cd2ae0090/l132176.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/237197.png?width=265",
+    "stats": {
+      "pac": 89,
+      "sho": 73,
+      "pas": 82,
+      "dri": 83,
+      "def": 82,
+      "phy": 80
+    }
+  },
+  {
+    "id": "p_83",
+    "name": "Michael Olise",
+    "overall": 86,
+    "position": "RM",
+    "club": "FC Bayern München",
+    "clubImage": "https://drop-assets.ea.com/images/3p0dv1pGWIH6lGAKZssZKH/4f70d2c5a3c147f3e006c863e85e4993/l21.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/247827.png?width=265",
+    "stats": {
+      "pac": 78,
+      "sho": 80,
+      "pas": 84,
+      "dri": 87,
+      "def": 50,
+      "phy": 66
+    }
+  },
+  {
+    "id": "p_84",
+    "name": "Claudia Pina",
+    "overall": 86,
+    "position": "LW",
+    "club": "FC Barcelona",
+    "clubImage": "https://drop-assets.ea.com/images/1omg1GUYiuhDZzro6k79Gp/c3c15c873e984dae4e34fac491248b33/l116325.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/262531.png?width=265",
+    "stats": {
+      "pac": 79,
+      "sho": 86,
+      "pas": 83,
+      "dri": 87,
+      "def": 45,
+      "phy": 71
+    }
+  },
+  {
+    "id": "p_85",
+    "name": "Trent Alexander-Arnold",
+    "overall": 86,
+    "position": "RB",
+    "club": "Real Madrid",
+    "clubImage": "https://drop-assets.ea.com/images/Pk8nYrWuRt895RlhJx8jI/445d98b711f413a3a1e70c41b19b0f95/l243.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/231281.png?width=265",
+    "stats": {
+      "pac": 76,
+      "sho": 72,
+      "pas": 89,
+      "dri": 80,
+      "def": 80,
+      "phy": 74
+    }
+  },
+  {
+    "id": "p_86",
+    "name": "Rúben Dias",
+    "overall": 86,
+    "position": "CB",
+    "club": "Manchester City",
+    "clubImage": "https://drop-assets.ea.com/images/4asmNLic4aQn6cjlEg1t5u/88bea3ddd6c1f620bbf813041f248685/l10.png",
+    "nation": "Portugal",
+    "nationImage": "https://drop-assets.ea.com/images/3CxRD7XqY2NSlZ3628fY4S/abf38470644ee334e6a425b9272f7767/f_38.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/239818.png?width=265",
+    "stats": {
+      "pac": 59,
+      "sho": 39,
+      "pas": 69,
+      "dri": 69,
+      "def": 86,
+      "phy": 84
+    }
+  },
+  {
+    "id": "p_87",
+    "name": "Paulo Dybala",
+    "overall": 86,
+    "position": "CAM",
+    "club": "AS Roma",
+    "clubImage": "https://drop-assets.ea.com/images/2ruQP0TDYcCmtVFKr9qMBI/5f53795056598b1faac31300900b8671/l52.png",
+    "nation": "Argentina",
+    "nationImage": "https://drop-assets.ea.com/images/4xMXjEt7CFJ6JENYeG45Sk/836d733dc1642c5e4ab3338d91481436/f_52.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/211110.png?width=265",
+    "stats": {
+      "pac": 80,
+      "sho": 85,
+      "pas": 84,
+      "dri": 87,
+      "def": 41,
+      "phy": 64
+    }
+  },
+  {
+    "id": "p_88",
+    "name": "Bruno Guimarães",
+    "overall": 86,
+    "position": "CM",
+    "club": "Newcastle Utd",
+    "clubImage": "https://drop-assets.ea.com/images/69fXoaX4p9zFwKaZYoNtNX/14d86649a9b5a3f7e876cc3d46357b5d/l13.png",
+    "nation": "Brazil",
+    "nationImage": "https://drop-assets.ea.com/images/1zdNn1R9tRlfQ3lsbAOecD/a606f742789b6306363383a6e20dd003/f_54.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/247851.png?width=265",
+    "stats": {
+      "pac": 66,
+      "sho": 75,
+      "pas": 84,
+      "dri": 84,
+      "def": 79,
+      "phy": 81
+    }
+  },
+  {
+    "id": "p_89",
+    "name": "Klara Bühl",
+    "overall": 86,
+    "position": "LM",
+    "club": "FC Bayern München",
+    "clubImage": "https://drop-assets.ea.com/images/6VNQgbgU33AK9U8cQgteGh/aae1cf67f81ed40ca84a5da5dce26140/l115995.png",
+    "nation": "Germany",
+    "nationImage": "https://drop-assets.ea.com/images/6IIMMGk0Uj1rcZ6DSHTpLL/93f95b602dc62594104f418c8f80ebb3/f_21.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/248822.png?width=265",
+    "stats": {
+      "pac": 84,
+      "sho": 84,
+      "pas": 81,
+      "dri": 84,
+      "def": 34,
+      "phy": 74
+    }
+  },
+  {
+    "id": "p_90",
+    "name": "Willian Pacho",
+    "overall": 86,
+    "position": "CB",
+    "club": "Paris SG",
+    "clubImage": "https://drop-assets.ea.com/images/2QwnhmHh5K7bjkfZAF7ZCi/7c53874542fb5c606ff810a4b1f6b88b/l73.png",
+    "nation": "Ecuador",
+    "nationImage": "https://drop-assets.ea.com/images/66PiFUp2Q6vRExGveELXgV/e8199bd0e00c5c544ac498d6424aafa0/f_57.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/256196.png?width=265",
+    "stats": {
+      "pac": 80,
+      "sho": 34,
+      "pas": 62,
+      "dri": 62,
+      "def": 86,
+      "phy": 86
+    }
+  },
+  {
+    "id": "p_91",
+    "name": "Ona Batlle",
+    "overall": 86,
+    "position": "RB",
+    "club": "FC Barcelona",
+    "clubImage": "https://drop-assets.ea.com/images/1omg1GUYiuhDZzro6k79Gp/c3c15c873e984dae4e34fac491248b33/l116325.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/253436.png?width=265",
+    "stats": {
+      "pac": 80,
+      "sho": 54,
+      "pas": 79,
+      "dri": 79,
+      "def": 81,
+      "phy": 72
+    }
+  },
+  {
+    "id": "p_92",
+    "name": "Ibrahima Konaté",
+    "overall": 86,
+    "position": "CB",
+    "club": "Liverpool",
+    "clubImage": "https://drop-assets.ea.com/images/3mmzooNXBDCKuCy6kWcGQo/2e332a30fe2a7225a88fcb1898f48bbf/l9.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/237678.png?width=265",
+    "stats": {
+      "pac": 77,
+      "sho": 34,
+      "pas": 63,
+      "dri": 69,
+      "def": 86,
+      "phy": 85
+    }
+  },
+  {
+    "id": "p_93",
+    "name": "Hakan Çalhanoğlu",
+    "overall": 86,
+    "position": "CDM",
+    "club": "Lombardia FC",
+    "clubImage": "https://drop-assets.ea.com/images/1thPMvXN97JgFvt6ASWr4c/d2ca0a691a98c344305bc0975ab70314/l131682.png",
+    "nation": "Turkey",
+    "nationImage": "https://drop-assets.ea.com/images/501PnaP87pzjR8dKEQ20OT/7f0fd5c896b732a094222cbf0560b4c2/f_48.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/208128.png?width=265",
+    "stats": {
+      "pac": 71,
+      "sho": 81,
+      "pas": 87,
+      "dri": 82,
+      "def": 81,
+      "phy": 73
+    }
+  },
+  {
+    "id": "p_94",
+    "name": "Lea Schüller",
+    "overall": 86,
+    "position": "ST",
+    "club": "FC Bayern München",
+    "clubImage": "https://drop-assets.ea.com/images/6VNQgbgU33AK9U8cQgteGh/aae1cf67f81ed40ca84a5da5dce26140/l115995.png",
+    "nation": "Germany",
+    "nationImage": "https://drop-assets.ea.com/images/6IIMMGk0Uj1rcZ6DSHTpLL/93f95b602dc62594104f418c8f80ebb3/f_21.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/244302.png?width=265",
+    "stats": {
+      "pac": 87,
+      "sho": 83,
+      "pas": 71,
+      "dri": 82,
+      "def": 33,
+      "phy": 74
+    }
+  },
+  {
+    "id": "p_95",
+    "name": "Lionel Messi",
+    "overall": 86,
+    "position": "RW",
+    "club": "Inter Miami CF",
+    "clubImage": "https://drop-assets.ea.com/images/3luAerlx8cliy5XNziWvOA/b7785fb1a6915d5044b4f954d83e4915/l112893.png",
+    "nation": "Argentina",
+    "nationImage": "https://drop-assets.ea.com/images/4xMXjEt7CFJ6JENYeG45Sk/836d733dc1642c5e4ab3338d91481436/f_52.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/158023.png?width=265",
+    "stats": {
+      "pac": 78,
+      "sho": 85,
+      "pas": 85,
+      "dri": 90,
+      "def": 33,
+      "phy": 64
+    }
+  },
+  {
+    "id": "p_96",
+    "name": "Sandro Tonali",
+    "overall": 86,
+    "position": "CDM",
+    "club": "Newcastle Utd",
+    "clubImage": "https://drop-assets.ea.com/images/69fXoaX4p9zFwKaZYoNtNX/14d86649a9b5a3f7e876cc3d46357b5d/l13.png",
+    "nation": "Italy",
+    "nationImage": "https://drop-assets.ea.com/images/2WtjWPqYzT7xcMCbvajGZH/d06e9ec4734a0d43d88f65386cc3a484/f_27.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/241096.png?width=265",
+    "stats": {
+      "pac": 79,
+      "sho": 74,
+      "pas": 82,
+      "dri": 80,
+      "def": 81,
+      "phy": 83
+    }
+  },
+  {
+    "id": "p_97",
+    "name": "Nico Williams",
+    "overall": 86,
+    "position": "LM",
+    "club": "Athletic Club",
+    "clubImage": "https://drop-assets.ea.com/images/5lGGXYvaOCdAYlo8xWPzQb/7092243785809519c68b482ad21b2c41/l448.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/256516.png?width=265",
+    "stats": {
+      "pac": 93,
+      "sho": 76,
+      "pas": 80,
+      "dri": 87,
+      "def": 36,
+      "phy": 66
+    }
+  },
+  {
+    "id": "p_98",
+    "name": "Melchie Dumornay",
+    "overall": 86,
+    "position": "ST",
+    "club": "OL Lyonnes",
+    "clubImage": "https://drop-assets.ea.com/images/6CoUOe5iw6EdXzTsRUgPhB/e3e12054d723a75cfc7331a8276e00a3/l116033.png",
+    "nation": "Haiti",
+    "nationImage": "https://drop-assets.ea.com/images/6r6rAYnsUnHnZPeqku5CPp/41fc82e094f5501b924cd29d88cfc62a/f_80.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/265898.png?width=265",
+    "stats": {
+      "pac": 93,
+      "sho": 85,
+      "pas": 78,
+      "dri": 87,
+      "def": 60,
+      "phy": 71
+    }
+  },
+  {
+    "id": "p_99",
+    "name": "Pernille Harder",
+    "overall": 86,
+    "position": "CAM",
+    "club": "FC Bayern München",
+    "clubImage": "https://drop-assets.ea.com/images/6VNQgbgU33AK9U8cQgteGh/aae1cf67f81ed40ca84a5da5dce26140/l115995.png",
+    "nation": "Denmark",
+    "nationImage": "https://drop-assets.ea.com/images/6ueYG8kGNCY97fHWQ6LIZ7/9ad4b50beeb1d0d2a5d2bb5a8891336f/f_13.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/259287.png?width=265",
+    "stats": {
+      "pac": 81,
+      "sho": 80,
+      "pas": 80,
+      "dri": 88,
+      "def": 27,
+      "phy": 78
+    }
+  },
+  {
+    "id": "p_100",
+    "name": "Tijjani Reijnders",
+    "overall": 86,
+    "position": "CM",
+    "club": "Manchester City",
+    "clubImage": "https://drop-assets.ea.com/images/4asmNLic4aQn6cjlEg1t5u/88bea3ddd6c1f620bbf813041f248685/l10.png",
+    "nation": "Holland",
+    "nationImage": "https://drop-assets.ea.com/images/7LmdSUm2Ge4fzqcz0NElvq/d272142c80713dcf0e5ec0a47232aeee/f_34.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/240638.png?width=265",
+    "stats": {
+      "pac": 79,
+      "sho": 79,
+      "pas": 82,
+      "dri": 85,
+      "def": 77,
+      "phy": 77
+    }
+  },
+  {
+    "id": "p_101",
+    "name": "Marc-André ter Stegen",
+    "overall": 86,
+    "position": "GK",
+    "club": "FC Barcelona",
+    "clubImage": "https://drop-assets.ea.com/images/5VXhqALaBzgvb2YG8iJxlq/990024f3e3ecc9e6c37eae41ebef86bd/l241.png",
+    "nation": "Germany",
+    "nationImage": "https://drop-assets.ea.com/images/6IIMMGk0Uj1rcZ6DSHTpLL/93f95b602dc62594104f418c8f80ebb3/f_21.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/192448.png?width=265",
+    "stats": {
+      "pac": 84,
+      "sho": 84,
+      "pas": 89,
+      "dri": 85,
+      "def": 47,
+      "phy": 84
+    }
+  },
+  {
+    "id": "p_102",
+    "name": "Temwa Chawinga",
+    "overall": 86,
+    "position": "LW",
+    "club": "KC Current",
+    "clubImage": "https://drop-assets.ea.com/images/5oBfGWrjMkXuapB6h7S1hP/83cb2611b2d29b53ab3e6f34c70e6351/l116309.png",
+    "nation": "Malawi",
+    "nationImage": "https://drop-assets.ea.com/images/vR0QvzzQdjyGFEHWOo60x/bafe6ab7573b39b71dd35037fa93679f/f_125.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/279799.png?width=265",
+    "stats": {
+      "pac": 91,
+      "sho": 82,
+      "pas": 77,
+      "dri": 83,
+      "def": 46,
+      "phy": 83
+    }
+  },
+  {
+    "id": "p_103",
+    "name": "Gregor Kobel",
+    "overall": 86,
+    "position": "GK",
+    "club": "Borussia Dortmund",
+    "clubImage": "https://drop-assets.ea.com/images/TmqxUZk2FrbFXOK1kdE89/3dce225926ac7cfd9f283ecd731fa710/l22.png",
+    "nation": "Switzerland",
+    "nationImage": "https://drop-assets.ea.com/images/4CseD8PxDZqObA1huFIws0/f30914625e329de69ffdd60f3c334a88/f_47.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/235073.png?width=250",
+    "stats": {
+      "pac": 87,
+      "sho": 83,
+      "pas": 64,
+      "dri": 87,
+      "def": 44,
+      "phy": 86
+    }
+  },
+  {
+    "id": "p_104",
+    "name": "Ederson",
+    "overall": 85,
+    "position": "GK",
+    "club": "Fenerbahçe",
+    "clubImage": "https://drop-assets.ea.com/images/3sfoNHvqDPqhM1PsEE1sNM/b9dcc82d0e2fba3efc8e8d0ed4c216a6/l326.png",
+    "nation": "Brazil",
+    "nationImage": "https://drop-assets.ea.com/images/1zdNn1R9tRlfQ3lsbAOecD/a606f742789b6306363383a6e20dd003/f_54.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/210257.png?width=265",
+    "stats": {
+      "pac": 83,
+      "sho": 82,
+      "pas": 91,
+      "dri": 83,
+      "def": 64,
+      "phy": 83
+    }
+  },
+  {
+    "id": "p_105",
+    "name": "Selma Bacha",
+    "overall": 85,
+    "position": "LB",
+    "club": "OL Lyonnes",
+    "clubImage": "https://drop-assets.ea.com/images/6CoUOe5iw6EdXzTsRUgPhB/e3e12054d723a75cfc7331a8276e00a3/l116033.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/265674.png?width=265",
+    "stats": {
+      "pac": 88,
+      "sho": 73,
+      "pas": 85,
+      "dri": 82,
+      "def": 78,
+      "phy": 80
+    }
+  },
+  {
+    "id": "p_106",
+    "name": "Chiamaka Nnadozie",
+    "overall": 85,
+    "position": "GK",
+    "club": "Brighton",
+    "clubImage": "https://drop-assets.ea.com/images/2U86HrlbG4oxCoslaCJxkM/dd0ab11a7dbf18e216d8e03235dc4921/l116013.png",
+    "nation": "Nigeria",
+    "nationImage": "https://drop-assets.ea.com/images/7pdYOUzcOpsSLsQJqx6jq9/ab9bec93f27d4c42a76f2617073a6cce/f_133.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/246641.png?width=265",
+    "stats": {
+      "pac": 87,
+      "sho": 80,
+      "pas": 80,
+      "dri": 88,
+      "def": 63,
+      "phy": 84
+    }
+  },
+  {
+    "id": "p_107",
+    "name": "Federico Dimarco",
+    "overall": 85,
+    "position": "LB",
+    "club": "Lombardia FC",
+    "clubImage": "https://drop-assets.ea.com/images/1thPMvXN97JgFvt6ASWr4c/d2ca0a691a98c344305bc0975ab70314/l131682.png",
+    "nation": "Italy",
+    "nationImage": "https://drop-assets.ea.com/images/2WtjWPqYzT7xcMCbvajGZH/d06e9ec4734a0d43d88f65386cc3a484/f_27.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/226268.png?width=265",
+    "stats": {
+      "pac": 80,
+      "sho": 78,
+      "pas": 84,
+      "dri": 82,
+      "def": 79,
+      "phy": 77
+    }
+  },
+  {
+    "id": "p_108",
+    "name": "Scott McTominay",
+    "overall": 85,
+    "position": "CM",
+    "club": "SSC Napoli",
+    "clubImage": "https://drop-assets.ea.com/images/2FIV26KpnSXl3Nv8Ar6jk3/d8461aa150da3d433fccc34bc80c978f/l48.png",
+    "nation": "Scotland",
+    "nationImage": "https://drop-assets.ea.com/images/3LfmKqyBykOGZyfdSpENTr/ec3733dfa9526c8f6da96bf0f8c7448e/f_42.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/237238.png?width=265",
+    "stats": {
+      "pac": 76,
+      "sho": 82,
+      "pas": 77,
+      "dri": 80,
+      "def": 80,
+      "phy": 85
+    }
+  },
+  {
+    "id": "p_109",
+    "name": "Ryan Gravenberch",
+    "overall": 85,
+    "position": "CDM",
+    "club": "Liverpool",
+    "clubImage": "https://drop-assets.ea.com/images/3mmzooNXBDCKuCy6kWcGQo/2e332a30fe2a7225a88fcb1898f48bbf/l9.png",
+    "nation": "Holland",
+    "nationImage": "https://drop-assets.ea.com/images/7LmdSUm2Ge4fzqcz0NElvq/d272142c80713dcf0e5ec0a47232aeee/f_34.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/246104.png?width=265",
+    "stats": {
+      "pac": 76,
+      "sho": 76,
+      "pas": 81,
+      "dri": 85,
+      "def": 81,
+      "phy": 81
+    }
+  },
+  {
+    "id": "p_110",
+    "name": "Georgia Stanway",
+    "overall": 85,
+    "position": "CDM",
+    "club": "FC Bayern München",
+    "clubImage": "https://drop-assets.ea.com/images/6VNQgbgU33AK9U8cQgteGh/aae1cf67f81ed40ca84a5da5dce26140/l115995.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/243404.png?width=265",
+    "stats": {
+      "pac": 80,
+      "sho": 79,
+      "pas": 80,
+      "dri": 86,
+      "def": 77,
+      "phy": 77
+    }
+  },
+  {
+    "id": "p_111",
+    "name": "Erin Cuthbert",
+    "overall": 85,
+    "position": "CDM",
+    "club": "Chelsea",
+    "clubImage": "https://drop-assets.ea.com/images/3vni1UAimBV1Ffc3NbgIJp/40f6d3391ea7b8a43f79ce4c118a8ca2/l116010.png",
+    "nation": "Scotland",
+    "nationImage": "https://drop-assets.ea.com/images/3LfmKqyBykOGZyfdSpENTr/ec3733dfa9526c8f6da96bf0f8c7448e/f_42.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/245882.png?width=265",
+    "stats": {
+      "pac": 79,
+      "sho": 80,
+      "pas": 84,
+      "dri": 83,
+      "def": 80,
+      "phy": 73
+    }
+  },
+  {
+    "id": "p_112",
+    "name": "Manuela Giugliano",
+    "overall": 85,
+    "position": "CM",
+    "club": "Roma",
+    "clubImage": "https://drop-assets.ea.com/images/2lVkyeGjk3Ak6IrglV8o3A/08b143d38685647b57473c4d4b4212df/l116282.png",
+    "nation": "Italy",
+    "nationImage": "https://drop-assets.ea.com/images/2WtjWPqYzT7xcMCbvajGZH/d06e9ec4734a0d43d88f65386cc3a484/f_27.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/227095.png?width=265",
+    "stats": {
+      "pac": 81,
+      "sho": 80,
+      "pas": 84,
+      "dri": 86,
+      "def": 72,
+      "phy": 74
+    }
+  },
+  {
+    "id": "p_113",
+    "name": "Emiliano Martínez",
+    "overall": 85,
+    "position": "GK",
+    "club": "Aston Villa",
+    "clubImage": "https://drop-assets.ea.com/images/57c0ppYsEA88xL0gxqce8K/99605df97c6a96ea3b6e8a424c217af0/l2.png",
+    "nation": "Argentina",
+    "nationImage": "https://drop-assets.ea.com/images/4xMXjEt7CFJ6JENYeG45Sk/836d733dc1642c5e4ab3338d91481436/f_52.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/202811.png?width=250",
+    "stats": {
+      "pac": 83,
+      "sho": 82,
+      "pas": 82,
+      "dri": 85,
+      "def": 56,
+      "phy": 85
+    }
+  },
+  {
+    "id": "p_114",
+    "name": "Kim Little",
+    "overall": 85,
+    "position": "CDM",
+    "club": "Arsenal",
+    "clubImage": "https://drop-assets.ea.com/images/4rvnUS4EekAo5w8ckcUlW8/96274cde68a9488f484ec96d642941d0/l116009.png",
+    "nation": "Scotland",
+    "nationImage": "https://drop-assets.ea.com/images/3LfmKqyBykOGZyfdSpENTr/ec3733dfa9526c8f6da96bf0f8c7448e/f_42.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/245872.png?width=265",
+    "stats": {
+      "pac": 76,
+      "sho": 75,
+      "pas": 85,
+      "dri": 88,
+      "def": 78,
+      "phy": 70
+    }
+  },
+  {
+    "id": "p_115",
+    "name": "Sandy Baltimore",
+    "overall": 85,
+    "position": "LM",
+    "club": "Chelsea",
+    "clubImage": "https://drop-assets.ea.com/images/3vni1UAimBV1Ffc3NbgIJp/40f6d3391ea7b8a43f79ce4c118a8ca2/l116010.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/261733.png?width=265",
+    "stats": {
+      "pac": 87,
+      "sho": 74,
+      "pas": 84,
+      "dri": 86,
+      "def": 72,
+      "phy": 69
+    }
+  },
+  {
+    "id": "p_116",
+    "name": "João Neves",
+    "overall": 85,
+    "position": "CM",
+    "club": "Paris SG",
+    "clubImage": "https://drop-assets.ea.com/images/2QwnhmHh5K7bjkfZAF7ZCi/7c53874542fb5c606ff810a4b1f6b88b/l73.png",
+    "nation": "Portugal",
+    "nationImage": "https://drop-assets.ea.com/images/3CxRD7XqY2NSlZ3628fY4S/abf38470644ee334e6a425b9272f7767/f_38.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/272834.png?width=265",
+    "stats": {
+      "pac": 74,
+      "sho": 69,
+      "pas": 80,
+      "dri": 84,
+      "def": 82,
+      "phy": 83
+    }
+  },
+  {
+    "id": "p_117",
+    "name": "Antoine Griezmann",
+    "overall": 85,
+    "position": "ST",
+    "club": "Atlético de Madrid",
+    "clubImage": "https://drop-assets.ea.com/images/vYcueolPvaGx8blMqhPZ5/5dc3479fc8b85d475fd980c53fc2056f/l240.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/194765.png?width=265",
+    "stats": {
+      "pac": 77,
+      "sho": 86,
+      "pas": 85,
+      "dri": 88,
+      "def": 59,
+      "phy": 73
+    }
+  },
+  {
+    "id": "p_118",
+    "name": "Clara Mateo",
+    "overall": 85,
+    "position": "ST",
+    "club": "Paris FC",
+    "clubImage": "https://drop-assets.ea.com/images/7F6grxEn3OFD1LHGu8lbTB/60551fa849f9ba057ccf524181bbdb07/l116035.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/245697.png?width=265",
+    "stats": {
+      "pac": 87,
+      "sho": 86,
+      "pas": 80,
+      "dri": 84,
+      "def": 56,
+      "phy": 75
+    }
+  },
+  {
+    "id": "p_119",
+    "name": "Yui Hasegawa",
+    "overall": 85,
+    "position": "CDM",
+    "club": "Manchester City",
+    "clubImage": "https://drop-assets.ea.com/images/4ujf5zNmgTkQjfrGAT7583/be81b2a43abea89812157a320a3e7c0e/l116017.png",
+    "nation": "Japan",
+    "nationImage": "https://drop-assets.ea.com/images/1aoxCwnRS4A6LGlyhrUllt/b5b0cd61a299b9996821c16cc324cc3b/f_163.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/245830.png?width=265",
+    "stats": {
+      "pac": 77,
+      "sho": 71,
+      "pas": 85,
+      "dri": 86,
+      "def": 81,
+      "phy": 63
+    }
+  },
+  {
+    "id": "p_120",
+    "name": "Caroline Weir",
+    "overall": 85,
+    "position": "CAM",
+    "club": "Real Madrid",
+    "clubImage": "https://drop-assets.ea.com/images/33MkKSBWnQ6JK05gTK7Uut/9f1dc63b98a78eec04f43fb28ec1ab3a/l116326.png",
+    "nation": "Scotland",
+    "nationImage": "https://drop-assets.ea.com/images/3LfmKqyBykOGZyfdSpENTr/ec3733dfa9526c8f6da96bf0f8c7448e/f_42.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/245879.png?width=265",
+    "stats": {
+      "pac": 72,
+      "sho": 83,
+      "pas": 84,
+      "dri": 84,
+      "def": 69,
+      "phy": 69
+    }
+  },
+  {
+    "id": "p_121",
+    "name": "Bryan Mbeumo",
+    "overall": 85,
+    "position": "RW",
+    "club": "Man Utd",
+    "clubImage": "https://drop-assets.ea.com/images/5xxJeUfFY6FEQZEJyJK35/990979becf88b88ecb6461dc441c2ebf/l11.png",
+    "nation": "Cameroon",
+    "nationImage": "https://drop-assets.ea.com/images/1X9lne9BeFIWKbnondoRf3/d4a22aaa4909432d273d31dac141f250/f_103.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/243014.png?width=265",
+    "stats": {
+      "pac": 88,
+      "sho": 84,
+      "pas": 79,
+      "dri": 84,
+      "def": 49,
+      "phy": 76
+    }
+  },
+  {
+    "id": "p_122",
+    "name": "N'Golo Kanté",
+    "overall": 85,
+    "position": "CDM",
+    "club": "Al Ittihad",
+    "clubImage": "https://drop-assets.ea.com/images/21L35ZnVrrvEeFouMeqs8Q/b631b443b4d37e1712ed79f2487d850c/l607.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/215914.png?width=265",
+    "stats": {
+      "pac": 77,
+      "sho": 65,
+      "pas": 73,
+      "dri": 80,
+      "def": 85,
+      "phy": 79
+    }
+  },
+  {
+    "id": "p_123",
+    "name": "Désiré Doué",
+    "overall": 85,
+    "position": "RW",
+    "club": "Paris SG",
+    "clubImage": "https://drop-assets.ea.com/images/2QwnhmHh5K7bjkfZAF7ZCi/7c53874542fb5c606ff810a4b1f6b88b/l73.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/271421.png?width=265",
+    "stats": {
+      "pac": 83,
+      "sho": 80,
+      "pas": 77,
+      "dri": 90,
+      "def": 55,
+      "phy": 74
+    }
+  },
+  {
+    "id": "p_124",
+    "name": "Carvajal",
+    "overall": 85,
+    "position": "RB",
+    "club": "Real Madrid",
+    "clubImage": "https://drop-assets.ea.com/images/Pk8nYrWuRt895RlhJx8jI/445d98b711f413a3a1e70c41b19b0f95/l243.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/204963.png?width=265",
+    "stats": {
+      "pac": 80,
+      "sho": 58,
+      "pas": 79,
+      "dri": 81,
+      "def": 81,
+      "phy": 79
+    }
+  },
+  {
+    "id": "p_125",
+    "name": "Unai Simón",
+    "overall": 85,
+    "position": "GK",
+    "club": "Athletic Club",
+    "clubImage": "https://drop-assets.ea.com/images/5lGGXYvaOCdAYlo8xWPzQb/7092243785809519c68b482ad21b2c41/l448.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/230869.png?width=265",
+    "stats": {
+      "pac": 84,
+      "sho": 80,
+      "pas": 76,
+      "dri": 85,
+      "def": 49,
+      "phy": 84
+    }
+  },
+  {
+    "id": "p_126",
+    "name": "Trinity Rodman",
+    "overall": 85,
+    "position": "RM",
+    "club": "Washington Spirit",
+    "clubImage": "https://drop-assets.ea.com/images/7zKMPF5E8YqQhJyeLEdieP/ca4e50ec88238de3171d608dbba98c46/l116304.png",
+    "nation": "United States",
+    "nationImage": "https://drop-assets.ea.com/images/7ZVadlJQIutRH5P85wr76/c2456a2d76146d19f98c2c3071136dcf/f_95.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/266928.png?width=265",
+    "stats": {
+      "pac": 91,
+      "sho": 81,
+      "pas": 78,
+      "dri": 83,
+      "def": 43,
+      "phy": 82
+    }
+  },
+  {
+    "id": "p_127",
+    "name": "Marcus Thuram",
+    "overall": 85,
+    "position": "ST",
+    "club": "Lombardia FC",
+    "clubImage": "https://drop-assets.ea.com/images/1thPMvXN97JgFvt6ASWr4c/d2ca0a691a98c344305bc0975ab70314/l131682.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/228093.png?width=265",
+    "stats": {
+      "pac": 86,
+      "sho": 83,
+      "pas": 76,
+      "dri": 82,
+      "def": 50,
+      "phy": 80
+    }
+  },
+  {
+    "id": "p_128",
+    "name": "Lauren James",
+    "overall": 85,
+    "position": "RM",
+    "club": "Chelsea",
+    "clubImage": "https://drop-assets.ea.com/images/3vni1UAimBV1Ffc3NbgIJp/40f6d3391ea7b8a43f79ce4c118a8ca2/l116010.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/265249.png?width=265",
+    "stats": {
+      "pac": 89,
+      "sho": 81,
+      "pas": 78,
+      "dri": 87,
+      "def": 40,
+      "phy": 82
+    }
+  },
+  {
+    "id": "p_129",
+    "name": "Péter Gulácsi",
+    "overall": 85,
+    "position": "GK",
+    "club": "RB Leipzig",
+    "clubImage": "https://drop-assets.ea.com/images/1EoW6b2VkhiP3S0vqikd9s/f181f899a2037360f70a9a8aba18af30/l112172.png",
+    "nation": "Hungary",
+    "nationImage": "https://drop-assets.ea.com/images/7i3nOfE2sGJ9iku6pc1FjZ/eeaef3caa45bcbd92bfdd62705d3fa6f/f_23.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/185122.png?width=250",
+    "stats": {
+      "pac": 83,
+      "sho": 83,
+      "pas": 74,
+      "dri": 84,
+      "def": 43,
+      "phy": 87
+    }
+  },
+  {
+    "id": "p_130",
+    "name": "Alexandra Popp",
+    "overall": 85,
+    "position": "ST",
+    "club": "VfL Wolfsburg",
+    "clubImage": "https://drop-assets.ea.com/images/3KI25PZf7aFWPo1LJk0pxV/cdad8e04247ed9e4b86f448a0a4a0d53/l115998.png",
+    "nation": "Germany",
+    "nationImage": "https://drop-assets.ea.com/images/6IIMMGk0Uj1rcZ6DSHTpLL/93f95b602dc62594104f418c8f80ebb3/f_21.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/226302.png?width=265",
+    "stats": {
+      "pac": 74,
+      "sho": 84,
+      "pas": 76,
+      "dri": 78,
+      "def": 52,
+      "phy": 89
+    }
+  },
+  {
+    "id": "p_131",
+    "name": "Svenja Huth",
+    "overall": 85,
+    "position": "CM",
+    "club": "VfL Wolfsburg",
+    "clubImage": "https://drop-assets.ea.com/images/3KI25PZf7aFWPo1LJk0pxV/cdad8e04247ed9e4b86f448a0a4a0d53/l115998.png",
+    "nation": "Germany",
+    "nationImage": "https://drop-assets.ea.com/images/6IIMMGk0Uj1rcZ6DSHTpLL/93f95b602dc62594104f418c8f80ebb3/f_21.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/227337.png?width=265",
+    "stats": {
+      "pac": 82,
+      "sho": 76,
+      "pas": 84,
+      "dri": 86,
+      "def": 58,
+      "phy": 67
+    }
+  },
+  {
+    "id": "p_132",
+    "name": "Luis Díaz",
+    "overall": 85,
+    "position": "LM",
+    "club": "FC Bayern München",
+    "clubImage": "https://drop-assets.ea.com/images/3p0dv1pGWIH6lGAKZssZKH/4f70d2c5a3c147f3e006c863e85e4993/l21.png",
+    "nation": "Colombia",
+    "nationImage": "https://drop-assets.ea.com/images/JphMzcFrWU7Uo2jq6GSep/d909b5b6000d5bf7515600d2c6db6375/f_56.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/241084.png?width=265",
+    "stats": {
+      "pac": 88,
+      "sho": 81,
+      "pas": 76,
+      "dri": 87,
+      "def": 45,
+      "phy": 75
+    }
+  },
+  {
+    "id": "p_133",
+    "name": "De Gea",
+    "overall": 85,
+    "position": "GK",
+    "club": "Fiorentina",
+    "clubImage": "https://drop-assets.ea.com/images/j2Zuc19dll43zq88V7CgZ/d2e748909a451985aed5a26b122a4d8f/l110374.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/193080.png?width=250",
+    "stats": {
+      "pac": 85,
+      "sho": 78,
+      "pas": 71,
+      "dri": 87,
+      "def": 46,
+      "phy": 84
+    }
+  },
+  {
+    "id": "p_134",
+    "name": "Nico Schlotterbeck",
+    "overall": 85,
+    "position": "CB",
+    "club": "Borussia Dortmund",
+    "clubImage": "https://drop-assets.ea.com/images/TmqxUZk2FrbFXOK1kdE89/3dce225926ac7cfd9f283ecd731fa710/l22.png",
+    "nation": "Germany",
+    "nationImage": "https://drop-assets.ea.com/images/6IIMMGk0Uj1rcZ6DSHTpLL/93f95b602dc62594104f418c8f80ebb3/f_21.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/247819.png?width=265",
+    "stats": {
+      "pac": 74,
+      "sho": 60,
+      "pas": 75,
+      "dri": 73,
+      "def": 85,
+      "phy": 82
+    }
+  },
+  {
+    "id": "p_135",
+    "name": "Tabitha Chawinga",
+    "overall": 85,
+    "position": "LW",
+    "club": "OL Lyonnes",
+    "clubImage": "https://drop-assets.ea.com/images/6CoUOe5iw6EdXzTsRUgPhB/e3e12054d723a75cfc7331a8276e00a3/l116033.png",
+    "nation": "Malawi",
+    "nationImage": "https://drop-assets.ea.com/images/vR0QvzzQdjyGFEHWOo60x/bafe6ab7573b39b71dd35037fa93679f/f_125.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/278219.png?width=265",
+    "stats": {
+      "pac": 94,
+      "sho": 82,
+      "pas": 71,
+      "dri": 85,
+      "def": 36,
+      "phy": 81
+    }
+  },
+  {
+    "id": "p_136",
+    "name": "Heung Min Son",
+    "overall": 85,
+    "position": "LW",
+    "club": "LAFC",
+    "clubImage": "https://drop-assets.ea.com/images/7HVxXj38u4xwAYPYjnYeBm/dd7c8333fd89f025a52fa53a96406475/l112996.png",
+    "nation": "Korea Republic",
+    "nationImage": "https://drop-assets.ea.com/images/1dVkB8X9Wb0vnMLflqc8EP/c44c481c48f80fa33f1056628596b957/f_167.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/200104.png?width=265",
+    "stats": {
+      "pac": 84,
+      "sho": 84,
+      "pas": 81,
+      "dri": 83,
+      "def": 42,
+      "phy": 73
+    }
+  },
+  {
+    "id": "p_137",
+    "name": "Phil Foden",
+    "overall": 85,
+    "position": "RW",
+    "club": "Manchester City",
+    "clubImage": "https://drop-assets.ea.com/images/4asmNLic4aQn6cjlEg1t5u/88bea3ddd6c1f620bbf813041f248685/l10.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/237692.png?width=265",
+    "stats": {
+      "pac": 81,
+      "sho": 81,
+      "pas": 82,
+      "dri": 89,
+      "def": 57,
+      "phy": 57
+    }
+  },
+  {
+    "id": "p_138",
+    "name": "Fabián Ruiz",
+    "overall": 85,
+    "position": "CM",
+    "club": "Paris SG",
+    "clubImage": "https://drop-assets.ea.com/images/2QwnhmHh5K7bjkfZAF7ZCi/7c53874542fb5c606ff810a4b1f6b88b/l73.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/226271.png?width=265",
+    "stats": {
+      "pac": 61,
+      "sho": 77,
+      "pas": 80,
+      "dri": 81,
+      "def": 75,
+      "phy": 72
+    }
+  },
+  {
+    "id": "p_139",
+    "name": "Youri Tielemans",
+    "overall": 85,
+    "position": "CM",
+    "club": "Aston Villa",
+    "clubImage": "https://drop-assets.ea.com/images/57c0ppYsEA88xL0gxqce8K/99605df97c6a96ea3b6e8a424c217af0/l2.png",
+    "nation": "Belgium",
+    "nationImage": "https://drop-assets.ea.com/images/7eZLPoDDyxSlQoqcS4NVA2/6fc085dc7e85ccd7519be7ff2df875ee/f_7.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/216393.png?width=265",
+    "stats": {
+      "pac": 54,
+      "sho": 79,
+      "pas": 85,
+      "dri": 80,
+      "def": 75,
+      "phy": 72
+    }
+  },
+  {
+    "id": "p_140",
+    "name": "Marta",
+    "overall": 85,
+    "position": "CAM",
+    "club": "Orlando Pride",
+    "clubImage": "https://drop-assets.ea.com/images/1IPVGeKVfmlPY2Cqj53yhE/03d7e2ec1cdff79d160d27448319b28d/l116307.png",
+    "nation": "Brazil",
+    "nationImage": "https://drop-assets.ea.com/images/1zdNn1R9tRlfQ3lsbAOecD/a606f742789b6306363383a6e20dd003/f_54.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/226890.png?width=265",
+    "stats": {
+      "pac": 70,
+      "sho": 83,
+      "pas": 84,
+      "dri": 88,
+      "def": 44,
+      "phy": 75
+    }
+  },
+  {
+    "id": "p_141",
+    "name": "Laura Freigang",
+    "overall": 85,
+    "position": "CAM",
+    "club": "Frankfurt",
+    "clubImage": "https://drop-assets.ea.com/images/1OAeQdIJOxaZmrOaa3HUob/c7e3411d758140ffc88b874634da90ad/l115997.png",
+    "nation": "Germany",
+    "nationImage": "https://drop-assets.ea.com/images/6IIMMGk0Uj1rcZ6DSHTpLL/93f95b602dc62594104f418c8f80ebb3/f_21.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/261773.png?width=265",
+    "stats": {
+      "pac": 84,
+      "sho": 83,
+      "pas": 77,
+      "dri": 83,
+      "def": 37,
+      "phy": 79
+    }
+  },
+  {
+    "id": "p_142",
+    "name": "Ella Toone",
+    "overall": 85,
+    "position": "CAM",
+    "club": "Manchester Utd",
+    "clubImage": "https://drop-assets.ea.com/images/kPniQZ6hdIOOVB11pASDH/2d71742b6ba5ee50d0faa6edd3f9f4b8/l116012.png",
+    "nation": "England",
+    "nationImage": "https://drop-assets.ea.com/images/6ZM1OFXGUFeV0ZaYVKj2z/ae88ef17f8cb179fbc1c463f7e1e4bd8/f_14.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/263011.png?width=265",
+    "stats": {
+      "pac": 81,
+      "sho": 80,
+      "pas": 81,
+      "dri": 86,
+      "def": 51,
+      "phy": 64
+    }
+  },
+  {
+    "id": "p_143",
+    "name": "Caitlin Foord",
+    "overall": 85,
+    "position": "LM",
+    "club": "Arsenal",
+    "clubImage": "https://drop-assets.ea.com/images/4rvnUS4EekAo5w8ckcUlW8/96274cde68a9488f484ec96d642941d0/l116009.png",
+    "nation": "Australia",
+    "nationImage": "https://drop-assets.ea.com/images/1z4BxEaFLZ7lgOP3T5RVqv/99256126771f079224aadffd2f61ad94/f_195.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/227110.png?width=265",
+    "stats": {
+      "pac": 87,
+      "sho": 77,
+      "pas": 81,
+      "dri": 82,
+      "def": 45,
+      "phy": 70
+    }
+  },
+  {
+    "id": "p_144",
+    "name": "Granit Xhaka",
+    "overall": 85,
+    "position": "CDM",
+    "club": "Sunderland",
+    "clubImage": "https://drop-assets.ea.com/images/6ja62Iw2LyY8cVrud4aSHi/aa6c15e4a2ceed66f92099108bea9dfa/l106.png",
+    "nation": "Switzerland",
+    "nationImage": "https://drop-assets.ea.com/images/4CseD8PxDZqObA1huFIws0/f30914625e329de69ffdd60f3c334a88/f_47.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/199503.png?width=265",
+    "stats": {
+      "pac": 47,
+      "sho": 75,
+      "pas": 85,
+      "dri": 74,
+      "def": 78,
+      "phy": 82
+    }
+  },
+  {
+    "id": "p_145",
+    "name": "Naomi Girma",
+    "overall": 85,
+    "position": "CB",
+    "club": "Chelsea",
+    "clubImage": "https://drop-assets.ea.com/images/3vni1UAimBV1Ffc3NbgIJp/40f6d3391ea7b8a43f79ce4c118a8ca2/l116010.png",
+    "nation": "United States",
+    "nationImage": "https://drop-assets.ea.com/images/7ZVadlJQIutRH5P85wr76/c2456a2d76146d19f98c2c3071136dcf/f_95.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/267382.png?width=265",
+    "stats": {
+      "pac": 80,
+      "sho": 51,
+      "pas": 70,
+      "dri": 74,
+      "def": 85,
+      "phy": 79
+    }
+  },
+  {
+    "id": "p_146",
+    "name": "Karim Benzema",
+    "overall": 85,
+    "position": "ST",
+    "club": "Al Ittihad",
+    "clubImage": "https://drop-assets.ea.com/images/21L35ZnVrrvEeFouMeqs8Q/b631b443b4d37e1712ed79f2487d850c/l607.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/165153.png?width=265",
+    "stats": {
+      "pac": 75,
+      "sho": 84,
+      "pas": 81,
+      "dri": 83,
+      "def": 38,
+      "phy": 77
+    }
+  },
+  {
+    "id": "p_147",
+    "name": "Cristiana Girelli",
+    "overall": 85,
+    "position": "ST",
+    "club": "Juventus",
+    "clubImage": "https://drop-assets.ea.com/images/4H9QlLcG24qNAESGlhHP4u/e034518e22c514cf441df1704a6120f2/l116280.png",
+    "nation": "Italy",
+    "nationImage": "https://drop-assets.ea.com/images/2WtjWPqYzT7xcMCbvajGZH/d06e9ec4734a0d43d88f65386cc3a484/f_27.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/227073.png?width=265",
+    "stats": {
+      "pac": 77,
+      "sho": 84,
+      "pas": 70,
+      "dri": 80,
+      "def": 46,
+      "phy": 77
+    }
+  },
+  {
+    "id": "p_148",
+    "name": "Delphine Cascarino",
+    "overall": 85,
+    "position": "RM",
+    "club": "San Diego Wave",
+    "clubImage": "https://drop-assets.ea.com/images/5LEZaKjy2gtQUJ9t0S00AK/95774bf06afec0b64174201c155f8a59/l116312.png",
+    "nation": "France",
+    "nationImage": "https://drop-assets.ea.com/images/3ECAQzhfgSLWRf9IIHB6G8/7e235a7b2f93c1f73db7f89dc03b3657/f_18.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/232202.png?width=265",
+    "stats": {
+      "pac": 93,
+      "sho": 75,
+      "pas": 79,
+      "dri": 88,
+      "def": 38,
+      "phy": 61
+    }
+  },
+  {
+    "id": "p_149",
+    "name": "Vivianne Miedema",
+    "overall": 85,
+    "position": "ST",
+    "club": "Manchester City",
+    "clubImage": "https://drop-assets.ea.com/images/4ujf5zNmgTkQjfrGAT7583/be81b2a43abea89812157a320a3e7c0e/l116017.png",
+    "nation": "Holland",
+    "nationImage": "https://drop-assets.ea.com/images/7LmdSUm2Ge4fzqcz0NElvq/d272142c80713dcf0e5ec0a47232aeee/f_34.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/233746.png?width=265",
+    "stats": {
+      "pac": 82,
+      "sho": 85,
+      "pas": 70,
+      "dri": 85,
+      "def": 32,
+      "phy": 80
+    }
+  },
+  {
+    "id": "p_150",
+    "name": "Iñigo Martínez",
+    "overall": 85,
+    "position": "CB",
+    "club": "Al Nassr",
+    "clubImage": "https://drop-assets.ea.com/images/6oPkjdKPFc4aHfFp7UGXB7/262e529bd81a51c0b5f317e61b3f5985/l112139.png",
+    "nation": "Spain",
+    "nationImage": "https://drop-assets.ea.com/images/Kv8okAYMsDbB3ZKbxrAXw/9d30c88d16a4c85002f35c6af412c6f7/f_45.png",
+    "photo": "https://ratings-images-prod.pulse.ea.com/FC25/full/player-shields/en/204525.png?width=265",
+    "stats": {
+      "pac": 71,
+      "sho": 57,
+      "pas": 72,
+      "dri": 68,
+      "def": 85,
+      "phy": 80
+    }
+  }
 ]
