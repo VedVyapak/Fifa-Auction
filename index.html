@@ -13,42 +13,69 @@
   <div class="offline-banner">reconnecting · check your wifi</div>
 
   <!-- ============================== SETUP SCREEN ============================== -->
-  <section id="setupScreen" class="setup-screen panel">
-    <div class="bc-bar" style="background:transparent;border:none;padding:0 0 24px 0;">
-      <span class="live-dot"></span>
-      <span class="bc-tag">Host Console</span>
-    </div>
-    <h1>FIFA<br/>Auction <span style="color:var(--pitch)">'26</span></h1>
-    <p class="sub">
-      Start a new auction room. Friends join from their phones using the code + QR.
-      You control pacing from this screen.
-    </p>
+  <section id="setupScreen" class="bp-setup">
+    <div class="bp-setup-card">
+      <div class="bp-top-bar">
+        <span class="bp-live-dot"></span>
+        <span class="bp-tag">Host Console</span>
+      </div>
 
-    <div id="setupError" class="banner danger hide" style="margin-bottom:16px;"></div>
+      <h1 class="bp-setup-title">FIFA<br/>Auction <em>'26</em></h1>
+      <p class="bp-setup-lede">
+        Start a new auction room. Friends join from their phones using the code + QR.
+        You control pacing from this screen.
+      </p>
 
-    <div class="col">
-      <button id="btnCreateRoom" class="btn btn-primary" style="padding:18px 24px;font-size:16px;">
-        Create new room
+      <div id="setupError" class="banner danger hide" style="margin-bottom:16px;"></div>
+
+      <button id="btnCreateRoom" class="bp-btn-create">
+        Create new room <span class="arrow">→</span>
       </button>
-      <div class="row" style="gap:12px;margin-top:8px;">
-        <span class="eyebrow text-dim">or rejoin existing</span>
-      </div>
-      <div class="row">
-        <input id="rejoinCode" class="input" placeholder="ROOM CODE" maxlength="4" style="text-transform:uppercase;" />
-        <button id="btnRejoin" class="btn btn-ghost">Rejoin</button>
-      </div>
-    </div>
 
-    <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border);">
-      <div class="eyebrow" style="margin-bottom:8px;">Rules tonight</div>
-      <ul style="list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:8px;color:var(--text-dim);font-size:13px;line-height:1.6;">
-        <li>· 7 bidders × 100M budget</li>
-        <li>· Top 150 players</li>
-        <li>· Squad of 15, no positions required</li>
-        <li>· 10s timer, resets on each bid</li>
-        <li>· Min increment 100K</li>
-        <li>· Random next player</li>
-      </ul>
+      <div class="bp-rejoin">
+        <div class="bp-rejoin-eyebrow">or rejoin existing</div>
+        <input id="rejoinCode" class="bp-input" placeholder="ROOM CODE" maxlength="4" />
+        <button id="btnRejoin" class="bp-btn-rejoin">Rejoin</button>
+      </div>
+
+      <div class="bp-rules">
+        <div class="bp-rules-head">
+          <span class="bp-rules-label">Rules tonight</span>
+          <span class="bp-rules-meta">classic format</span>
+        </div>
+        <div class="bp-stats-grid">
+          <div class="bp-stat-tile">
+            <span class="val">7<span class="unit">×</span></span>
+            <span class="key">Bidders</span>
+            <span class="helper">100M budget each</span>
+          </div>
+          <div class="bp-stat-tile accent-gold">
+            <span class="val">150</span>
+            <span class="key">Players</span>
+            <span class="helper">top-rated pool</span>
+          </div>
+          <div class="bp-stat-tile">
+            <span class="val">15</span>
+            <span class="key">Squad size</span>
+            <span class="helper">no position quotas</span>
+          </div>
+          <div class="bp-stat-tile accent-green">
+            <span class="val">10<span class="unit">s</span></span>
+            <span class="key">Bid timer</span>
+            <span class="helper">resets on each bid</span>
+          </div>
+          <div class="bp-stat-tile">
+            <span class="val">100<span class="unit">K</span></span>
+            <span class="key">Min raise</span>
+            <span class="helper">strict multiples</span>
+          </div>
+          <div class="bp-stat-tile accent-red">
+            <span class="val">random</span>
+            <span class="key">Draw order</span>
+            <span class="helper">marquee on tap</span>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 

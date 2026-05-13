@@ -1111,3 +1111,192 @@ body.offline .offline-banner { display: block; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+/* =========================================================
+   ==========================================================
+   BROADCAST PRO — new design system
+   All new classes are namespaced with bp- (or a clearly new
+   name) so they coexist with the legacy classes while the
+   migration is in progress. Once every screen has been
+   ported, the legacy block above will be removed.
+   ==========================================================
+   ========================================================= */
+
+/* shared atoms */
+.bp-display { font-family: var(--display); letter-spacing: 0.02em; line-height: 0.9; }
+.bp-mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.bp-eyebrow {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  color: var(--dim);
+  letter-spacing: 0.2em; text-transform: uppercase;
+}
+
+.bp-live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--red); box-shadow: 0 0 8px var(--red);
+  animation: bpPulse 1.4s infinite;
+}
+@keyframes bpPulse { 50% { opacity: .35 } }
+.bp-tag {
+  background: var(--red); color: #fff;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  padding: 5px 10px; border-radius: 3px;
+}
+.bp-tag.gold { background: var(--gold); color: #2a1d00; }
+.bp-tag.green { background: var(--green); color: #001a08; }
+.bp-top-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+.bp-top-bar .spacer { flex: 1; }
+
+/* ============ SETUP SCREEN ============ */
+.bp-setup {
+  /* the setup screen overrides the body grid so it can centre the card */
+  min-height: 100vh;
+  display: grid; place-items: center;
+  padding: 24px;
+  position: relative; z-index: 2;
+}
+.bp-setup-card {
+  position: relative; z-index: 2;
+  width: 100%; max-width: 720px;
+  padding: 40px 44px;
+  background: linear-gradient(180deg, rgba(19,26,44,0.85), rgba(11,15,26,0.85));
+  border: 1px solid var(--line-2);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+.bp-setup-title {
+  font-family: var(--display); font-size: 88px; line-height: 0.88;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.bp-setup-title em { font-style: normal; color: var(--green); }
+.bp-setup-lede {
+  font-size: 15px; color: var(--dim); line-height: 1.5;
+  max-width: 460px; margin-bottom: 28px;
+}
+
+.bp-btn-create {
+  width: 100%;
+  padding: 18px 24px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--green), #00b85f);
+  color: #001a08;
+  font-family: var(--sans); font-weight: 800; font-size: 15px;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  box-shadow: 0 10px 30px rgba(0,230,118,0.25);
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  transition: transform .08s, box-shadow .15s, filter .15s;
+}
+.bp-btn-create:hover { filter: brightness(1.06); box-shadow: 0 14px 36px rgba(0,230,118,0.32); }
+.bp-btn-create:active { transform: translateY(1px); }
+.bp-btn-create:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
+.bp-btn-create .arrow { font-family: var(--display); font-size: 22px; }
+
+.bp-rejoin {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+.bp-rejoin-eyebrow {
+  grid-column: 1 / -1;
+  font-family: var(--mono); font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 0.2em; text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.bp-input {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--line);
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-family: var(--mono); font-size: 18px;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  width: 100%;
+  transition: border-color .15s, background .15s;
+}
+.bp-input:focus { outline: none; border-color: var(--green); background: rgba(0,230,118,0.04); }
+.bp-input::placeholder { color: var(--faint); letter-spacing: 0.1em; }
+.bp-btn-rejoin {
+  padding: 14px 22px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--line-2);
+  color: var(--text);
+  font-weight: 700; font-size: 13px;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  transition: background .15s;
+}
+.bp-btn-rejoin:hover { background: rgba(255,255,255,0.08); }
+
+.bp-rules { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); }
+.bp-rules-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.bp-rules-label {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 0.25em; text-transform: uppercase;
+}
+.bp-rules-meta {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--faint);
+  letter-spacing: 0.15em; text-transform: uppercase;
+}
+.bp-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.bp-stat-tile {
+  padding: 18px 16px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.bp-stat-tile:nth-child(3n) { border-right: none; }
+.bp-stat-tile:nth-last-child(-n+3) { border-bottom: none; }
+.bp-stat-tile .val {
+  font-family: var(--display);
+  font-size: 36px; line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  text-transform: uppercase;
+}
+.bp-stat-tile .val .unit {
+  font-family: var(--sans); font-size: 13px; font-weight: 700;
+  color: var(--dim);
+  letter-spacing: 0;
+  margin-left: 2px;
+}
+.bp-stat-tile .key {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 0.15em; text-transform: uppercase;
+  margin-top: 2px;
+}
+.bp-stat-tile .helper {
+  font-size: 12px; color: var(--faint);
+  margin-top: 4px;
+  line-height: 1.3;
+}
+.bp-stat-tile.accent-green .val { color: var(--green); }
+.bp-stat-tile.accent-gold .val { color: var(--gold); }
+.bp-stat-tile.accent-red .val { color: var(--red); }
+
+/* the legacy setup-screen panel still uses .setup-screen + .panel as wrappers.
+   We use a new wrapper class to avoid colliding with .panel padding. */
+#setupScreen.bp-setup { background: transparent; border: none; padding: 24px; max-width: none; margin: 0 auto; }
