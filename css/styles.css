@@ -687,6 +687,36 @@ label.field .eyebrow { display: block; margin-bottom: 6px; }
 
 .mobile-header .hamburger svg { stroke: var(--text); }
 
+.conn-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--pitch);
+  box-shadow: 0 0 6px rgba(0,255,135,0.6);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+.conn-dot.offline {
+  background: var(--broadcast);
+  box-shadow: 0 0 6px rgba(255,45,85,0.7);
+  animation: pulse 1.4s infinite;
+}
+
+.offline-banner {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: var(--broadcast);
+  color: white;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 5px;
+  z-index: 100;
+}
+body.offline .offline-banner { display: block; }
+
 .mobile-header .balance {
   margin-left: auto;
   text-align: right;

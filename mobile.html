@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="./css/styles.css" />
 </head>
 <body>
+  <div class="offline-banner">reconnecting · check your wifi</div>
+
   <main class="mobile-shell">
 
     <!-- header -->
@@ -21,7 +23,10 @@
       </button>
       <div>
         <div class="eyebrow" id="whoami">—</div>
-        <div class="mono" style="font-size:11px;color:var(--text-dim);" id="roomLabel">ROOM —</div>
+        <div class="mono" style="font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:6px;">
+          <span id="connDot" class="conn-dot"></span>
+          <span id="roomLabel">ROOM —</span>
+        </div>
       </div>
       <div class="balance">
         <div class="label">Budget</div>

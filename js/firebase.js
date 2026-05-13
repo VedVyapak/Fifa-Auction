@@ -53,6 +53,13 @@ export function watchRoom(roomCode, cb) {
   return onValue(roomRef(roomCode), snap => cb(snap.val()));
 }
 
+// Subscribe to Firebase's built-in connection state. Useful as a "you're
+// disconnected" indicator on mobile — Safari likes to suspend WebSockets when
+// the tab goes to background.
+export function watchConnection(cb) {
+  return onValue(ref(db, '.info/connected'), snap => cb(snap.val() === true));
+}
+
 export async function getRoomOnce(roomCode) {
   const snap = await get(roomRef(roomCode));
   return snap.val();
@@ -117,15 +124,44 @@ export async function skipCurrentPlayer(roomCode) {
   await update(roomRef(roomCode), { currentAuction: null });
 }
 
-// finalize: award current leading bid; mutate budgets & pool.
+// Atomically finalize the current auction.
+// Step 1: claim it via transaction (set finalizing=true). Aborts if:
+//   - no auction (already cleared)
+//   - someone else already claimed it
+//   - timer hasn't actually expired
+//   - a late bid just reset endsAt into the future
+// Step 2: read room data and award the player.
+// Bids racing with finalize get rejected (see placeBid's `finalizing` check)
+// OR cause the claim to abort (if they reset endsAt). Net effect: no lost bids.
 export async function finalizeAuction(roomCode) {
   const r = roomRef(roomCode);
+  const auctionRef = ref(db, `rooms/${roomCode}/currentAuction`);
+
+  // Atomic claim
+  let claimed = null;
+  const txn = await runTransaction(auctionRef, (auction) => {
+    if (!auction) return; // already cleared
+    if (auction.finalizing) return; // someone else has it
+    if (auction.paused) return;
+    // Grace period: 200ms back from endsAt to avoid finalizing while a bid is
+    // landing. Actual buzzer is endsAt; finalize only fires safely after that.
+    if (Date.now() < (auction.endsAt || 0)) return;
+    auction.finalizing = true;
+    claimed = JSON.parse(JSON.stringify(auction));
+    return auction;
+  });
+  if (!txn.committed || !claimed) return null;
+
+  // We own this finalization. Read room and write awards.
   const snap = await get(r);
   const room = snap.val();
-  if (!room?.currentAuction) return null;
-  const a = room.currentAuction;
+  if (!room) return null;
+  const a = claimed;
   const player = room.pool?.[a.playerId];
-  if (!player) return null;
+  if (!player) {
+    await update(r, { currentAuction: null });
+    return null;
+  }
 
   // If nobody bid, mark unsold and move on.
   if (!a.leadingBidderId) {
@@ -146,7 +182,10 @@ export async function finalizeAuction(roomCode) {
   const winnerId = a.leadingBidderId;
   const price = a.currentBid;
   const bidder = room.bidders?.[winnerId];
-  if (!bidder) return null;
+  if (!bidder) {
+    await update(r, { currentAuction: null });
+    return null;
+  }
 
   const newSquad = [...(bidder.squad || []), { ...player, price }];
   const newBudget = (bidder.budget ?? STARTING_BUDGET) - price;
@@ -218,6 +257,17 @@ export async function placeBid(roomCode, bidderId, bidderName, amount, expectedP
     }
     if (expectedPlayerId && auction.playerId !== expectedPlayerId) {
       result = { ok: false, reason: 'Auction moved to a different player.' };
+      return;
+    }
+    if (auction.finalizing) {
+      result = { ok: false, reason: 'Bidding closed — finalizing sale.' };
+      return;
+    }
+    // Allow a 300ms grace past the buzzer for network jitter; anything later
+    // is too late. Without this, a bid at T+50ms can land after the host has
+    // already claimed the auction for finalization, silently disappearing.
+    if (Date.now() > (auction.endsAt || 0) + 300) {
+      result = { ok: false, reason: 'Too late — buzzer.' };
       return;
     }
     if (auction.paused) { result = { ok: false, reason: 'Auction is paused.' }; return; }

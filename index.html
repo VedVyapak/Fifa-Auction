@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 </head>
 <body>
+  <div class="offline-banner">reconnecting · check your wifi</div>
+
   <!-- ============================== SETUP SCREEN ============================== -->
   <section id="setupScreen" class="setup-screen panel">
     <div class="bc-bar" style="background:transparent;border:none;padding:0 0 24px 0;">
@@ -92,6 +94,15 @@
       <span class="bc-tag">Live Auction</span>
       <span class="eyebrow"><span id="liveSoldCount">0</span> / <span id="livePoolCount">0</span> sold</span>
       <div class="spacer"></div>
+      <button id="btnShowQR" class="btn btn-ghost" style="padding:8px 14px;font-size:12px;" title="Show join QR — for someone who closed their tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/>
+          <rect x="18" y="14" width="3" height="3"/><rect x="14" y="18" width="3" height="3"/>
+          <rect x="18" y="18" width="3" height="3"/>
+        </svg>
+        Show QR
+      </button>
       <span class="eyebrow">room</span>
       <span class="bc-room-code" id="liveRoomCode">----</span>
     </div>
@@ -146,6 +157,27 @@
     </div>
     <div id="finalGrid" class="final-grid"></div>
   </section>
+
+  <!-- ============================== QR MODAL ============================== -->
+  <div id="qrModal" class="drawer-backdrop hide" style="z-index:60;">
+    <div class="panel" style="max-width:420px;width:90%;margin:8vh auto;position:relative;text-align:center;">
+      <div class="drawer-header" style="margin-bottom:16px;">
+        <h2>Rejoin</h2>
+        <button class="drawer-close" id="qrModalClose">✕</button>
+      </div>
+      <p class="text-dim" style="font-size:13px;margin-bottom:16px;">
+        Scan this from a phone to join the room, or type the URL.
+      </p>
+      <div class="qr-card" style="padding:20px;">
+        <div id="qrModalSlot" style="width:240px;height:240px;display:flex;align-items:center;justify-content:center;background:white;border-radius:12px;">
+          <span style="font-family:var(--mono);color:#0a0d14;font-size:11px;">generating…</span>
+        </div>
+        <div class="eyebrow">room code</div>
+        <div id="qrModalCode" class="room-code-big" style="font-size:64px;">----</div>
+        <div class="mono" id="qrModalUrl" style="font-size:11px;color:var(--text-dim);word-break:break-all;"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- ============================== SQUAD MODAL ============================== -->
   <div id="squadModal" class="drawer-backdrop hide" style="z-index:50;">

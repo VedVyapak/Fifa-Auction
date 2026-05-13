@@ -3,7 +3,7 @@ import {
   positionWarnings, isLockedOut, MIN_INCREMENT, SQUAD_SIZE, bucketFor,
   squadPositionCounts,
 } from './auction.js';
-import { watchRoom, placeBid } from './firebase.js';
+import { watchRoom, placeBid, getRoomOnce, watchConnection } from './firebase.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -26,6 +26,11 @@ let tickInterval = null;
 (function boot() {
   $('roomLabel').textContent = `ROOM ${roomCode}`;
   watchRoom(roomCode, onUpdate);
+  watchConnection((connected) => {
+    document.body.classList.toggle('offline', !connected);
+    const dot = $('connDot');
+    if (dot) dot.classList.toggle('offline', !connected);
+  });
 
   $('btnHamburger').addEventListener('click', openDrawer);
   $('drawerClose').addEventListener('click', closeDrawer);
@@ -33,6 +38,17 @@ let tickInterval = null;
   $('btnCustomBid').addEventListener('click', onCustomBid);
   $('customBidInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') onCustomBid();
+  });
+
+  // When the tab returns to foreground (iOS Safari may have suspended the
+  // websocket), force a fresh read so we don't show stale state.
+  document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState === 'visible') {
+      try {
+        const fresh = await getRoomOnce(roomCode);
+        if (fresh) onUpdate(fresh);
+      } catch (e) { console.warn('visibility refresh failed', e); }
+    }
   });
 
   startTicker();

@@ -5,6 +5,7 @@ import {
 import {
   createRoom, watchRoom, startAuctionForPlayer, pauseAuction,
   skipCurrentPlayer, finalizeAuction, undoLastSale, setStatus, getRoomOnce,
+  watchConnection,
 } from './firebase.js';
 
 const $ = (id) => document.getElementById(id);
@@ -18,6 +19,7 @@ let roomCode = null;
 let room = null;
 let unsubscribe = null;
 let tickInterval = null;
+let finalizingInFlight = false;
 let lastSoldFlash = null;
 
 // ---------------------------------------------------------------------------
@@ -64,6 +66,33 @@ async function boot() {
   $('squadModal').addEventListener('click', (e) => {
     if (e.target.id === 'squadModal') closeSquadModal();
   });
+
+  watchConnection((connected) => {
+    document.body.classList.toggle('offline', !connected);
+  });
+
+  $('btnShowQR').addEventListener('click', openQRModal);
+  $('qrModalClose').addEventListener('click', closeQRModal);
+  $('qrModal').addEventListener('click', (e) => {
+    if (e.target.id === 'qrModal') closeQRModal();
+  });
+}
+
+function openQRModal() {
+  if (!roomCode) return;
+  const joinUrl = new URL('./join.html', location.href);
+  joinUrl.searchParams.set('room', roomCode);
+  $('qrModalCode').textContent = roomCode;
+  $('qrModalUrl').textContent = joinUrl.toString();
+  renderQRInto($('qrModalSlot'), joinUrl.toString());
+  const modal = $('qrModal');
+  modal.classList.remove('hide');
+  modal.classList.add('open');
+}
+function closeQRModal() {
+  const modal = $('qrModal');
+  modal.classList.remove('open');
+  modal.classList.add('hide');
 }
 
 // ---------------------------------------------------------------------------
@@ -376,12 +405,15 @@ function startTicker() {
       el.textContent = secs;
       el.classList.toggle('urgent', secs <= 3);
     }
-    if (remaining <= 0) {
-      // finalize
+    // Wait an extra 400ms past the buzzer to give late bids room to land
+    // (placeBid grants a 300ms grace). Only one finalize at a time per tab.
+    if (remaining <= 0 && Date.now() > (a.endsAt || 0) + 400 && !a.finalizing && !finalizingInFlight) {
+      finalizingInFlight = true;
       try {
         const result = await finalizeAuction(roomCode);
         if (result && !result.unsold) flashSold(result);
       } catch (e) { console.error(e); }
+      finalizingInFlight = false;
     }
   }, 200);
 }
@@ -507,10 +539,10 @@ function downloadCanvas(canvas, filename) {
 // Utility
 // ---------------------------------------------------------------------------
 
-function renderQR(text) {
-  const slot = $('qrSlot');
+function renderQR(text) { renderQRInto($('qrSlot'), text); }
+
+function renderQRInto(slot, text) {
   if (!slot) return;
-  // Use a reliable public QR image service (no JS lib needed).
   const services = [
     (t) => `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=4&data=${encodeURIComponent(t)}`,
     (t) => `https://quickchart.io/qr?size=240&margin=2&text=${encodeURIComponent(t)}`,
