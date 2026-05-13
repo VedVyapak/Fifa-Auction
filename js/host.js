@@ -1,6 +1,6 @@
 import {
   startingBid, makeRoomCode, formatMoney, bucketFor, SQUAD_SIZE, BID_TIMER_SECONDS,
-  squadPositionCounts,
+  squadPositionCounts, pickNextPlayer,
 } from './auction.js';
 import {
   createRoom, watchRoom, startAuctionForPlayer, pauseAuction,
@@ -55,7 +55,8 @@ async function boot() {
   $('btnCreateRoom').addEventListener('click', onCreate);
   $('btnRejoin').addEventListener('click', onRejoin);
   $('btnStartAuction').addEventListener('click', onStartAuction);
-  $('btnNextPlayer').addEventListener('click', onNextPlayer);
+  $('btnNextPlayer').addEventListener('click', () => onNextPlayer());
+  $('btnForceMarquee').addEventListener('click', onForceMarquee);
   $('btnPause').addEventListener('click', onPause);
   $('btnSkip').addEventListener('click', onSkip);
   $('btnUndo').addEventListener('click', onUndo);
@@ -253,6 +254,7 @@ function renderLive() {
   $('btnPause').disabled = !a;
   $('btnSkip').disabled = !a;
   $('btnNextPlayer').disabled = !!a;
+  $('btnForceMarquee').disabled = !!a;
 
   // bidders
   const bidders = Object.values(room.bidders || {})
@@ -359,12 +361,22 @@ function bidDisplayHTML(a) {
 // Host actions
 // ---------------------------------------------------------------------------
 
-async function onNextPlayer() {
+async function onNextPlayer(opts = {}) {
   if (!room) return;
-  const unsold = Object.values(room.pool || {}).filter(p => !p.sold);
-  if (unsold.length === 0) { alert('All players sold!'); return; }
-  const pick = unsold[Math.floor(Math.random() * unsold.length)];
+  const pick = pickNextPlayer(room.pool, room.history, opts);
+  if (!pick) { alert('All players sold!'); return; }
   await startAuctionForPlayer(roomCode, pick, startingBid(pick.overall));
+}
+
+async function onForceMarquee() {
+  if (!room) return;
+  const remainingMarquees = Object.values(room.pool || {})
+    .filter(p => !p.sold && p.overall >= 90).length;
+  if (remainingMarquees === 0) {
+    alert('No marquee players (90+) left in the pool.');
+    return;
+  }
+  await onNextPlayer({ forceTier: 'marquee' });
 }
 
 async function onPause() {
