@@ -17,21 +17,24 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_PATH = path.resolve(__dirname, '../data/players.json');
 const LIST_URL = 'https://www.ea.com/en/games/ea-sports-fc/ratings';
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
-const PAGE_SIZE = 100;
 const TARGET = 150;
-const PAGES = Math.ceil(TARGET / PAGE_SIZE);
+const MAX_PAGES = 10; // safety cap; 1 page = 100 entries, ~60 are men
 
 async function main() {
-  const all = [];
-  for (let p = 1; p <= PAGES; p++) {
+  const men = [];
+  for (let p = 1; p <= MAX_PAGES && men.length < TARGET; p++) {
     const url = `${LIST_URL}?page=${p}`;
     console.log(`Fetching ${url}`);
     const { items } = await fetchPage(url);
-    console.log(`  got ${items.length} entries`);
-    all.push(...items);
+    const pageMen = items.filter(x => x.gender?.id === 0);
+    men.push(...pageMen);
+    console.log(`  ${items.length} entries (${pageMen.length} men) — total men: ${men.length}`);
+  }
+  if (men.length < TARGET) {
+    console.warn(`Only collected ${men.length} men, wanted ${TARGET}`);
   }
 
-  const out = all
+  const out = men
     .sort((a, b) => b.overallRating - a.overallRating)
     .slice(0, TARGET)
     .map((p, i) => ({
