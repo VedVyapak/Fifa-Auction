@@ -2530,12 +2530,18 @@ body.mobile-body {
   background-attachment: fixed;
 }
 .bp-mobile-screen {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex; flex-direction: column;
   overflow: hidden;
   max-width: 480px;
   margin: 0 auto;
   position: relative;
+}
+/* On desktop (centred mobile preview), cap the height so the actions
+   don't get pushed miles below the bid hero by the .grow flex spacer.
+   Sample's iPhone-14 phone frame is 844px tall — match that. */
+@media (min-width: 481px) {
+  .bp-mobile-screen { min-height: 0; max-height: 844px; }
 }
 
 /* --- HEADER --- */
@@ -2698,7 +2704,7 @@ body.mobile-body {
   margin-bottom: 8px;
 }
 .bp-mobile-actions .qb-head .min { color: var(--green); }
-.bp-mobile-actions .qb-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.bp-mobile-actions .qb-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .bp-qb {
   padding: 16px 8px;
   display: grid; place-items: center;

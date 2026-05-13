@@ -111,6 +111,13 @@ let modalFormation = '4-3-3';
 // ---------------------------------------------------------------------------
 
 async function boot() {
+  // Wire event listeners IMMEDIATELY — before any async work — so the buttons
+  // are responsive even if players.json is slow to fetch or auto-rejoin
+  // is awaiting Firebase. (Previously this lived after the awaits, which
+  // caused "Rejoin doesn't work" on slow links — the button had no handler
+  // attached yet when the user clicked.)
+  wireListeners();
+
   try {
     const res = await fetch('./data/players.json', { cache: 'no-store' });
     if (!res.ok) throw new Error('players.json not found');
@@ -135,9 +142,17 @@ async function boot() {
       console.warn('Auto-rejoin failed:', e);
     }
   }
+}
 
+function wireListeners() {
   $('btnCreateRoom').addEventListener('click', onCreate);
   $('btnRejoin').addEventListener('click', onRejoin);
+  $('rejoinCode').addEventListener('input', (e) => {
+    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z2-9]/g, '');
+  });
+  $('rejoinCode').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') onRejoin();
+  });
   $('btnStartAuction').addEventListener('click', onStartAuction);
   $('btnNextPlayer').addEventListener('click', () => onNextPlayer());
   $('btnForceMarquee').addEventListener('click', onForceMarquee);
@@ -231,14 +246,29 @@ async function onCreate() {
 
 async function onRejoin() {
   setError('');
+  const btn = $('btnRejoin');
   const code = $('rejoinCode').value.trim().toUpperCase();
   if (!/^[A-Z2-9]{4}$/.test(code)) {
     setError('Room codes are 4 letters/numbers.');
     return;
   }
-  const existing = await getRoomOnce(code);
-  if (!existing) { setError('Room not found.'); return; }
-  enterRoom(code);
+  btn.disabled = true;
+  const originalLabel = btn.textContent;
+  btn.textContent = 'Checking…';
+  try {
+    const existing = await getRoomOnce(code);
+    if (!existing) {
+      setError(`Room "${code}" not found. Double-check the code.`);
+      return;
+    }
+    enterRoom(code);
+  } catch (e) {
+    console.error('[rejoin] failed', e);
+    setError(`Could not reach Firebase. ${e?.message || e}`);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+  }
 }
 
 function enterRoom(code) {
@@ -299,7 +329,6 @@ function swap(visible) {
 // Lobby render
 // ---------------------------------------------------------------------------
 
-const LOBBY_SEATS = 7;
 const MIN_BIDDERS_TO_START = 2;
 
 function renderLobby() {
@@ -308,28 +337,26 @@ function renderLobby() {
   const joinedCount = bidders.length;
   $('bidderCount').textContent = joinedCount;
 
-  const seats = [];
-  for (let i = 0; i < LOBBY_SEATS; i++) {
-    const b = bidders[i];
-    if (b) {
-      const offline = b.connected === false ? ' · offline' : '';
-      seats.push(`
-        <div class="seat joined">
-          <div class="num">${i + 1}</div>
-          <div class="name">${escapeHtml(b.name)}</div>
-          <div class="status">Ready${offline}</div>
-        </div>
-      `);
-    } else {
-      seats.push(`
-        <div class="seat">
-          <div class="num">${i + 1}</div>
-          <div class="name">Waiting for bidder…</div>
-          <div class="status">Empty</div>
-        </div>
-      `);
-    }
-  }
+  // Render one seat per joined bidder, plus a single "waiting" placeholder
+  // at the bottom to signal that more can still join. Seat list grows
+  // naturally — no fixed cap.
+  const seats = bidders.map((b, i) => {
+    const offline = b.connected === false ? ' · offline' : '';
+    return `
+      <div class="seat joined">
+        <div class="num">${i + 1}</div>
+        <div class="name">${escapeHtml(b.name)}</div>
+        <div class="status">Ready${offline}</div>
+      </div>
+    `;
+  });
+  seats.push(`
+    <div class="seat">
+      <div class="num">${joinedCount + 1}</div>
+      <div class="name">Waiting for next bidder…</div>
+      <div class="status">Open</div>
+    </div>
+  `);
   $('lobbyBidders').innerHTML = seats.join('');
 
   const startBtn = $('btnStartAuction');

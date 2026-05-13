@@ -261,9 +261,14 @@ function renderPlayerCard(player) {
 
 function renderBidHero(a, isMe) {
   $('bidAmount').textContent = formatMoney(a.currentBid);
-  $('leaderFlag').textContent = isMe
-    ? '▲ You are leading'
-    : `▲ ${(a.leadingBidderName || 'no bids yet')} is leading`;
+  const flag = $('leaderFlag');
+  if (isMe) {
+    flag.textContent = '▲ You are leading';
+  } else if (a.leadingBidderName) {
+    flag.textContent = `▲ ${a.leadingBidderName} is leading`;
+  } else {
+    flag.textContent = '▲ Open · awaiting first bid';
+  }
   const sec = Math.max(0, Math.ceil((a.endsAt - Date.now()) / 1000));
   $('timerNum').textContent = formatTime(sec);
   $('bidCount').textContent = `${bidsForCurrent} bid${bidsForCurrent === 1 ? '' : 's'}`;
