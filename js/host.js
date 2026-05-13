@@ -88,7 +88,11 @@ let lastSoldFlash = null;
 
 // view-only state (not persisted to firebase)
 let activeSoldTab = 'recent';
-let upNextPreview = [];     // [{id, name, overall}] — ephemeral, client-side
+// nextQueue: the actual next 3 players that will be auctioned. Built by
+// calling pickNextPlayer with a simulated history so the preview matches
+// the real pacing logic (round-1 marquee, endgame marquees, anti-cluster).
+// Shuffle button rebuilds it. onNextPlayer pops the head.
+let nextQueue = [];
 let prevAuctionPlayerId = null;
 let prevBidCount = 0;       // for "BIDDING +N%" ticker
 let prevAuctionBidCount = 0;
@@ -105,6 +109,10 @@ let bidHistoryByPlayer = {};
 let modalBidderId = null;
 let modalActiveTab = 'list';
 let modalFormation = '4-3-3';
+
+// image-preload state
+const preloadedUrls = new Set();
+let preloadQueueRunning = false;
 
 // ---------------------------------------------------------------------------
 // Boot
@@ -185,10 +193,11 @@ function wireListeners() {
     });
   });
 
-  // up-next reshuffle (client-side only, never mutates auction order)
+  // up-next reshuffle — rebuilds the actual queue (and re-warms image cache)
   $('btnShuffle').addEventListener('click', () => {
-    upNextPreview = pickUpNextPreview();
+    nextQueue = buildNextQueue();
     renderUpNext();
+    preloadQueueImages();
   });
 
   // squad modal navigation
@@ -437,9 +446,13 @@ function renderLive() {
   // bidders sidebar
   renderBiddersSidebar(a);
 
-  // up next preview — refresh whenever pool changes OR no active auction
-  if (!a || upNextPreview.length === 0) {
-    upNextPreview = pickUpNextPreview();
+  // up-next queue — keep filled to 3 picks. Rebuild if any queued player has
+  // since been sold (e.g. host force-marqueed) or if it's empty.
+  const queueStale = !nextQueue.length
+    || nextQueue.some(p => !room.pool[p.id] || room.pool[p.id].sold);
+  if (queueStale) {
+    nextQueue = buildNextQueue();
+    preloadQueueImages();
   }
   renderUpNext();
 
@@ -485,7 +498,7 @@ function renderFeatureCard(a) {
   const statKeys = ['pac','sho','pas','dri','def','phy'];
   const hasStats = statKeys.some(k => stats[k] != null);
   const photoHTML = player.photo
-    ? `<img class="bp-player-photo" src="${player.photo}" alt="" />`
+    ? `<img class="bp-player-photo" src="${player.photo}" alt="" fetchpriority="high" decoding="async" />`
     : '';
   const clubChip = player.club
     ? `<span class="bp-meta-chip">${player.clubImage ? `<img src="${player.clubImage}" alt="" />` : ''}${escapeHtml(player.club)}</span>`
@@ -661,44 +674,60 @@ function trackBidHistory() {
 }
 
 // =============================================================================
-// Up Next preview (client-side, never mutates pool/auction)
+// Up Next queue — these are the ACTUAL next players. onNextPlayer pops head,
+// btnShuffle rebuilds. Uses the real pickNextPlayer logic with a simulated
+// history so the queue respects pacing (opener marquee, endgame marquees,
+// position anti-cluster).
 // =============================================================================
 
-function pickUpNextPreview() {
-  const unsold = Object.values(room?.pool || {}).filter(p => !p.sold);
-  if (unsold.length === 0) return [];
-  // weight by tier so the preview feels theatrical
-  const weights = { marquee: 8, star: 4, mid: 2, filler: 1 };
-  const weighted = unsold.map(p => ({ p, w: weights[playerTier(p)] || 1 }));
-  const picks = [];
-  const used = new Set();
-  while (picks.length < 3 && picks.length < unsold.length) {
-    const remaining = weighted.filter(x => !used.has(x.p.id));
-    const total = remaining.reduce((s, x) => s + x.w, 0);
-    let r = Math.random() * total;
-    let pick = remaining[remaining.length - 1].p;
-    for (const x of remaining) {
-      if ((r -= x.w) <= 0) { pick = x.p; break; }
-    }
-    used.add(pick.id);
-    picks.push(pick);
+const NEXT_QUEUE_SIZE = 3;
+
+function buildNextQueue() {
+  if (!room?.pool) return [];
+  // Clone pool so we can mark queued players "sold" for the simulation
+  const simPool = {};
+  for (const id in room.pool) simPool[id] = { ...room.pool[id] };
+  const simHistory = [...(room.history || [])];
+  const queue = [];
+  for (let i = 0; i < NEXT_QUEUE_SIZE; i++) {
+    const pick = pickNextPlayer(simPool, simHistory);
+    if (!pick) break;
+    queue.push(pick);
+    // Mark as "sold" in the sim so pickNextPlayer doesn't re-pick
+    simPool[pick.id].sold = 'queued';
+    simHistory.push({ type: 'sold', playerId: pick.id, at: Date.now() + i });
   }
-  return picks;
+  return queue;
 }
 
 function renderUpNext() {
   const el = $('upNextList');
-  if (!upNextPreview.length) {
+  if (!nextQueue.length) {
     el.innerHTML = `<div class="empty">pool empty</div>`;
     return;
   }
-  el.innerHTML = upNextPreview.map((p, i) => `
+  el.innerHTML = nextQueue.map((p, i) => `
     <div class="row">
       <span class="idx">${i + 1}</span>
       <span class="nm">${escapeHtml(p.name)}</span>
       <span class="ovr">${p.overall}</span>
     </div>
   `).join('');
+}
+
+// =============================================================================
+// Image preload — cache-warm the upcoming photos so they pop in instantly
+// =============================================================================
+
+const preloadedPhotos = new Set();
+function preloadQueueImages() {
+  for (const p of nextQueue) {
+    if (p.photo && !preloadedPhotos.has(p.photo)) {
+      preloadedPhotos.add(p.photo);
+      const img = new Image();
+      img.src = p.photo;
+    }
+  }
 }
 
 // =============================================================================
@@ -772,9 +801,22 @@ function renderSoldRows(rows, withRanks) {
 
 async function onNextPlayer(opts = {}) {
   if (!room) return;
-  const pick = pickNextPlayer(room.pool, room.history, opts);
+  let pick;
+  if (opts.forceTier) {
+    // Marquee override bypasses the queue
+    pick = pickNextPlayer(room.pool, room.history, opts);
+  } else {
+    // Consume the queue head. If empty (or stale), build it now.
+    if (!nextQueue.length) nextQueue = buildNextQueue();
+    pick = nextQueue.shift();
+    if (!pick) pick = pickNextPlayer(room.pool, room.history);
+  }
   if (!pick) { alert('All players sold!'); return; }
   await startAuctionForPlayer(roomCode, pick, startingBid(pick.overall));
+  // Refill the queue so the panel always shows 3 ahead, and preload images
+  nextQueue = buildNextQueue();
+  preloadQueueImages();
+  renderUpNext();
 }
 
 async function onForceMarquee() {
@@ -823,12 +865,24 @@ function startTicker() {
     const secs = Math.ceil(remaining / 1000);
     const numEl = document.getElementById('bidCountdownNum');
     const fillEl = document.getElementById('bidTimerFill');
-    if (numEl) numEl.textContent = String(secs).padStart(2, '0');
-    if (fillEl) fillEl.style.width = Math.max(0, Math.min(100, (remaining / (BID_TIMER_SECONDS * 1000)) * 100)) + '%';
     const countdownWrap = numEl?.closest('.bp-countdown');
-    if (countdownWrap) countdownWrap.classList.toggle('tense', secs <= 5);
 
-    if (remaining <= 0 && Date.now() > (a.endsAt || 0) + 400 && !finalizingInFlight) {
+    if (remaining <= 0) {
+      // Show a visible "FINALIZING…" cue so the 0→next-player gap doesn't
+      // look frozen. The actual finalize is a Firebase round-trip (~1s
+      // unavoidable) — this just communicates that the buzzer fired.
+      if (numEl) numEl.textContent = a.leadingBidderId ? 'SOLD' : '—';
+      if (fillEl) fillEl.style.width = '0%';
+      if (countdownWrap) countdownWrap.classList.add('tense');
+    } else {
+      if (numEl) numEl.textContent = String(secs).padStart(2, '0');
+      if (fillEl) fillEl.style.width = Math.max(0, Math.min(100, (remaining / (BID_TIMER_SECONDS * 1000)) * 100)) + '%';
+      if (countdownWrap) countdownWrap.classList.toggle('tense', secs <= 5);
+    }
+
+    // Bid grace is 300ms past endsAt (see firebase.js placeBid). We finalize
+    // at +350ms — just 50ms past the grace, the minimum safe window.
+    if (remaining <= 0 && Date.now() > (a.endsAt || 0) + 350 && !finalizingInFlight) {
       finalizingInFlight = true;
       try {
         const result = await finalizeAuction(roomCode);
@@ -839,7 +893,7 @@ function startTicker() {
         finalizingInFlight = false;
       }
     }
-  }, 200);
+  }, 100);
 }
 
 function flashSold(result) {
