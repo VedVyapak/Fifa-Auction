@@ -125,62 +125,100 @@
 
   <!-- ============================== LIVE SCREEN ============================== -->
   <section id="liveScreen" class="hide">
-    <div class="bc-bar">
-      <span class="live-dot"></span>
-      <span class="bc-tag">Live Auction</span>
-      <span class="eyebrow"><span id="liveSoldCount">0</span> / <span id="livePoolCount">0</span> sold</span>
-      <div class="spacer"></div>
-      <button id="btnShowQR" class="btn btn-ghost" style="padding:8px 14px;font-size:12px;" title="Show join QR — for someone who closed their tab">
+    <!-- TOP CHROME -->
+    <header class="bp-chrome">
+      <div class="bp-net-logo">FIFA·AUCT</div>
+      <div class="bp-ticker-strip">
+        <span>POOL <strong id="tickerPool">0/0</strong></span>
+        <span>HIGHEST <strong id="tickerHighest">—</strong></span>
+        <span id="tickerBiddingWrap">BIDDING <strong id="tickerBidding">—</strong></span>
+      </div>
+      <div id="livePill" class="bp-live-pill hide">On Air</div>
+      <button id="btnShowQR" class="bp-chrome-icon-btn" title="Show join QR — for someone who closed their tab" aria-label="Show join QR">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
           <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/>
           <rect x="18" y="14" width="3" height="3"/><rect x="14" y="18" width="3" height="3"/>
           <rect x="18" y="18" width="3" height="3"/>
         </svg>
-        Show QR
       </button>
-      <span class="eyebrow">room</span>
-      <span class="bc-room-code" id="liveRoomCode">----</span>
-    </div>
+      <div class="bp-room-chip">
+        <span class="label">ROOM</span>
+        <span class="code" id="liveRoomCode">----</span>
+      </div>
+    </header>
 
-    <div class="host-shell">
-      <main class="host-main">
-        <!-- player + bid -->
-        <div id="playerSlot" class="panel" style="padding:0;overflow:hidden;">
-          <div id="playerCardWrap"></div>
-          <div id="bidDisplayWrap"></div>
-        </div>
+    <main class="bp-stage">
+      <div class="bp-main">
 
-        <!-- host controls -->
-        <div class="panel host-controls">
-          <button id="btnNextPlayer" class="btn btn-primary">Auction next player →</button>
-          <button id="btnForceMarquee" class="btn" style="background:linear-gradient(180deg,rgba(255,184,0,0.25),rgba(255,184,0,0.1));border:1px solid rgba(255,184,0,0.55);color:var(--gold);" title="Pull a 90+ rated player on demand">🔥 Marquee</button>
-          <button id="btnPause" class="btn btn-ghost">Pause</button>
-          <button id="btnSkip" class="btn btn-ghost">Skip</button>
-          <button id="btnUndo" class="btn btn-danger">Undo last sale</button>
-          <button id="btnFinish" class="btn btn-ghost">Finish auction</button>
-        </div>
-
-        <!-- recently sold ticker -->
-        <div class="panel">
-          <div class="section-title">
-            <h2>Last Sold</h2>
-            <span class="meta">Most recent 6</span>
+        <!-- FEATURE: CURRENT PLAYER + BID -->
+        <section id="featureCard" class="bp-feature">
+          <div class="bp-player-pane" id="playerPane">
+            <!-- injected by renderLive -->
           </div>
-          <div id="recentSold" class="leaderboard"></div>
-        </div>
-      </main>
-
-      <aside class="host-side">
-        <div class="panel">
-          <div class="section-title">
-            <h2>Bidders</h2>
-            <span class="meta">tap for squad</span>
+          <div class="bp-bid-pane" id="bidPane">
+            <!-- injected by renderLive -->
           </div>
-          <div id="hostLeaderboard" class="leaderboard"></div>
+        </section>
+
+        <!-- CONTROLS -->
+        <div class="bp-controls">
+          <button id="btnNextPlayer" class="bp-btn primary">▶ Auction next player</button>
+          <button id="btnForceMarquee" class="bp-btn marquee" title="Pull a 90+ rated player on demand">🔥 Marquee</button>
+          <button id="btnPause" class="bp-btn">Pause</button>
+          <button id="btnSkip" class="bp-btn">Skip</button>
+          <button id="btnUndo" class="bp-btn danger">Undo</button>
+          <button id="btnFinish" class="bp-btn">Finish</button>
+        </div>
+
+        <!-- SOLD — TABS -->
+        <section class="bp-panel">
+          <div class="bp-panel-head">
+            <div class="bp-tabs" id="soldTabs">
+              <button class="active" data-soldtab="recent">Recent <span class="count" id="cntRecent">0</span></button>
+              <button data-soldtab="top">Top sold <span class="count" id="cntTop">0</span></button>
+              <button data-soldtab="all">All <span class="count" id="cntAll">0</span></button>
+            </div>
+            <span class="meta" id="soldTabMeta">most recent transactions</span>
+          </div>
+          <div class="bp-tab-panel active" data-soldtab="recent" id="soldPanelRecent"></div>
+          <div class="bp-tab-panel" data-soldtab="top" id="soldPanelTop"></div>
+          <div class="bp-tab-panel" data-soldtab="all">
+            <div class="bp-scroll-area" id="soldPanelAll"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- SIDEBAR -->
+      <aside class="bp-side">
+        <div class="bp-panel">
+          <div class="bp-panel-head">
+            <h3>Up next</h3>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span class="meta">next 3 picks</span>
+              <button class="bp-icon-btn" id="btnShuffle" title="Reshuffle next 3" aria-label="Reshuffle">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="16 3 21 3 21 8"></polyline>
+                  <line x1="4" y1="20" x2="21" y2="3"></line>
+                  <polyline points="21 16 21 21 16 21"></polyline>
+                  <line x1="15" y1="15" x2="21" y2="21"></line>
+                  <line x1="4" y1="4" x2="9" y2="9"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="bp-upnext" id="upNextList"></div>
+        </div>
+
+        <div class="bp-panel">
+          <div class="bp-panel-head">
+            <h3>Bidders</h3>
+            <span class="meta">tap → squad</span>
+          </div>
+          <div class="bp-bidders-list" id="hostLeaderboard"></div>
         </div>
       </aside>
-    </div>
+    </main>
   </section>
 
   <!-- ============================== FINISHED SCREEN ============================== -->
@@ -217,13 +255,66 @@
   </div>
 
   <!-- ============================== SQUAD MODAL ============================== -->
-  <div id="squadModal" class="drawer-backdrop hide" style="z-index:50;">
-    <div class="panel" style="max-width:520px;width:90%;margin:5vh auto;max-height:90vh;overflow:auto;position:relative;">
-      <div class="drawer-header">
-        <h2 id="squadModalTitle">Squad</h2>
-        <button class="drawer-close" id="squadModalClose">✕</button>
+  <div id="squadModal" class="bp-modal-backdrop hidden">
+    <div class="bp-modal" role="dialog" aria-modal="true">
+      <div class="bp-modal-header">
+        <button class="bp-nav-arrow" id="prevBidder" aria-label="Previous bidder">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="bp-bidder-title">
+          <h2 id="bidderName">—</h2>
+          <span class="sub" id="bidderSub">—</span>
+        </div>
+        <button class="bp-nav-arrow" id="nextBidder" aria-label="Next bidder">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <div class="bp-budget-pill">
+          <span class="num" id="bidderBudget">—</span>
+          <span class="label">budget left</span>
+        </div>
+        <button class="bp-nav-arrow" id="squadModalClose" aria-label="Close">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
-      <div id="squadModalBody"></div>
+
+      <div class="bp-squad-summary">
+        <div class="stat gk"><span class="val" id="cntGK">0</span><span class="lbl">GK</span></div>
+        <div class="stat def"><span class="val" id="cntDEF">0</span><span class="lbl">DEF</span></div>
+        <div class="stat mid"><span class="val" id="cntMID">0</span><span class="lbl">MID</span></div>
+        <div class="stat fwd"><span class="val" id="cntFWD">0</span><span class="lbl">FWD</span></div>
+      </div>
+
+      <div class="bp-modal-tabs" id="modalTabs">
+        <button class="active" data-mtab="list">List</button>
+        <button data-mtab="formation" data-fmt="4-3-3">4-3-3</button>
+        <button data-mtab="formation" data-fmt="4-4-2">4-4-2</button>
+        <button data-mtab="formation" data-fmt="4-2-3-1">4-2-3-1</button>
+        <button data-mtab="formation" data-fmt="3-2-4-1">3-2-4-1</button>
+      </div>
+
+      <div class="bp-modal-body">
+        <div class="bp-modal-panel active" data-mtab="list">
+          <div class="bp-squad-list" id="squadList"></div>
+        </div>
+        <div class="bp-modal-panel" data-mtab="formation">
+          <div class="bp-pitch-wrap">
+            <div class="bp-pitch" id="modalPitch">
+              <div class="half-line"></div>
+              <div class="center-circle"></div>
+              <div class="center-spot"></div>
+              <div class="box-top"></div>
+              <div class="six-top"></div>
+              <div class="pen-spot-top"></div>
+              <div class="box-bottom"></div>
+              <div class="six-bottom"></div>
+              <div class="pen-spot-bottom"></div>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:14px;">
+            <a id="viewFullSquadLink" class="bp-view-full" href="#">View full squad →</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

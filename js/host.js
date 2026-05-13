@@ -1,12 +1,76 @@
 import {
   startingBid, makeRoomCode, formatMoney, bucketFor, SQUAD_SIZE, BID_TIMER_SECONDS,
-  squadPositionCounts, pickNextPlayer,
+  STARTING_BUDGET, MIN_INCREMENT,
+  squadPositionCounts, pickNextPlayer, playerTier, positionWarnings,
 } from './auction.js';
 import {
   createRoom, watchRoom, startAuctionForPlayer, pauseAuction,
   skipCurrentPlayer, finalizeAuction, undoLastSale, setStatus, getRoomOnce,
   watchConnection,
 } from './firebase.js';
+
+// ---------------------------------------------------------------------------
+// Formations & position math (shared with squad modal + recap)
+// ---------------------------------------------------------------------------
+
+const POS_CATEGORY = {
+  GK: 'GK',
+  CB: 'DEF', LB: 'DEF', RB: 'DEF', LWB: 'DEF', RWB: 'DEF',
+  CDM: 'MID', CM: 'MID', CAM: 'MID', LM: 'MID', RM: 'MID',
+  ST: 'FWD', CF: 'FWD', LW: 'FWD', RW: 'FWD',
+};
+const posCat = (p) => POS_CATEGORY[(p || '').toUpperCase()] || 'MID';
+
+const FORMATIONS = {
+  '4-3-3': [
+    { x: 50, y: 92, role: 'GK' },
+    { x: 12, y: 73, role: 'LB' }, { x: 36, y: 76, role: 'CB' }, { x: 64, y: 76, role: 'CB' }, { x: 88, y: 73, role: 'RB' },
+    { x: 25, y: 52, role: 'CM' }, { x: 50, y: 56, role: 'CDM' }, { x: 75, y: 52, role: 'CM' },
+    { x: 18, y: 20, role: 'LW' }, { x: 50, y: 14, role: 'ST' }, { x: 82, y: 20, role: 'RW' },
+  ],
+  '4-4-2': [
+    { x: 50, y: 92, role: 'GK' },
+    { x: 12, y: 73, role: 'LB' }, { x: 36, y: 76, role: 'CB' }, { x: 64, y: 76, role: 'CB' }, { x: 88, y: 73, role: 'RB' },
+    { x: 12, y: 46, role: 'LM' }, { x: 36, y: 48, role: 'CM' }, { x: 64, y: 48, role: 'CM' }, { x: 88, y: 46, role: 'RM' },
+    { x: 36, y: 16, role: 'ST' }, { x: 64, y: 16, role: 'ST' },
+  ],
+  '4-2-3-1': [
+    { x: 50, y: 92, role: 'GK' },
+    { x: 12, y: 73, role: 'LB' }, { x: 36, y: 76, role: 'CB' }, { x: 64, y: 76, role: 'CB' }, { x: 88, y: 73, role: 'RB' },
+    { x: 35, y: 56, role: 'CDM' }, { x: 65, y: 56, role: 'CDM' },
+    { x: 18, y: 32, role: 'LW' }, { x: 50, y: 34, role: 'CAM' }, { x: 82, y: 32, role: 'RW' },
+    { x: 50, y: 12, role: 'ST' },
+  ],
+  '3-2-4-1': [
+    { x: 50, y: 92, role: 'GK' },
+    { x: 22, y: 75, role: 'CB' }, { x: 50, y: 78, role: 'CB' }, { x: 78, y: 75, role: 'CB' },
+    { x: 35, y: 56, role: 'CDM' }, { x: 65, y: 56, role: 'CDM' },
+    { x: 12, y: 32, role: 'LW' }, { x: 38, y: 34, role: 'CAM' }, { x: 62, y: 34, role: 'CAM' }, { x: 88, y: 32, role: 'RW' },
+    { x: 50, y: 12, role: 'ST' },
+  ],
+};
+
+// 3-letter nation code from a full nation name. Falls back to first 3 chars.
+const NATION_CODES = {
+  'England': 'ENG', 'Scotland': 'SCO', 'Wales': 'WAL', 'Northern Ireland': 'NIR',
+  'France': 'FRA', 'Germany': 'GER', 'Spain': 'ESP', 'Portugal': 'POR',
+  'Italy': 'ITA', 'Netherlands': 'NED', 'Belgium': 'BEL', 'Argentina': 'ARG',
+  'Brazil': 'BRA', 'Norway': 'NOR', 'Egypt': 'EGY', 'Croatia': 'CRO',
+  'Poland': 'POL', 'Denmark': 'DEN', 'Sweden': 'SWE', 'Switzerland': 'SUI',
+  'Uruguay': 'URU', 'Colombia': 'COL', 'Mexico': 'MEX', 'USA': 'USA',
+  'United States': 'USA', 'Senegal': 'SEN', 'Morocco': 'MAR', 'Nigeria': 'NGA',
+  'Korea Republic': 'KOR', 'South Korea': 'KOR', 'Japan': 'JPN', 'Australia': 'AUS',
+  'Austria': 'AUT', 'Serbia': 'SRB', 'Türkiye': 'TUR', 'Turkey': 'TUR',
+  'Ghana': 'GHA', 'Ivory Coast': 'CIV', 'Côte d’Ivoire': 'CIV',
+  'Cameroon': 'CMR', 'Czech Republic': 'CZE', 'Republic of Ireland': 'IRL',
+  'Slovakia': 'SVK', 'Slovenia': 'SVN', 'Algeria': 'ALG', 'Ecuador': 'ECU',
+  'Canada': 'CAN', 'Russia': 'RUS', 'Ukraine': 'UKR', 'Greece': 'GRE',
+  'Hungary': 'HUN', 'Romania': 'ROU', 'Bulgaria': 'BUL', 'Finland': 'FIN',
+  'Iceland': 'ISL', 'Israel': 'ISR', 'Iran': 'IRN', 'Iraq': 'IRQ',
+  'Saudi Arabia': 'KSA', 'Tunisia': 'TUN', 'Mali': 'MLI', 'Gabon': 'GAB',
+  'Guinea': 'GUI', 'Albania': 'ALB',
+};
+const nationCode = (n) => NATION_CODES[n] || (n ? n.slice(0, 3).toUpperCase() : '—');
 
 const $ = (id) => document.getElementById(id);
 
@@ -21,6 +85,26 @@ let unsubscribe = null;
 let tickInterval = null;
 let finalizingInFlight = false;
 let lastSoldFlash = null;
+
+// view-only state (not persisted to firebase)
+let activeSoldTab = 'recent';
+let upNextPreview = [];     // [{id, name, overall}] — ephemeral, client-side
+let prevAuctionPlayerId = null;
+let prevBidCount = 0;       // for "BIDDING +N%" ticker
+let prevAuctionBidCount = 0;
+let lastRoundBidCount = 0;  // bids in last completed auction
+
+// per-auction bid history. Keyed by playerId; resets when currentAuction
+// switches. Bid history is NOT in the firebase schema (locked) — we capture
+// it client-side as Firebase pushes leadingBidder updates. Lossy in edge
+// cases (two bids in the same RTDB tick will collapse) but that's fine for
+// a decorative "last 5 bids" panel.
+let bidHistoryByPlayer = {};
+
+// squad modal state
+let modalBidderId = null;
+let modalActiveTab = 'list';
+let modalFormation = '4-3-3';
 
 // ---------------------------------------------------------------------------
 // Boot
@@ -76,6 +160,36 @@ async function boot() {
   $('qrModalClose').addEventListener('click', closeQRModal);
   $('qrModal').addEventListener('click', (e) => {
     if (e.target.id === 'qrModal') closeQRModal();
+  });
+
+  // sold-tabs switching
+  document.querySelectorAll('#soldTabs button').forEach(b => {
+    b.addEventListener('click', () => {
+      activeSoldTab = b.dataset.soldtab;
+      renderSoldTabs();
+    });
+  });
+
+  // up-next reshuffle (client-side only, never mutates auction order)
+  $('btnShuffle').addEventListener('click', () => {
+    upNextPreview = pickUpNextPreview();
+    renderUpNext();
+  });
+
+  // squad modal navigation
+  $('prevBidder').addEventListener('click', () => cycleBidder(-1));
+  $('nextBidder').addEventListener('click', () => cycleBidder(1));
+  document.querySelectorAll('#modalTabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#modalTabs button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      modalActiveTab = btn.dataset.mtab;
+      if (btn.dataset.fmt) modalFormation = btn.dataset.fmt;
+      switchModalPanel();
+    });
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !$('squadModal').classList.contains('hidden')) closeSquadModal();
   });
 }
 
@@ -245,29 +359,46 @@ async function onStartAuction() {
 function renderLive() {
   if (!(room.status === 'live' || room.status === 'paused')) return;
 
-  // counts
-  const total = Object.keys(room.pool || {}).length;
-  const sold = Object.values(room.pool || {}).filter(p => p.sold && p.sold !== false && p.sold !== 'unsold').length;
-  $('livePoolCount').textContent = total;
-  $('liveSoldCount').textContent = sold;
+  trackBidHistory();
 
-  // player + bid
-  const a = room.currentAuction;
-  if (a) {
-    const player = room.pool[a.playerId];
-    $('playerCardWrap').innerHTML = playerCardHTML(player);
-    $('bidDisplayWrap').innerHTML = bidDisplayHTML(a);
+  // chrome ticker
+  const pool = Object.values(room.pool || {});
+  const total = pool.length;
+  const sold = pool.filter(p => p.sold && p.sold !== false && p.sold !== 'unsold').length;
+  $('tickerPool').textContent = `${sold}/${total}`;
+
+  const history = room.history || [];
+  const sales = history.filter(h => h.type === 'sold');
+  const topSale = sales.length ? sales.reduce((m, h) => h.price > m.price ? h : m, sales[0]) : null;
+  if (topSale) {
+    const tp = room.pool[topSale.playerId];
+    $('tickerHighest').textContent = `${formatMoney(topSale.price)}${tp ? ' · ' + tp.name.split(' ').pop() : ''}`;
   } else {
-    $('playerCardWrap').innerHTML = `
-      <div style="padding:64px;text-align:center;">
-        <div class="eyebrow" style="margin-bottom:12px;">No active auction</div>
-        <div class="display" style="font-size:56px;line-height:1;margin-bottom:8px;">
-          Ready when you are.
-        </div>
-        <p class="text-dim">Click "Auction next player" to draw a random unsold player.</p>
-      </div>`;
-    $('bidDisplayWrap').innerHTML = '';
+    $('tickerHighest').textContent = '—';
   }
+
+  const a = room.currentAuction;
+  const currentBidCount = (bidHistoryByPlayer[a?.playerId] || []).length;
+  const tickerBidding = $('tickerBidding');
+  const tickerWrap = $('tickerBiddingWrap');
+  if (a && lastRoundBidCount > 0) {
+    const pct = Math.round(((currentBidCount - lastRoundBidCount) / Math.max(lastRoundBidCount, 1)) * 100);
+    const sign = pct >= 0 ? '+' : '';
+    tickerBidding.textContent = `${sign}${pct}%`;
+    tickerWrap.classList.toggle('down', pct < 0);
+  } else if (a) {
+    tickerBidding.textContent = `${currentBidCount}`;
+    tickerWrap.classList.remove('down');
+  } else {
+    tickerBidding.textContent = '—';
+    tickerWrap.classList.remove('down');
+  }
+
+  // live pill
+  $('livePill').classList.toggle('hide', room.status !== 'live');
+
+  // feature card (player + bid)
+  renderFeatureCard(a);
 
   // controls
   $('btnPause').textContent = a?.paused ? 'Resume' : 'Pause';
@@ -276,105 +407,336 @@ function renderLive() {
   $('btnNextPlayer').disabled = !!a;
   $('btnForceMarquee').disabled = !!a;
 
-  // bidders
-  const bidders = Object.values(room.bidders || {})
-    .sort((x, y) => (y.budget ?? 0) - (x.budget ?? 0));
-  $('hostLeaderboard').innerHTML = bidders.map(b => {
-    const initial = (b.name || '?').trim().charAt(0).toUpperCase();
+  // bidders sidebar
+  renderBiddersSidebar(a);
+
+  // up next preview — refresh whenever pool changes OR no active auction
+  if (!a || upNextPreview.length === 0) {
+    upNextPreview = pickUpNextPreview();
+  }
+  renderUpNext();
+
+  // sold tabs
+  renderSoldTabs();
+
+  // refresh squad modal if it's open
+  if (modalBidderId && !$('squadModal').classList.contains('hidden')) {
+    renderSquadModal();
+  }
+}
+
+function renderFeatureCard(a) {
+  const card = $('featureCard');
+  if (!a) {
+    card.className = 'bp-feature idle';
+    $('playerPane').innerHTML = `
+      <div style="position:relative;z-index:1;">
+        <div class="bp-eyebrow" style="margin-bottom:12px;">No active auction</div>
+        <div class="bp-idle-title">Ready when you are.</div>
+        <div class="bp-idle-sub">Click "Auction next player" to draw a player.</div>
+      </div>
+    `;
+    $('bidPane').innerHTML = '';
+    return;
+  }
+
+  const player = room.pool[a.playerId];
+  if (!player) {
+    $('playerPane').innerHTML = '';
+    $('bidPane').innerHTML = '';
+    return;
+  }
+
+  const tier = playerTier(player);
+  card.className = `bp-feature tier-${tier}`;
+
+  // player pane
+  const nameParts = (player.name || '').trim().split(/\s+/);
+  const first = nameParts.length > 1 ? nameParts[0] : '';
+  const last = nameParts.length > 1 ? nameParts.slice(1).join(' ') : (nameParts[0] || '?');
+  const stats = player.stats || {};
+  const statKeys = ['pac','sho','pas','dri','def','phy'];
+  const hasStats = statKeys.some(k => stats[k] != null);
+  const photoHTML = player.photo
+    ? `<img class="bp-player-photo" src="${player.photo}" alt="" />`
+    : '';
+  const clubChip = player.club
+    ? `<span class="bp-meta-chip">${player.clubImage ? `<img src="${player.clubImage}" alt="" />` : ''}${escapeHtml(player.club)}</span>`
+    : '';
+  const nationChip = player.nation
+    ? `<span class="bp-meta-chip">${player.nationImage ? `<img src="${player.nationImage}" alt="" />` : ''}${escapeHtml(nationCode(player.nation))}</span>`
+    : '';
+  const leadingChip = a.leadingBidderId
+    ? `<div class="bp-leading-chip">▲ Leading · ${escapeHtml(a.leadingBidderName || '—')}</div>`
+    : `<div class="bp-leading-chip" style="background:rgba(255,255,255,0.04);border-color:var(--line);color:var(--dim);">Awaiting first bid · Start ${formatMoney(startingBid(player.overall))}</div>`;
+
+  $('playerPane').innerHTML = `
+    ${photoHTML}
+    <div class="bp-player-meta">
+      <span class="bp-meta-chip star">★ ${player.overall} OVR</span>
+      <span class="bp-meta-chip">${escapeHtml(player.position || '')}</span>
+      ${clubChip}
+      ${nationChip}
+    </div>
+    <div>
+      <span class="bp-player-name">
+        ${first ? `<span class="first">${escapeHtml(first)}</span>` : ''}
+        ${escapeHtml(last)}
+      </span>
+      ${leadingChip}
+    </div>
+    ${hasStats ? `
+      <div class="bp-player-stats">
+        ${statKeys.map(k => `<div class="s"><div class="v">${stats[k] ?? '—'}</div><div class="k">${k.toUpperCase()}</div></div>`).join('')}
+      </div>
+    ` : ''}
+  `;
+
+  // bid pane
+  const remainingMs = Math.max(0, (a.endsAt || 0) - Date.now());
+  const remaining = Math.ceil(remainingMs / 1000);
+  const urgent = !a.paused && remaining <= 5;
+  const pct = Math.max(0, Math.min(100, (remainingMs / (BID_TIMER_SECONDS * 1000)) * 100));
+  const bids = bidHistoryByPlayer[a.playerId] || [];
+  const last5 = bids.slice(0, 5);
+  const bidsLabel = `${bids.length} bid${bids.length === 1 ? '' : 's'}`;
+
+  $('bidPane').innerHTML = `
+    <div>
+      <div class="bp-eyebrow" style="margin-bottom:12px;">${a.paused ? 'Paused' : 'Time remaining'}</div>
+      <div class="bp-countdown ${urgent ? 'tense' : ''} ${a.paused ? 'paused' : ''}">
+        <div class="num" id="bidCountdownNum">${a.paused ? '——' : String(remaining).padStart(2, '0')}</div>
+        <div class="bp-timer-bar" style="flex:1;"><i id="bidTimerFill" style="width:${pct}%"></i></div>
+      </div>
+    </div>
+    <div class="bp-bid-readout">
+      <div class="label">Current bid</div>
+      <div class="amount" id="bidAmountDisplay">${formatMoney(a.currentBid)}</div>
+      <div class="by">${a.leadingBidderId ? '▲ ' + escapeHtml((a.leadingBidderName || '').toUpperCase()) + ' · ' + bidTimeAgo(bids[0]?.at) : 'No bids yet'}</div>
+    </div>
+    <div>
+      <div class="bp-bids-eyebrow" style="margin-bottom: 10px;">
+        ${bids.length ? '<span class="bp-bid-pulse"></span>' : ''}Bid history · <span style="color:var(--green)">${bidsLabel}</span>
+      </div>
+      <div class="bp-bid-history">
+        ${last5.length === 0
+          ? `<div class="bp-bid-row"><span class="who">—</span><span class="amt" style="color:var(--faint);">no bids yet</span><span class="ago"></span></div>`
+          : last5.map((b, i) => `
+              <div class="bp-bid-row ${i === 0 ? 'top' : ''}">
+                <span class="who">${escapeHtml((b.name || '?').toUpperCase())}</span>
+                <span class="amt">${formatMoney(b.amount)}</span>
+                <span class="ago">${bidTimeAgo(b.at)}</span>
+              </div>
+            `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function bidTimeAgo(ts) {
+  if (!ts) return '';
+  const s = Math.max(0, Math.round((Date.now() - ts) / 1000));
+  if (s < 1) return 'now';
+  if (s < 60) return s + 's';
+  const m = Math.floor(s / 60);
+  return `${m}m ${s % 60}s`;
+}
+
+function renderBiddersSidebar(a) {
+  const bidders = Object.values(room.bidders || {}).filter(b => b.name);
+  // sort by spent desc (more "rank-like" than budget desc)
+  bidders.sort((x, y) => {
+    const spentX = STARTING_BUDGET - (x.budget ?? STARTING_BUDGET);
+    const spentY = STARTING_BUDGET - (y.budget ?? STARTING_BUDGET);
+    return spentY - spentX;
+  });
+
+  $('hostLeaderboard').innerHTML = bidders.map((b, i) => {
     const isLeader = a?.leadingBidderId === b.id;
+    const squad = b.squad || [];
+    const spent = STARTING_BUDGET - (b.budget ?? STARTING_BUDGET);
+    const spentPct = Math.round((spent / STARTING_BUDGET) * 100);
+    const squadFull = squad.length >= SQUAD_SIZE;
+    const brokeForBid = (b.budget ?? 0) < MIN_INCREMENT;
+    const broke = squadFull || brokeForBid;
+
+    let barClass = '';
+    if (spentPct >= 90) barClass = 'critical';
+    else if (spentPct >= 70) barClass = 'high';
+    else if (spentPct >= 50) barClass = 'mid';
+
+    const warnings = positionWarnings(squad);
+    let warnChip = '';
+    if (isLeader) {
+      warnChip = '<span class="bp-warn-chip lead">▲ LEADING</span>';
+    } else if (broke) {
+      warnChip = `<span class="bp-warn-chip danger">${squadFull ? '● MAXED' : '● BROKE'}</span>`;
+    } else if (warnings.length) {
+      const labels = { GK: 'no GK', DEF: 'no DEF', MID: 'no MID', FWD: 'no FWD' };
+      warnChip = `<span class="bp-warn-chip">${labels[warnings[0]] || ''}</span>`;
+    }
+
     return `
-      <div class="player-row ${isLeader ? 'leading' : ''}" data-bidder="${b.id}">
-        <div class="avatar">${initial}</div>
+      <div class="bp-bidder ${isLeader ? 'leading' : ''} ${broke ? 'broke' : ''}" data-bidder="${b.id}">
+        <div class="bp-rank">${i + 1}</div>
         <div>
-          <div class="name">${escapeHtml(b.name)}</div>
-          <div class="meta-row">
-            <span>${(b.squad || []).length}/${SQUAD_SIZE} players</span>
-            ${isLeader ? '<span class="text-pitch">leading</span>' : ''}
-          </div>
+          <div class="name">${escapeHtml((b.name || '?').toUpperCase())} ${warnChip}</div>
+          <div class="row2"><span>${squad.length} players</span><span>·</span><span>spent ${formatMoney(spent)}</span></div>
+          <div class="bar"><i class="${barClass}" style="width:${Math.max(spentPct, broke ? 100 : 0)}%${broke && squadFull ? ';background:var(--faint)' : ''}"></i></div>
         </div>
-        <div class="budget">${formatMoney(b.budget)}</div>
-      </div>`;
+        <div class="budget" ${broke && (b.budget ?? 0) < 1_000_000 ? 'style="color:var(--red)"' : ''}>${formatMoney(b.budget)}<span class="sub">LEFT</span></div>
+      </div>
+    `;
   }).join('');
-  // wire up click to open squad
+
   $('hostLeaderboard').querySelectorAll('[data-bidder]').forEach(el => {
     el.addEventListener('click', () => openSquadModal(el.dataset.bidder));
   });
-
-  // recently sold
-  const recent = (room.history || []).slice(-6).reverse();
-  $('recentSold').innerHTML = recent.length === 0
-    ? `<div class="text-dim text-center" style="padding:16px 0;">No sales yet.</div>`
-    : recent.map(h => {
-        if (h.type === 'unsold') {
-          const p = room.pool[h.playerId];
-          return `<div class="player-row" style="border-color:var(--border);">
-            <div class="avatar" style="color:var(--text-dim);">—</div>
-            <div>
-              <div class="name">${escapeHtml(p?.name || '?')}</div>
-              <div class="meta-row"><span class="text-dim">unsold</span></div>
-            </div>
-            <div class="budget text-dim">—</div>
-          </div>`;
-        }
-        const p = room.pool[h.playerId];
-        return `<div class="player-row">
-          <div class="avatar">${(h.winnerName||'?').charAt(0).toUpperCase()}</div>
-          <div>
-            <div class="name">${escapeHtml(p?.name || '?')}</div>
-            <div class="meta-row">
-              <span>${p?.position || ''} · ${p?.overall || ''}</span>
-              <span>→ ${escapeHtml(h.winnerName)}</span>
-            </div>
-          </div>
-          <div class="budget text-pitch">${formatMoney(h.price)}</div>
-        </div>`;
-      }).join('');
 }
 
-function playerCardHTML(p) {
-  return `
-    <div class="player-card" id="bigPlayerCard">
-      <div class="rating-block">
-        <div class="rating-overall">${p.overall || '?'}</div>
-        <div class="rating-pos">${p.position || ''}</div>
-        <div class="rating-divider"></div>
-        <div class="rating-bucket">${bucketFor(p.position)}</div>
-      </div>
-      <div class="meta">
-        <div class="eyebrow">On the block</div>
-        <div class="name">${escapeHtml(p.name || '?')}</div>
-        <div class="club">${escapeHtml(p.club || '')}${p.nation ? ' · ' + escapeHtml(p.nation) : ''}</div>
-        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-          <span class="bc-tag" style="background:var(--panel-2);color:var(--text);border:1px solid var(--border);">Start ${formatMoney(startingBid(p.overall))}</span>
-        </div>
-      </div>
+// =============================================================================
+// Bid history tracking (client-side, ephemeral)
+// =============================================================================
+
+function trackBidHistory() {
+  const a = room.currentAuction;
+  if (!a) {
+    if (prevAuctionPlayerId) {
+      // auction just ended — remember its bid count for the ticker
+      lastRoundBidCount = (bidHistoryByPlayer[prevAuctionPlayerId] || []).length;
+      prevAuctionPlayerId = null;
+    }
+    return;
+  }
+  if (a.playerId !== prevAuctionPlayerId) {
+    // new auction — capture closing count from the previous one for ticker
+    if (prevAuctionPlayerId) {
+      lastRoundBidCount = (bidHistoryByPlayer[prevAuctionPlayerId] || []).length;
+    }
+    bidHistoryByPlayer[a.playerId] = [];
+    prevAuctionPlayerId = a.playerId;
+    prevBidCount = 0;
+  }
+  const hist = bidHistoryByPlayer[a.playerId];
+  const latestKey = `${a.leadingBidderId || ''}@${a.currentBid || 0}`;
+  const topRow = hist[0];
+  const topKey = topRow ? `${topRow.bidderId || ''}@${topRow.amount}` : null;
+  if (a.leadingBidderId && a.currentBid > 0 && latestKey !== topKey) {
+    hist.unshift({
+      bidderId: a.leadingBidderId,
+      name: a.leadingBidderName,
+      amount: a.currentBid,
+      at: Date.now(),
+    });
+    // cap to keep memory in check
+    if (hist.length > 30) hist.length = 30;
+  }
+}
+
+// =============================================================================
+// Up Next preview (client-side, never mutates pool/auction)
+// =============================================================================
+
+function pickUpNextPreview() {
+  const unsold = Object.values(room?.pool || {}).filter(p => !p.sold);
+  if (unsold.length === 0) return [];
+  // weight by tier so the preview feels theatrical
+  const weights = { marquee: 8, star: 4, mid: 2, filler: 1 };
+  const weighted = unsold.map(p => ({ p, w: weights[playerTier(p)] || 1 }));
+  const picks = [];
+  const used = new Set();
+  while (picks.length < 3 && picks.length < unsold.length) {
+    const remaining = weighted.filter(x => !used.has(x.p.id));
+    const total = remaining.reduce((s, x) => s + x.w, 0);
+    let r = Math.random() * total;
+    let pick = remaining[remaining.length - 1].p;
+    for (const x of remaining) {
+      if ((r -= x.w) <= 0) { pick = x.p; break; }
+    }
+    used.add(pick.id);
+    picks.push(pick);
+  }
+  return picks;
+}
+
+function renderUpNext() {
+  const el = $('upNextList');
+  if (!upNextPreview.length) {
+    el.innerHTML = `<div class="empty">pool empty</div>`;
+    return;
+  }
+  el.innerHTML = upNextPreview.map((p, i) => `
+    <div class="row">
+      <span class="idx">${i + 1}</span>
+      <span class="nm">${escapeHtml(p.name)}</span>
+      <span class="ovr">${p.overall}</span>
     </div>
-  `;
+  `).join('');
 }
 
-function bidDisplayHTML(a) {
-  const leader = a.leadingBidderName || 'No bids yet';
-  const remainingMs = Math.max(0, (a.endsAt || 0) - Date.now());
-  const remaining = Math.ceil(remainingMs / 1000);
-  const urgent = remaining <= 3 && !a.paused;
-  return `
-    <div class="bid-display">
-      <div class="leading">
-        <div class="eyebrow">Leading bidder</div>
-        <div class="display" style="font-size:36px;color:${a.leadingBidderId ? 'var(--pitch)' : 'var(--text-dim)'};">
-          ${escapeHtml(leader)}
+// =============================================================================
+// Sold tabs
+// =============================================================================
+
+function renderSoldTabs() {
+  const history = room?.history || [];
+  const sales = history.filter(h => h.type === 'sold');
+  $('cntRecent').textContent = Math.min(6, history.length);
+  $('cntTop').textContent = Math.min(10, sales.length);
+  $('cntAll').textContent = history.length;
+
+  // toggle active tab
+  document.querySelectorAll('#soldTabs button').forEach(b => {
+    b.classList.toggle('active', b.dataset.soldtab === activeSoldTab);
+  });
+  document.querySelectorAll('.bp-tab-panel').forEach(p => {
+    p.classList.toggle('active', p.dataset.soldtab === activeSoldTab);
+  });
+  $('soldTabMeta').textContent = {
+    recent: 'most recent transactions',
+    top: 'highest prices · this auction',
+    all: 'every sale · scroll for more',
+  }[activeSoldTab] || '';
+
+  // recent (6, reversed)
+  $('soldPanelRecent').innerHTML = renderSoldRows(history.slice(-6).reverse(), false);
+
+  // top 10 by price, with rank badges
+  const top10 = [...sales].sort((a, b) => b.price - a.price).slice(0, 10);
+  $('soldPanelTop').innerHTML = renderSoldRows(top10, true);
+
+  // all (reversed)
+  $('soldPanelAll').innerHTML = renderSoldRows([...history].reverse(), false);
+}
+
+function renderSoldRows(rows, withRanks) {
+  if (rows.length === 0) {
+    return `<div class="bp-empty-state">No sales yet</div>`;
+  }
+  return rows.map((h, i) => {
+    const p = room.pool[h.playerId];
+    if (h.type === 'unsold') {
+      return `<div class="bp-sold-row unsold ${withRanks ? 'with-rank' : ''}">
+        ${withRanks ? `<span class="bp-rank-badge r5">—</span>` : ''}
+        <div class="ovr">${p?.overall ?? '—'}</div>
+        <div>
+          <div class="name">${escapeHtml(p?.name || '?')}</div>
+          <div class="who">unsold</div>
         </div>
-      </div>
+        <div class="price">—</div>
+      </div>`;
+    }
+    const rankClass = i === 0 ? '' : i === 1 ? 'r2' : i === 2 ? 'r3' : i < 5 ? 'r4' : 'r5';
+    return `<div class="bp-sold-row ${withRanks ? 'with-rank' : ''}">
+      ${withRanks ? `<span class="bp-rank-badge ${rankClass}">${i + 1}</span>` : ''}
+      <div class="ovr">${p?.overall ?? '—'}</div>
       <div>
-        <div class="eyebrow text-center" style="margin-bottom:4px;">Current bid</div>
-        <div class="amount" id="bidAmountDisplay">${formatMoney(a.currentBid)}</div>
+        <div class="name">${escapeHtml(p?.name || '?')}</div>
+        <div class="who">→ ${escapeHtml(h.winnerName)} · ${escapeHtml(p?.position || '')} · ${escapeHtml(p?.club || '')}</div>
       </div>
-      <div class="timer">
-        <div class="eyebrow">${a.paused ? 'Paused' : 'Time left'}</div>
-        <div class="num ${urgent ? 'urgent' : ''}" id="bidTimerDisplay">${a.paused ? '——' : remaining}</div>
-      </div>
-    </div>
-  `;
+      <div class="price">${formatMoney(h.price)}</div>
+    </div>`;
+  }).join('');
 }
 
 // ---------------------------------------------------------------------------
@@ -432,15 +794,13 @@ function startTicker() {
     if (a.paused) return;
     const remaining = Math.max(0, (a.endsAt || 0) - Date.now());
     const secs = Math.ceil(remaining / 1000);
-    const el = document.getElementById('bidTimerDisplay');
-    if (el) {
-      el.textContent = secs;
-      el.classList.toggle('urgent', secs <= 3);
-    }
-    // Wait an extra 400ms past the buzzer to give late bids room to land
-    // (placeBid grants a 300ms grace). `finalizingInFlight` only prevents
-    // double-call from THIS tab; finalizeAuction itself is atomic and will
-    // rescue stale claims from crashed peers.
+    const numEl = document.getElementById('bidCountdownNum');
+    const fillEl = document.getElementById('bidTimerFill');
+    if (numEl) numEl.textContent = String(secs).padStart(2, '0');
+    if (fillEl) fillEl.style.width = Math.max(0, Math.min(100, (remaining / (BID_TIMER_SECONDS * 1000)) * 100)) + '%';
+    const countdownWrap = numEl?.closest('.bp-countdown');
+    if (countdownWrap) countdownWrap.classList.toggle('tense', secs <= 5);
+
     if (remaining <= 0 && Date.now() > (a.endsAt || 0) + 400 && !finalizingInFlight) {
       finalizingInFlight = true;
       try {
@@ -456,8 +816,11 @@ function startTicker() {
 }
 
 function flashSold(result) {
-  const card = document.getElementById('bigPlayerCard');
-  if (card) card.classList.add('flash');
+  const card = document.getElementById('featureCard');
+  if (card) {
+    card.classList.add('flash');
+    setTimeout(() => card.classList.remove('flash'), 600);
+  }
   lastSoldFlash = result;
 }
 
@@ -466,58 +829,129 @@ function flashSold(result) {
 // ---------------------------------------------------------------------------
 
 function openSquadModal(bidderId) {
-  const b = room.bidders?.[bidderId];
-  if (!b) return;
-  $('squadModalTitle').textContent = `${b.name} · ${formatMoney(b.budget)} left`;
-  $('squadModalBody').innerHTML = positionCountsHTML(b.squad) + squadGridHTML(b.squad);
-  const modal = $('squadModal');
-  modal.classList.remove('hide');
-  modal.classList.add('open');
-}
-
-function positionCountsHTML(squad) {
-  const c = squadPositionCounts(squad);
-  const cell = (label, count) => `
-    <div class="pos-count ${count > 0 ? 'has' : 'zero'}">
-      <div class="label">${label}</div>
-      <div class="num">${count}</div>
-    </div>`;
-  return `
-    <div class="position-counts">
-      ${cell('GK', c.GK)}
-      ${cell('DEF', c.DEF)}
-      ${cell('MID', c.MID)}
-      ${cell('FWD', c.FWD)}
-    </div>`;
+  modalBidderId = bidderId;
+  modalActiveTab = 'list';
+  modalFormation = '4-3-3';
+  // reset tab active state
+  document.querySelectorAll('#modalTabs button').forEach(b => {
+    b.classList.toggle('active', b.dataset.mtab === 'list');
+  });
+  switchModalPanel();
+  renderSquadModal();
+  $('squadModal').classList.remove('hidden');
 }
 function closeSquadModal() {
-  const modal = $('squadModal');
-  modal.classList.remove('open');
-  modal.classList.add('hide');
+  modalBidderId = null;
+  $('squadModal').classList.add('hidden');
 }
 
-function squadGridHTML(squad) {
-  const filled = (squad || []);
-  const slots = [];
-  for (let i = 0; i < SQUAD_SIZE; i++) {
-    const p = filled[i];
-    if (p) {
-      slots.push(`
-        <div class="squad-slot filled">
-          <span class="rate">${p.overall}</span>
-          <span class="pos-tag">${p.position}</span>
-          <div class="pname">${escapeHtml(p.name)}</div>
-          <div class="pclub">${escapeHtml(p.club || '')}</div>
-          <div class="pprice">${formatMoney(p.price)}</div>
-        </div>`);
-    } else {
-      slots.push(`<div class="squad-slot empty">
-        <span class="empty-circle"></span>
-        <span class="slot-label">slot ${i+1}</span>
-      </div>`);
-    }
+function switchModalPanel() {
+  document.querySelectorAll('.bp-modal-panel').forEach(p => {
+    p.classList.toggle('active', p.dataset.mtab === modalActiveTab);
+  });
+  if (modalActiveTab === 'formation' && modalBidderId) {
+    renderModalPitch();
   }
-  return `<div class="squad-grid">${slots.join('')}</div>`;
+}
+
+function cycleBidder(delta) {
+  if (!modalBidderId || !room) return;
+  const ids = Object.keys(room.bidders || {}).filter(id => room.bidders[id]?.name);
+  if (!ids.length) return;
+  const i = ids.indexOf(modalBidderId);
+  modalBidderId = ids[(i + delta + ids.length) % ids.length];
+  renderSquadModal();
+}
+
+function renderSquadModal() {
+  if (!modalBidderId) return;
+  const b = room.bidders?.[modalBidderId];
+  if (!b) { closeSquadModal(); return; }
+
+  const squad = b.squad || [];
+  const spent = squad.reduce((s, p) => s + (p.price || 0), 0);
+  $('bidderName').textContent = (b.name || '?').toUpperCase();
+  $('bidderSub').textContent = `${squad.length} player${squad.length === 1 ? '' : 's'} · spent ${formatMoney(spent)}`;
+  const budgetEl = $('bidderBudget');
+  budgetEl.textContent = formatMoney(b.budget || 0);
+  budgetEl.classList.toggle('low', (b.budget || 0) < 1_000_000);
+
+  // counts
+  const c = squadPositionCounts(squad);
+  ['GK', 'DEF', 'MID', 'FWD'].forEach(k => {
+    const el = $('cnt' + k);
+    if (el) {
+      el.textContent = c[k] || 0;
+      el.classList.toggle('zero', !c[k]);
+    }
+  });
+
+  renderSquadList(squad);
+  if (modalActiveTab === 'formation') renderModalPitch();
+
+  // wire view-full link
+  const link = $('viewFullSquadLink');
+  if (link) link.href = `./squad.html?room=${encodeURIComponent(roomCode || '')}&bidder=${encodeURIComponent(modalBidderId)}`;
+}
+
+function renderSquadList(squad) {
+  const wrap = $('squadList');
+  if (!squad.length) {
+    wrap.innerHTML = `<div class="bp-empty-state">No players yet</div>`;
+    return;
+  }
+  const order = { GK: 0, DEF: 1, MID: 2, FWD: 3 };
+  const sorted = [...squad].sort((a, b) => {
+    const ca = order[posCat(a.position)], cb = order[posCat(b.position)];
+    if (ca !== cb) return ca - cb;
+    return (b.overall || 0) - (a.overall || 0);
+  });
+  wrap.innerHTML = sorted.map(p => {
+    const cat = posCat(p.position).toLowerCase();
+    return `
+      <div class="bp-squad-player ${cat}">
+        <div class="ovr-badge">${p.overall || '—'}</div>
+        <div>
+          <div class="nm-line">${escapeHtml(p.name || '?')}</div>
+          <div class="meta-line"><span class="pos">${escapeHtml(p.position || '')}</span><span>·</span><span>${escapeHtml(p.club || '')}</span></div>
+        </div>
+        <div class="price-tag">${formatMoney(p.price)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderModalPitch() {
+  const pitch = $('modalPitch');
+  if (!pitch) return;
+  const b = room.bidders?.[modalBidderId];
+  if (!b) return;
+  renderPitchInto(pitch, b.squad || [], modalFormation);
+}
+
+function renderPitchInto(pitchEl, squad, formationKey) {
+  pitchEl.querySelectorAll('.bp-pitch-player').forEach(n => n.remove());
+  const slots = FORMATIONS[formationKey] || FORMATIONS['4-3-3'];
+  const players = [...squad];
+  const used = new Set();
+  slots.forEach(slot => {
+    const cat = posCat(slot.role);
+    let pIdx = players.findIndex((p, idx) => !used.has(idx) && (p.position || '').toUpperCase() === slot.role);
+    if (pIdx === -1) pIdx = players.findIndex((p, idx) => !used.has(idx) && posCat(p.position) === cat);
+    const p = pIdx > -1 ? players[pIdx] : null;
+    if (p) used.add(pIdx);
+    const short = p ? (p.name || '').split(' ').pop() : slot.role;
+    const el = document.createElement('div');
+    el.className = 'bp-pitch-player' + (p ? '' : ' empty');
+    el.style.left = slot.x + '%';
+    el.style.top = slot.y + '%';
+    el.innerHTML = `
+      <div class="badge">${p ? p.overall : '—'}</div>
+      <div class="name-tag">${escapeHtml(short)}</div>
+      <div class="pos-tag">${slot.role}</div>
+    `;
+    pitchEl.appendChild(el);
+  });
 }
 
 // ---------------------------------------------------------------------------
