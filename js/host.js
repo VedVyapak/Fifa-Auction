@@ -185,33 +185,53 @@ function swap(visible) {
 // Lobby render
 // ---------------------------------------------------------------------------
 
+const LOBBY_SEATS = 7;
+const MIN_BIDDERS_TO_START = 2;
+
 function renderLobby() {
   if (room.status !== 'lobby') return;
-  const bidders = Object.values(room.bidders || {});
-  $('bidderCount').textContent = bidders.length;
-  $('lobbyBidders').innerHTML = bidders.length === 0
-    ? `<div class="text-dim text-center" style="padding:32px 0;">No one yet. Share the QR.</div>`
-    : bidders.map(b => bidderRowHTML(b)).join('');
-  $('btnStartAuction').disabled = bidders.length < 1;
-}
+  const bidders = Object.values(room.bidders || {}).filter(b => b.name);
+  const joinedCount = bidders.length;
+  $('bidderCount').textContent = joinedCount;
 
-function bidderRowHTML(b) {
-  const initial = (b.name || '?').trim().charAt(0).toUpperCase();
-  const connected = b.connected ? '' : '<span class="meta-row"><span class="text-broadcast">offline</span></span>';
-  return `
-    <div class="player-row">
-      <div class="avatar">${initial}</div>
-      <div>
-        <div class="name">${escapeHtml(b.name || '?')}</div>
-        <div class="meta-row">
-          <span>${formatMoney(b.budget)} left</span>
-          <span>${(b.squad || []).length} / ${SQUAD_SIZE} players</span>
-          ${connected}
+  const seats = [];
+  for (let i = 0; i < LOBBY_SEATS; i++) {
+    const b = bidders[i];
+    if (b) {
+      const offline = b.connected === false ? ' · offline' : '';
+      seats.push(`
+        <div class="seat joined">
+          <div class="num">${i + 1}</div>
+          <div class="name">${escapeHtml(b.name)}</div>
+          <div class="status">Ready${offline}</div>
         </div>
-      </div>
-      <div class="budget">${formatMoney(b.budget)}</div>
-    </div>
-  `;
+      `);
+    } else {
+      seats.push(`
+        <div class="seat">
+          <div class="num">${i + 1}</div>
+          <div class="name">Waiting for bidder…</div>
+          <div class="status">Empty</div>
+        </div>
+      `);
+    }
+  }
+  $('lobbyBidders').innerHTML = seats.join('');
+
+  const startBtn = $('btnStartAuction');
+  const canStart = joinedCount >= MIN_BIDDERS_TO_START;
+  startBtn.disabled = !canStart;
+
+  const hint = $('startHint');
+  if (hint) {
+    if (canStart) {
+      hint.classList.add('hide');
+    } else {
+      const need = MIN_BIDDERS_TO_START - joinedCount;
+      hint.classList.remove('hide');
+      hint.textContent = `need ${need} more`;
+    }
+  }
 }
 
 async function onStartAuction() {
