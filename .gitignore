@@ -9,3 +9,6 @@ scraper/node_modules/
 .agents/
 .claude/
 skills-lock.json
+
+# UI exploration / mockups (not part of the app)
+ui-samples/

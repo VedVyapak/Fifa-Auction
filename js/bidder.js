@@ -3,7 +3,7 @@ import {
   positionWarnings, isLockedOut, MIN_INCREMENT, SQUAD_SIZE, bucketFor,
   squadPositionCounts,
 } from './auction.js';
-import { watchRoom, placeBid, getRoomOnce, watchConnection } from './firebase.js';
+import { watchRoom, placeBid, getRoomOnce, watchConnection, finalizeAuction } from './firebase.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -18,6 +18,7 @@ if (!roomCode || !myId) {
 let room = null;
 let me = null;
 let tickInterval = null;
+let rescueInFlight = false;
 
 // =============================================================================
 // boot
@@ -332,6 +333,19 @@ function startTicker() {
     const pct = Math.max(0, Math.min(1, remaining / total));
     const fill = document.getElementById('timerFill');
     if (fill) fill.style.transform = `scaleX(${pct})`;
+
+    // Safety net: if the auction has been stuck past the buzzer for >3s, this
+    // bidder offers to finalize. finalizeAuction is atomic — racing clients
+    // will gracefully back off. Only fires if host has dropped offline.
+    if (!rescueInFlight && remaining <= 0 && Date.now() > (a.endsAt || 0) + 3000) {
+      rescueInFlight = true;
+      finalizeAuction(roomCode)
+        .then(res => {
+          if (res) console.warn('[bidder] rescued stuck auction', res);
+        })
+        .catch(e => console.error('[bidder] rescue failed', e))
+        .finally(() => { rescueInFlight = false; });
+    }
   }, 100);
 }
 

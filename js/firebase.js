@@ -124,33 +124,52 @@ export async function skipCurrentPlayer(roomCode) {
   await update(roomRef(roomCode), { currentAuction: null });
 }
 
+// Maximum seconds we'll trust a finalizing claim before another client can
+// "rescue" the auction. Covers the case where the host's tab dies between
+// claim and award — otherwise the auction would be frozen forever.
+const FINALIZE_CLAIM_TTL_MS = 6000;
+
 // Atomically finalize the current auction.
-// Step 1: claim it via transaction (set finalizing=true). Aborts if:
+// Step 1: claim it via transaction. Aborts if:
 //   - no auction (already cleared)
-//   - someone else already claimed it
+//   - someone else already claimed it AND their claim is still fresh
 //   - timer hasn't actually expired
 //   - a late bid just reset endsAt into the future
 // Step 2: read room data and award the player.
 // Bids racing with finalize get rejected (see placeBid's `finalizing` check)
 // OR cause the claim to abort (if they reset endsAt). Net effect: no lost bids.
+//
+// Recovery: if a previous finalizer crashed mid-flight, their claim's
+// timestamp goes stale and a later caller can re-claim. Safe because the
+// award update is idempotent on the auction state.
 export async function finalizeAuction(roomCode) {
   const r = roomRef(roomCode);
   const auctionRef = ref(db, `rooms/${roomCode}/currentAuction`);
 
   // Atomic claim
   let claimed = null;
+  let rescued = false;
   const txn = await runTransaction(auctionRef, (auction) => {
     if (!auction) return; // already cleared
-    if (auction.finalizing) return; // someone else has it
     if (auction.paused) return;
-    // Grace period: 200ms back from endsAt to avoid finalizing while a bid is
-    // landing. Actual buzzer is endsAt; finalize only fires safely after that.
     if (Date.now() < (auction.endsAt || 0)) return;
-    auction.finalizing = true;
+    // Already being finalized?
+    if (auction.finalizing) {
+      const at = (typeof auction.finalizing === 'object' && auction.finalizing.at) || 0;
+      const age = Date.now() - at;
+      if (age < FINALIZE_CLAIM_TTL_MS) {
+        return; // fresh claim — leave it alone
+      }
+      rescued = true; // stale, we take over
+    }
+    auction.finalizing = { at: Date.now() };
     claimed = JSON.parse(JSON.stringify(auction));
     return auction;
   });
   if (!txn.committed || !claimed) return null;
+  if (rescued) {
+    console.warn('[auction] rescued stale finalizing claim', { roomCode, playerId: claimed.playerId });
+  }
 
   // We own this finalization. Read room and write awards.
   const snap = await get(r);
@@ -250,6 +269,7 @@ export async function undoLastSale(roomCode) {
 export async function placeBid(roomCode, bidderId, bidderName, amount, expectedPlayerId) {
   const r = ref(db, `rooms/${roomCode}/currentAuction`);
   let result = { ok: false, reason: 'unknown' };
+  console.log('[bid] submit', { amount, expectedPlayerId, bidder: bidderName });
   await runTransaction(r, (auction) => {
     if (!auction) {
       result = { ok: false, reason: 'Auction already ended — too late.' };
@@ -283,5 +303,7 @@ export async function placeBid(roomCode, bidderId, bidderName, amount, expectedP
     result = { ok: true };
     return auction;
   });
+  if (!result.ok) console.warn('[bid] rejected', result.reason, { amount, bidder: bidderName });
+  else console.log('[bid] accepted', { amount, bidder: bidderName });
   return result;
 }

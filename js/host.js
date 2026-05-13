@@ -406,14 +406,19 @@ function startTicker() {
       el.classList.toggle('urgent', secs <= 3);
     }
     // Wait an extra 400ms past the buzzer to give late bids room to land
-    // (placeBid grants a 300ms grace). Only one finalize at a time per tab.
-    if (remaining <= 0 && Date.now() > (a.endsAt || 0) + 400 && !a.finalizing && !finalizingInFlight) {
+    // (placeBid grants a 300ms grace). `finalizingInFlight` only prevents
+    // double-call from THIS tab; finalizeAuction itself is atomic and will
+    // rescue stale claims from crashed peers.
+    if (remaining <= 0 && Date.now() > (a.endsAt || 0) + 400 && !finalizingInFlight) {
       finalizingInFlight = true;
       try {
         const result = await finalizeAuction(roomCode);
         if (result && !result.unsold) flashSold(result);
-      } catch (e) { console.error(e); }
-      finalizingInFlight = false;
+      } catch (e) {
+        console.error('[host] finalize failed', e);
+      } finally {
+        finalizingInFlight = false;
+      }
     }
   }, 200);
 }

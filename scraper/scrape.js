@@ -1,18 +1,15 @@
-// One-off scraper: grab top 150 player ratings from EA Sports FC's ratings page.
+// One-off scraper: grab top player ratings from EA Sports FC's ratings page,
+// then visit each player's profile page to pull the full FC card image.
 //
 // EA's site is JS-rendered. Strategy:
-//   1) Open the ratings page with Playwright.
-//   2) Intercept JSON network responses to find the players payload.
-//   3) Fall back to DOM scraping if the API call shape isn't recognized.
+//   1) Open the ratings list page with Playwright, scroll to load enough rows.
+//   2) For each row, capture name/overall/position/club/nation + the profile URL.
+//   3) For the top N, visit each profile page and extract the card image src.
 //
-// Output: ../data/players.json
+// Output: ../data/players.json — [{ id, name, overall, position, club, nation, photo }]
 //
 // Run:
 //   cd scraper && npm install && npm run scrape
-//
-// If EA's site has changed and this script fails, you can also paste data
-// from another source into ../data/players.json — the website only needs:
-//   [{ id, name, overall, position, club, nation, photo }]
 
 import { chromium } from 'playwright';
 import fs from 'node:fs/promises';
@@ -22,7 +19,9 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_PATH = path.resolve(__dirname, '../data/players.json');
 const TARGET = 150;
-const URL = 'https://www.ea.com/en/games/ea-sports-fc/ratings';
+const ORIGIN = 'https://www.ea.com';
+const LIST_URL = `${ORIGIN}/en/games/ea-sports-fc/ratings`;
+const PROFILE_CONCURRENCY = 6;
 
 async function main() {
   console.log('Launching Chromium...');
@@ -31,148 +30,199 @@ async function main() {
     userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
     viewport: { width: 1440, height: 900 },
   });
-  const page = await ctx.newPage();
 
-  const apiPayloads = [];
-  page.on('response', async (res) => {
-    const ct = res.headers()['content-type'] || '';
-    if (!ct.includes('application/json')) return;
-    const url = res.url();
-    // EA ratings JSON tends to live under /content/ea-com/ or a search/index endpoint
-    if (!/rating|player|search|content/i.test(url)) return;
-    try {
-      const data = await res.json();
-      apiPayloads.push({ url, data });
-    } catch {}
-  });
+  console.log('Scraping ratings list...');
+  const list = await scrapeList(ctx);
+  console.log(`Collected ${list.length} player rows from the list.`);
 
-  console.log(`Opening ${URL}`);
-  await page.goto(URL, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-  // Let JS finish rendering and trigger initial data calls
-  await page.waitForTimeout(6000);
-
-  // Try to detect "load more" or pagination and scroll a few times
-  for (let i = 0; i < 8; i++) {
-    await page.mouse.wheel(0, 2000);
-    await page.waitForTimeout(800);
-    // try clicking any "load more" button if present
-    const more = await page.$('button:has-text("Load more"), button:has-text("Show more")');
-    if (more) { try { await more.click(); await page.waitForTimeout(1500); } catch {} }
-  }
-
-  let players = extractFromPayloads(apiPayloads);
-  if (players.length < 30) {
-    console.log(`Only ${players.length} from JSON, falling back to DOM scrape...`);
-    players = await scrapeDOM(page);
-  }
-
-  await browser.close();
-
-  if (!players.length) {
-    console.error('Scraping failed — no players found.');
-    console.error('You can manually edit data/players.json instead. Required schema:');
-    console.error('  [{ id, name, overall, position, club, nation, photo }]');
+  if (!list.length) {
+    await browser.close();
+    console.error('No players found on list page.');
     process.exit(1);
   }
 
-  // Sort by overall desc, dedupe by name, take top N
+  // Sort by overall desc, dedupe by profile URL, take top N
   const seen = new Set();
-  const top = players
-    .filter(p => p && p.name && Number.isFinite(p.overall))
+  const top = list
+    .filter(p => p.profileUrl && p.name && Number.isFinite(p.overall) && p.overall > 0)
     .sort((a, b) => b.overall - a.overall)
-    .filter(p => {
-      const k = p.name.toLowerCase();
-      if (seen.has(k)) return false;
-      seen.add(k);
-      return true;
-    })
-    .slice(0, TARGET)
-    .map((p, i) => ({
-      id: `p_${i + 1}`,
-      name: p.name,
-      overall: Number(p.overall) || 0,
-      position: p.position || '',
-      club: p.club || '',
-      nation: p.nation || '',
-      photo: p.photo || '',
-    }));
+    .filter(p => { if (seen.has(p.profileUrl)) return false; seen.add(p.profileUrl); return true; })
+    .slice(0, TARGET);
 
-  await fs.writeFile(OUT_PATH, JSON.stringify(top, null, 2), 'utf8');
-  console.log(`Wrote ${top.length} players → ${OUT_PATH}`);
+  console.log(`Fetching photos for top ${top.length} via profile pages (concurrency=${PROFILE_CONCURRENCY})...`);
+  await hydratePhotos(ctx, top);
+
+  await browser.close();
+
+  const out = top.map((p, i) => ({
+    id: `p_${i + 1}`,
+    name: p.name,
+    overall: p.overall,
+    position: p.position || '',
+    club: p.club || '',
+    nation: p.nation || '',
+    photo: p.photo || '',
+  }));
+
+  await fs.writeFile(OUT_PATH, JSON.stringify(out, null, 2), 'utf8');
+  const withPhotos = out.filter(p => p.photo).length;
+  console.log(`Wrote ${out.length} players (${withPhotos} with photos) → ${OUT_PATH}`);
 }
 
-function extractFromPayloads(payloads) {
-  const collected = [];
-  for (const { data } of payloads) {
-    walk(data, collected);
+async function scrapeList(ctx) {
+  const page = await ctx.newPage();
+  await page.goto(LIST_URL, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+  await page.waitForTimeout(5000);
+
+  // Try to dismiss cookie banner if present
+  for (const sel of ['button:has-text("Accept")', 'button:has-text("I accept")', 'button:has-text("Agree")']) {
+    const btn = await page.$(sel);
+    if (btn) { try { await btn.click(); await page.waitForTimeout(500); } catch {} }
   }
-  return collected;
-}
 
-// Recursively look for objects that look like a player.
-function walk(node, out, depth = 0) {
-  if (!node || depth > 8) return;
-  if (Array.isArray(node)) {
-    for (const item of node) walk(item, out, depth + 1);
-    return;
+  // Scroll until we have enough player profile links, or we stop making progress.
+  let lastCount = 0;
+  let stagnant = 0;
+  for (let i = 0; i < 80; i++) {
+    const count = await page.evaluate(() =>
+      document.querySelectorAll('a[href*="/ratings/player-ratings/"]').length
+    );
+    if (count >= TARGET + 20) break;
+    if (count === lastCount) stagnant++; else stagnant = 0;
+    if (stagnant >= 8) break;
+    lastCount = count;
+
+    await page.mouse.wheel(0, 4000);
+    await page.waitForTimeout(500);
+
+    const more = await page.$('button:has-text("Load more"), button:has-text("Show more")');
+    if (more) { try { await more.click(); await page.waitForTimeout(1200); } catch {} }
   }
-  if (typeof node === 'object') {
-    // Detect player-like shape
-    const rating = pickFirst(node, ['overallRating', 'rating', 'overall', 'ovr']);
-    const name = pickFirst(node, ['commonName', 'fullName', 'firstName', 'name', 'playerName']);
-    if (rating && name && Number(rating) >= 50 && Number(rating) <= 99) {
-      out.push({
-        name: typeof name === 'string' ? name : combineNames(node),
-        overall: Number(rating),
-        position: pickFirst(node, ['position', 'preferredPosition', 'pos']) || '',
-        club: extractName(pickFirst(node, ['club', 'team', 'teamName', 'clubName'])),
-        nation: extractName(pickFirst(node, ['nationality', 'nation', 'country'])),
-        photo: pickFirst(node, ['avatarUrl', 'imageUrl', 'image', 'photoUrl', 'playerImage']) || '',
-      });
-    }
-    for (const k of Object.keys(node)) walk(node[k], out, depth + 1);
-  }
-}
 
-function pickFirst(obj, keys) {
-  for (const k of keys) {
-    if (obj[k] != null && obj[k] !== '') return obj[k];
-  }
-  return null;
-}
-
-function combineNames(node) {
-  return [node.firstName, node.lastName].filter(Boolean).join(' ') || 'Unknown';
-}
-
-function extractName(val) {
-  if (!val) return '';
-  if (typeof val === 'string') return val;
-  if (typeof val === 'object') return val.name || val.label || '';
-  return String(val);
-}
-
-async function scrapeDOM(page) {
-  // Best-effort DOM scrape if JSON intercept fails.
-  return await page.evaluate(() => {
-    const rows = Array.from(document.querySelectorAll('[class*="player"], [class*="Player"]'));
+  return await page.evaluate((origin) => {
+    const POSITIONS = new Set([
+      'GK','RB','LB','CB','RWB','LWB','CDM','CM','CAM','RM','LM','LW','RW','CF','ST',
+    ]);
+    const links = Array.from(document.querySelectorAll('a[href*="/ratings/player-ratings/"]'));
     const out = [];
-    for (const row of rows) {
-      const txt = row.textContent || '';
-      const ratingMatch = txt.match(/\b([5-9]\d)\b/);
-      const nameEl = row.querySelector('[class*="name" i], h2, h3, [class*="title" i]');
-      if (!ratingMatch || !nameEl) continue;
-      out.push({
-        name: (nameEl.textContent || '').trim().slice(0, 60),
-        overall: Number(ratingMatch[1]),
-        position: '',
-        club: '',
-        nation: '',
-        photo: row.querySelector('img')?.src || '',
-      });
+    const seenHref = new Set();
+
+    for (const link of links) {
+      let href = link.getAttribute('href') || '';
+      if (!href) continue;
+      if (href.startsWith('/')) href = origin + href;
+      if (seenHref.has(href)) continue;
+      seenHref.add(href);
+
+      // Walk up to the row containing this single player link.
+      let row = link;
+      while (row && row.parentElement) {
+        const p = row.parentElement;
+        if (p.querySelectorAll('a[href*="/ratings/player-ratings/"]').length > 1) break;
+        row = p;
+      }
+
+      const text = (row.innerText || row.textContent || '').replace(/\s+/g, ' ').trim();
+      const name = ((link.innerText || link.textContent || '').trim()) || extractName(text);
+
+      // Nation + club from img alt attributes inside the row.
+      const imgs = Array.from(row.querySelectorAll('img'));
+      let nation = '', club = '';
+      for (const img of imgs) {
+        const alt = (img.getAttribute('alt') || '').trim();
+        const src = (img.getAttribute('src') || '').toLowerCase();
+        if (!alt) continue;
+        if (/avatar|headshot|player|portrait/.test(src)) continue;
+        if (/flag|nation|country/.test(src) && !nation) { nation = alt; continue; }
+        if (/team|club|crest|badge|logo/.test(src) && !club) { club = alt; continue; }
+        // Fallback: first short alt becomes nation, next becomes club.
+        if (!nation) nation = alt;
+        else if (!club && alt !== nation) club = alt;
+      }
+
+      // Position: first cell whose text is a known position token.
+      let position = '';
+      const tokens = text.split(/\s+/);
+      for (const t of tokens) {
+        if (POSITIONS.has(t)) { position = t; break; }
+      }
+
+      // Overall: the 2-digit number immediately following the position.
+      let overall = 0;
+      if (position) {
+        const idx = text.indexOf(position);
+        if (idx >= 0) {
+          const m = text.slice(idx + position.length).match(/\b(\d{2})\b/);
+          if (m) overall = Number(m[1]);
+        }
+      }
+      if (!overall) {
+        // Fallback: pick the first 2-digit number in 50..99 range.
+        const m = text.match(/\b([5-9]\d)\b/);
+        if (m) overall = Number(m[1]);
+      }
+
+      if (!overall || !name) continue;
+
+      out.push({ profileUrl: href, name, overall, position, club, nation });
     }
     return out;
+
+    function extractName(t) {
+      const stripped = t.replace(/^\d+\s+/, '');
+      return stripped.split(/\s{2,}|\t/)[0] || stripped;
+    }
+  }, ORIGIN);
+}
+
+async function hydratePhotos(ctx, players) {
+  let cursor = 0;
+  const workers = Array.from({ length: PROFILE_CONCURRENCY }, async () => {
+    while (true) {
+      const i = cursor++;
+      if (i >= players.length) return;
+      const p = players[i];
+      try {
+        p.photo = await fetchPhoto(ctx, p.profileUrl);
+        if ((i + 1) % 10 === 0 || i === players.length - 1) {
+          console.log(`  ${i + 1}/${players.length} done`);
+        }
+      } catch (e) {
+        console.warn(`  ! ${p.name}: ${e.message}`);
+      }
+    }
   });
+  await Promise.all(workers);
+}
+
+async function fetchPhoto(ctx, url) {
+  const page = await ctx.newPage();
+  try {
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    // Give images a moment to lazy-load.
+    await page.waitForTimeout(1500);
+    return await page.evaluate(() => {
+      const imgs = Array.from(document.querySelectorAll('img'));
+      let best = '';
+      let bestScore = -Infinity;
+      for (const img of imgs) {
+        const src = img.currentSrc || img.src || img.getAttribute('data-src') || '';
+        if (!src || src.startsWith('data:')) continue;
+        const lower = src.toLowerCase();
+        if (/flag|crest|badge|logo|nation|country|sprite|icon|placeholder/.test(lower)) continue;
+        const w = img.naturalWidth || img.width || 0;
+        const h = img.naturalHeight || img.height || 0;
+        // Prefer larger images; strongly prefer URLs that look like player cards/portraits.
+        let score = (w * h) || 1;
+        if (/player|card|portrait|headshot/.test(lower)) score += 1e8;
+        if (/drop-assets\.ea\.com/.test(lower)) score += 1e6;
+        if (score > bestScore) { bestScore = score; best = src; }
+      }
+      return best;
+    });
+  } finally {
+    await page.close();
+  }
 }
 
 main().catch((e) => {
