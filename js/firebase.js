@@ -71,13 +71,23 @@ export async function getRoomOnce(roomCode) {
 
 export async function joinRoom(roomCode, bidderId, name) {
   const r = bidderRef(roomCode, bidderId);
-  await set(r, {
-    id: bidderId,
-    name,
-    budget: STARTING_BUDGET,
-    squad: [],
-    joinedAt: serverTimestamp(),
-    connected: true,
+  // Rejoin must preserve squad + budget. Transaction so first-join initializes
+  // fresh, but if a bidder already exists (tab was reopened) we only refresh
+  // name and connection state. set() here would wipe their team.
+  await runTransaction(r, (existing) => {
+    if (existing) {
+      existing.name = name;
+      existing.connected = true;
+      return existing;
+    }
+    return {
+      id: bidderId,
+      name,
+      budget: STARTING_BUDGET,
+      squad: [],
+      joinedAt: serverTimestamp(),
+      connected: true,
+    };
   });
   // mark disconnected on tab close
   onDisconnect(ref(db, `rooms/${roomCode}/bidders/${bidderId}/connected`)).set(false);
