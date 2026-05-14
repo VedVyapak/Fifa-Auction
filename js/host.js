@@ -1091,13 +1091,38 @@ function renderPitchInto(pitchEl, squad, formationKey) {
   pitchEl.querySelectorAll('.bp-pitch-player').forEach(n => n.remove());
   const slots = FORMATIONS[formationKey] || FORMATIONS['4-3-3'];
   const players = [...squad];
-  const used = new Set();
-  slots.forEach(slot => {
+  const assignments = new Array(slots.length).fill(null);
+  const usedPlayers = new Set();
+
+  // Pass 1 — exact position match across all slots first.
+  // Without this, slot order would matter: e.g. a 4-3-3 lists LW before
+  // ST, so a single-FWD squad (Kane = ST) would get put in LW via the
+  // category fallback before we ever consider the ST slot.
+  slots.forEach((slot, slotIdx) => {
+    if (assignments[slotIdx]) return;
+    const pIdx = players.findIndex((p, idx) =>
+      !usedPlayers.has(idx) && (p.position || '').toUpperCase() === slot.role
+    );
+    if (pIdx > -1) {
+      assignments[slotIdx] = players[pIdx];
+      usedPlayers.add(pIdx);
+    }
+  });
+  // Pass 2 — fill remaining slots by category (GK/DEF/MID/FWD).
+  slots.forEach((slot, slotIdx) => {
+    if (assignments[slotIdx]) return;
     const cat = posCat(slot.role);
-    let pIdx = players.findIndex((p, idx) => !used.has(idx) && (p.position || '').toUpperCase() === slot.role);
-    if (pIdx === -1) pIdx = players.findIndex((p, idx) => !used.has(idx) && posCat(p.position) === cat);
-    const p = pIdx > -1 ? players[pIdx] : null;
-    if (p) used.add(pIdx);
+    const pIdx = players.findIndex((p, idx) =>
+      !usedPlayers.has(idx) && posCat(p.position) === cat
+    );
+    if (pIdx > -1) {
+      assignments[slotIdx] = players[pIdx];
+      usedPlayers.add(pIdx);
+    }
+  });
+
+  slots.forEach((slot, slotIdx) => {
+    const p = assignments[slotIdx];
     const short = p ? (p.name || '').split(' ').pop() : slot.role;
     const el = document.createElement('div');
     el.className = 'bp-pitch-player' + (p ? '' : ' empty');

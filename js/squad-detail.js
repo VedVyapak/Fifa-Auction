@@ -216,14 +216,31 @@ function renderPitch() {
   const slots = FORMATIONS[formation];
   const squad = bidder?.squad || [];
   const players = [...squad];
-  const used = new Set();
-  let filled = 0;
-  slots.forEach(slot => {
+  const assignments = new Array(slots.length).fill(null);
+  const usedPlayers = new Set();
+  // Pass 1: exact role match first (prevents ST being placed at LW
+  // just because LW comes earlier in the slot list).
+  slots.forEach((slot, slotIdx) => {
+    if (assignments[slotIdx]) return;
+    const pIdx = players.findIndex((p, idx) =>
+      !usedPlayers.has(idx) && (p.position || '').toUpperCase() === slot.role
+    );
+    if (pIdx > -1) { assignments[slotIdx] = players[pIdx]; usedPlayers.add(pIdx); }
+  });
+  // Pass 2: category fallback.
+  slots.forEach((slot, slotIdx) => {
+    if (assignments[slotIdx]) return;
     const cat = posCat(slot.role);
-    let pIdx = players.findIndex((p, idx) => !used.has(idx) && (p.position || '').toUpperCase() === slot.role);
-    if (pIdx === -1) pIdx = players.findIndex((p, idx) => !used.has(idx) && posCat(p.position) === cat);
-    const p = pIdx > -1 ? players[pIdx] : null;
-    if (p) { used.add(pIdx); filled++; }
+    const pIdx = players.findIndex((p, idx) =>
+      !usedPlayers.has(idx) && posCat(p.position) === cat
+    );
+    if (pIdx > -1) { assignments[slotIdx] = players[pIdx]; usedPlayers.add(pIdx); }
+  });
+
+  let filled = 0;
+  slots.forEach((slot, slotIdx) => {
+    const p = assignments[slotIdx];
+    if (p) filled++;
     const short = p ? (p.name || '').split(' ').pop() : slot.role;
     const el = document.createElement('div');
     el.className = 'bp-pitch-player' + (p ? '' : ' empty');
