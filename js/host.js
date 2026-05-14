@@ -908,9 +908,9 @@ async function onNextPlayer(opts = {}) {
 async function onForceMarquee() {
   if (!room) return;
   const remainingMarquees = Object.values(room.pool || {})
-    .filter(p => !p.sold && p.overall >= 90).length;
+    .filter(p => !p.sold && p.overall >= 87).length;
   if (remainingMarquees === 0) {
-    alert('No marquee players (90+) left in the pool.');
+    alert('No marquee players (87+) left in the pool.');
     return;
   }
   await onNextPlayer({ forceTier: 'marquee' });

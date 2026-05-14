@@ -127,9 +127,9 @@ export function pickNextPlayer(pool, history, options = {}) {
 
 export function playerTier(p) {
   const o = (p && p.overall) || 0;
-  if (o >= 90) return 'marquee';
-  if (o >= 88) return 'star';
-  if (o >= 86) return 'mid';
+  if (o >= 87) return 'marquee';
+  if (o >= 85) return 'star';
+  if (o >= 83) return 'mid';
   return 'filler';
 }
 
