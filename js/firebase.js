@@ -65,6 +65,62 @@ export async function deleteRoom(roomCode) {
   await remove(roomRef(roomCode));
 }
 
+// Rebuild the room's player pool from a fresh players.json list.
+//
+// Keeps every "in use" player from the old pool — anyone who has been
+// sold, marked unsold, or is the current auction's player — so history,
+// recap, and bidder squad references stay intact.
+//
+// For everyone else (unsold-and-not-yet-auctioned entries), the old
+// entries are dropped and replaced with whatever the new list contains.
+// New IDs are added with sold:false. Returns { before, after, added,
+// removed, preserved } so the host can confirm what happened.
+export async function rebuildPool(roomCode, newPlayers) {
+  const r = roomRef(roomCode);
+  const snap = await get(r);
+  const room = snap.val();
+  if (!room) throw new Error('Room not found');
+
+  const oldPool = room.pool || {};
+  const history = room.history || [];
+  const currentAuction = room.currentAuction;
+
+  // Collect IDs that must NOT be touched (history references would break)
+  const inUse = new Set();
+  for (const h of history) if (h.playerId) inUse.add(h.playerId);
+  if (currentAuction?.playerId) inUse.add(currentAuction.playerId);
+  for (const [id, p] of Object.entries(oldPool)) {
+    if (p && p.sold) inUse.add(id); // sold or unsold, both are non-falsy
+  }
+
+  const newPool = {};
+  let preserved = 0;
+  for (const id of inUse) {
+    if (oldPool[id]) { newPool[id] = oldPool[id]; preserved++; }
+  }
+  let added = 0;
+  for (const p of (newPlayers || [])) {
+    if (!p?.id) continue;
+    if (!newPool[p.id]) {
+      newPool[p.id] = { ...p, sold: false };
+      if (!oldPool[p.id]) added++;
+    }
+  }
+  let removed = 0;
+  for (const id of Object.keys(oldPool)) {
+    if (!newPool[id]) removed++;
+  }
+
+  await update(r, { pool: newPool });
+  return {
+    before: Object.keys(oldPool).length,
+    after: Object.keys(newPool).length,
+    added,
+    removed,
+    preserved,
+  };
+}
+
 export function watchRoom(roomCode, cb) {
   return onValue(roomRef(roomCode), snap => cb(snap.val()));
 }

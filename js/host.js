@@ -6,7 +6,7 @@ import {
 import {
   createRoom, watchRoom, startAuctionForPlayer, pauseAuction,
   skipCurrentPlayer, finalizeAuction, undoLastSale, setStatus, getRoomOnce,
-  watchConnection, serverNow, FINALIZE_DELAY_MS,
+  watchConnection, serverNow, FINALIZE_DELAY_MS, rebuildPool,
 } from './firebase.js';
 
 // ---------------------------------------------------------------------------
@@ -180,6 +180,7 @@ function wireListeners() {
   });
 
   $('btnShowQR').addEventListener('click', openQRModal);
+  $('btnReloadPool').addEventListener('click', onReloadPool);
   $('qrModalClose').addEventListener('click', closeQRModal);
   $('qrModal').addEventListener('click', (e) => {
     if (e.target.id === 'qrModal') closeQRModal();
@@ -889,6 +890,39 @@ async function onUndo() {
 async function onFinish() {
   if (!confirm('End the auction and show final squads?')) return;
   await setStatus(roomCode, 'finished');
+}
+
+async function onReloadPool() {
+  if (!roomCode) { alert('No room loaded.'); return; }
+  if (!confirm(
+    'Reload the player pool from data/players.json?\n\n' +
+    '• Already-sold and currently-auctioning players are kept (history stays intact).\n' +
+    '• Unsold-and-not-yet-drawn entries will be replaced by whatever the JSON now contains.\n\n' +
+    'Continue?'
+  )) return;
+  const btn = $('btnReloadPool');
+  btn.disabled = true;
+  try {
+    const res = await fetch('./data/players.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('players.json HTTP ' + res.status);
+    const freshPlayers = await res.json();
+    const stats = await rebuildPool(roomCode, freshPlayers);
+    players = freshPlayers;
+    nextQueue = []; // force rebuild from the new pool
+    alert(
+      `Pool reloaded.\n` +
+      `• Before: ${stats.before}\n` +
+      `• After:  ${stats.after}\n` +
+      `• Added:    ${stats.added}\n` +
+      `• Removed:  ${stats.removed}\n` +
+      `• Preserved (sold / in-history): ${stats.preserved}`
+    );
+  } catch (e) {
+    console.error('[reload-pool] failed', e);
+    alert('Reload failed: ' + (e?.message || e));
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 // ---------------------------------------------------------------------------
