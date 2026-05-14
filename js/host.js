@@ -6,7 +6,7 @@ import {
 import {
   createRoom, watchRoom, startAuctionForPlayer, pauseAuction,
   skipCurrentPlayer, finalizeAuction, undoLastSale, setStatus, getRoomOnce,
-  watchConnection,
+  watchConnection, serverNow, FINALIZE_DELAY_MS,
 } from './firebase.js';
 
 // ---------------------------------------------------------------------------
@@ -508,7 +508,7 @@ function renderFeatureCard(a) {
   `;
 
   // bid pane
-  const remainingMs = Math.max(0, (a.endsAt || 0) - Date.now());
+  const remainingMs = Math.max(0, (a.endsAt || 0) - serverNow());
   const remaining = Math.ceil(remainingMs / 1000);
   const urgent = !a.paused && remaining <= 5;
   const pct = Math.max(0, Math.min(100, (remainingMs / (BID_TIMER_SECONDS * 1000)) * 100));
@@ -550,7 +550,7 @@ function renderFeatureCard(a) {
 
 function bidTimeAgo(ts) {
   if (!ts) return '';
-  const s = Math.max(0, Math.round((Date.now() - ts) / 1000));
+  const s = Math.max(0, Math.round((serverNow() - ts) / 1000));
   if (s < 1) return 'now';
   if (s < 60) return s + 's';
   const m = Math.floor(s / 60);
@@ -706,7 +706,7 @@ function trackBidHistory() {
       bidderId: a.leadingBidderId,
       name: a.leadingBidderName,
       amount: a.currentBid,
-      at: Date.now(),
+      at: serverNow(),
     });
     // cap to keep memory in check
     if (hist.length > 30) hist.length = 30;
@@ -901,16 +901,18 @@ function startTicker() {
     if (!room?.currentAuction) return;
     const a = room.currentAuction;
     if (a.paused) return;
-    const remaining = Math.max(0, (a.endsAt || 0) - Date.now());
+    const now = serverNow();
+    const remaining = Math.max(0, (a.endsAt || 0) - now);
     const secs = Math.ceil(remaining / 1000);
     const numEl = document.getElementById('bidCountdownNum');
     const fillEl = document.getElementById('bidTimerFill');
     const countdownWrap = numEl?.closest('.bp-countdown');
 
     if (remaining <= 0) {
-      // Show a visible "FINALIZING…" cue so the 0→next-player gap doesn't
+      // Show a visible "SOLD"/"—" cue so the 0→next-player gap doesn't
       // look frozen. The actual finalize is a Firebase round-trip (~1s
-      // unavoidable) — this just communicates that the buzzer fired.
+      // unavoidable) plus the FINALIZE_DELAY_MS buffer — this just
+      // communicates that the buzzer fired.
       if (numEl) numEl.textContent = a.leadingBidderId ? 'SOLD' : '—';
       if (fillEl) fillEl.style.width = '0%';
       if (countdownWrap) countdownWrap.classList.add('tense');
@@ -920,9 +922,10 @@ function startTicker() {
       if (countdownWrap) countdownWrap.classList.toggle('tense', secs <= 5);
     }
 
-    // Bid grace is 300ms past endsAt (see firebase.js placeBid). We finalize
-    // at +350ms — just 50ms past the grace, the minimum safe window.
-    if (remaining <= 0 && Date.now() > (a.endsAt || 0) + 350 && !finalizingInFlight) {
+    // FINALIZE_DELAY_MS (2000) > BID_GRACE_MS (1500) — by the time we claim
+    // the auction, any in-flight bid has either landed or been rejected
+    // for being past grace. This kills the race that produced phantom wins.
+    if (remaining <= 0 && now > (a.endsAt || 0) + FINALIZE_DELAY_MS && !finalizingInFlight) {
       finalizingInFlight = true;
       try {
         const result = await finalizeAuction(roomCode);

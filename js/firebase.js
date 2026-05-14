@@ -26,6 +26,22 @@ export function roomRef(roomCode) { return ref(db, `rooms/${roomCode}`); }
 export function bidderRef(roomCode, bidderId) { return ref(db, `rooms/${roomCode}/bidders/${bidderId}`); }
 
 // ---------------------------------------------------------------------------
+// Server-authoritative time
+// ---------------------------------------------------------------------------
+// Firebase RTDB exposes its server-clock offset at /.info/serverTimeOffset.
+// All timing checks (bid grace, finalize trigger, endsAt) should use
+// serverNow() instead of Date.now() so clients with skewed clocks agree
+// on when the buzzer fires. Otherwise a laptop with a 500ms-fast clock
+// thinks the buzzer hit before bidders' laptops do.
+
+let _serverOffset = 0;
+onValue(ref(db, '.info/serverTimeOffset'), (snap) => {
+  _serverOffset = Number(snap.val()) || 0;
+});
+export function serverNow() { return Date.now() + _serverOffset; }
+export function serverOffset() { return _serverOffset; }
+
+// ---------------------------------------------------------------------------
 // Room lifecycle
 // ---------------------------------------------------------------------------
 
@@ -102,7 +118,7 @@ export async function setStatus(roomCode, status) {
 // ---------------------------------------------------------------------------
 
 export async function startAuctionForPlayer(roomCode, player, startingBid) {
-  const endsAt = Date.now() + BID_TIMER_SECONDS * 1000;
+  const endsAt = serverNow() + BID_TIMER_SECONDS * 1000;
   const auction = {
     playerId: player.id,
     startingBid,
@@ -125,7 +141,7 @@ export async function pauseAuction(roomCode, paused) {
   // when un-pausing, reset the timer to a full BID_TIMER_SECONDS
   const updates = { 'currentAuction/paused': paused };
   if (!paused) {
-    updates['currentAuction/endsAt'] = Date.now() + BID_TIMER_SECONDS * 1000;
+    updates['currentAuction/endsAt'] = serverNow() + BID_TIMER_SECONDS * 1000;
   }
   await update(roomRef(roomCode), updates);
 }
@@ -138,6 +154,14 @@ export async function skipCurrentPlayer(roomCode) {
 // "rescue" the auction. Covers the case where the host's tab dies between
 // claim and award — otherwise the auction would be frozen forever.
 const FINALIZE_CLAIM_TTL_MS = 6000;
+
+// Grace window past the visible buzzer for late bids to land. Widened
+// from 300ms to 1500ms after a real-world race where a network-delayed
+// bid was rejected even though the bidder clicked well before zero.
+// Host's finalize trigger waits +2000ms (host.js startTicker) to ensure
+// finalize never claims the auction inside this window.
+export const BID_GRACE_MS = 1500;
+export const FINALIZE_DELAY_MS = 2000;
 
 // Atomically finalize the current auction.
 // Step 1: claim it via transaction. Aborts if:
@@ -162,17 +186,17 @@ export async function finalizeAuction(roomCode) {
   const txn = await runTransaction(auctionRef, (auction) => {
     if (!auction) return; // already cleared
     if (auction.paused) return;
-    if (Date.now() < (auction.endsAt || 0)) return;
+    if (serverNow() < (auction.endsAt || 0)) return;
     // Already being finalized?
     if (auction.finalizing) {
       const at = (typeof auction.finalizing === 'object' && auction.finalizing.at) || 0;
-      const age = Date.now() - at;
+      const age = serverNow() - at;
       if (age < FINALIZE_CLAIM_TTL_MS) {
         return; // fresh claim — leave it alone
       }
       rescued = true; // stale, we take over
     }
-    auction.finalizing = { at: Date.now() };
+    auction.finalizing = { at: serverNow() };
     claimed = JSON.parse(JSON.stringify(auction));
     return auction;
   });
@@ -198,7 +222,7 @@ export async function finalizeAuction(roomCode) {
     history.push({
       type: 'unsold',
       playerId: a.playerId,
-      at: Date.now(),
+      at: serverNow(),
     });
     await update(r, {
       currentAuction: null,
@@ -226,7 +250,7 @@ export async function finalizeAuction(roomCode) {
     winnerId,
     winnerName: bidder.name,
     price,
-    at: Date.now(),
+    at: serverNow(),
   });
 
   await update(r, {
@@ -276,6 +300,15 @@ export async function undoLastSale(roomCode) {
 
 // Transactional bid: refuses to overwrite a higher bid, refuses if the auction
 // has moved to a different player since the bidder saw it. Resets timer.
+//
+// Critical: { applyLocally: false } — without this, the transaction
+// handler's optimistic mutation is broadcast to the LOCAL watcher
+// immediately, so the bidder's UI flips to "you are leading" before the
+// server has confirmed (or even seen) the bid. If the bid is later
+// rejected server-side (e.g. raced with finalize, conflict with another
+// bidder), the rollback can be delayed or missed — leaving the bidder
+// staring at a phantom win. Disabling local apply means the bidder's UI
+// only updates when the server has actually committed the new state.
 export async function placeBid(roomCode, bidderId, bidderName, amount, expectedPlayerId) {
   const r = ref(db, `rooms/${roomCode}/currentAuction`);
   let result = { ok: false, reason: 'unknown' };
@@ -293,26 +326,26 @@ export async function placeBid(roomCode, bidderId, bidderName, amount, expectedP
       result = { ok: false, reason: 'Bidding closed — finalizing sale.' };
       return;
     }
-    // Allow a 300ms grace past the buzzer for network jitter; anything later
-    // is too late. Without this, a bid at T+50ms can land after the host has
-    // already claimed the auction for finalization, silently disappearing.
-    if (Date.now() > (auction.endsAt || 0) + 300) {
+    // Wider grace past the buzzer for network jitter. The host's finalize
+    // trigger waits FINALIZE_DELAY_MS (>BID_GRACE_MS) so finalize never
+    // claims the auction inside this window.
+    if (serverNow() > (auction.endsAt || 0) + BID_GRACE_MS) {
       result = { ok: false, reason: 'Too late — buzzer.' };
       return;
     }
     if (auction.paused) { result = { ok: false, reason: 'Auction is paused.' }; return; }
     const minNext = nextMinBid(auction.currentBid);
-    if (amount < minNext) { result = { ok: false, reason: 'Bid too low.' }; return; }
+    if (amount < minNext) { result = { ok: false, reason: `Bid too low — min ${minNext.toLocaleString()}.` }; return; }
     if (auction.leadingBidderId === bidderId && auction.currentBid >= amount) {
       result = { ok: false, reason: 'You already lead.' }; return;
     }
     auction.currentBid = amount;
     auction.leadingBidderId = bidderId;
     auction.leadingBidderName = bidderName;
-    auction.endsAt = Date.now() + BID_TIMER_SECONDS * 1000;
+    auction.endsAt = serverNow() + BID_TIMER_SECONDS * 1000;
     result = { ok: true };
     return auction;
-  });
+  }, { applyLocally: false });
   if (!result.ok) console.warn('[bid] rejected', result.reason, { amount, bidder: bidderName });
   else console.log('[bid] accepted', { amount, bidder: bidderName });
   return result;

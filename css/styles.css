@@ -2693,6 +2693,65 @@ body.mobile-body {
   background: linear-gradient(90deg, var(--green), #00b85f);
 }
 
+/* === In-flight bid overlay === */
+.bp-bid-pending {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  background: rgba(11,15,26,0.92);
+  backdrop-filter: blur(2px);
+  font-family: var(--mono); font-size: 14px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--gold);
+  border-radius: inherit;
+  animation: bpPendingPulse 1.2s ease-in-out infinite;
+  z-index: 5;
+}
+@keyframes bpPendingPulse {
+  0%, 100% { opacity: 0.85; }
+  50%      { opacity: 1; }
+}
+
+/* === Persistent bid-rejection banner === */
+.bp-bid-reject {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, rgba(255,46,78,0.18), rgba(255,46,78,0.06));
+  border: 1px solid rgba(255,46,78,0.5);
+  border-radius: 10px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.bp-bid-reject .head {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 2px;
+}
+.bp-bid-reject .ico {
+  color: var(--red); font-size: 10px;
+  animation: bpPillPulse 1.6s infinite;
+}
+.bp-bid-reject .title {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  color: var(--red);
+  letter-spacing: 0.15em; text-transform: uppercase;
+  flex: 1;
+}
+.bp-bid-reject .dismiss {
+  width: 22px; height: 22px;
+  display: grid; place-items: center;
+  border-radius: 5px;
+  color: var(--dim);
+  background: rgba(255,255,255,0.04);
+  font-family: var(--mono); font-size: 12px;
+}
+.bp-bid-reject .dismiss:hover { color: var(--text); background: rgba(255,255,255,0.08); }
+.bp-bid-reject .amt {
+  font-family: var(--display); font-size: 32px; line-height: 1;
+  color: var(--text);
+}
+.bp-bid-reject .reason {
+  font-family: var(--sans); font-size: 12px; line-height: 1.4;
+  color: var(--dim);
+}
+
 /* --- IDLE / LOCKED states --- */
 .bp-mobile-idle, .bp-mobile-locked {
   padding: 48px 24px;

@@ -13,7 +13,7 @@ import {
   positionWarnings, isLockedOut, MIN_INCREMENT, SQUAD_SIZE, BID_TIMER_SECONDS,
   squadPositionCounts,
 } from './auction.js';
-import { watchRoom, placeBid, getRoomOnce, watchConnection, finalizeAuction } from './firebase.js';
+import { watchRoom, placeBid, getRoomOnce, watchConnection, finalizeAuction, serverNow } from './firebase.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -93,6 +93,20 @@ let prevAuctionPlayerId = null;
 let currentLeaderAtKey = null; // detect new bids
 let lastBidAt = 0;
 
+// === Bid submission state ===
+// pendingBid: { amount, playerId } while a placeBid call is in flight.
+// While pending, the bid hero shows a "submitting…" overlay and the bid
+// buttons are disabled. Set to null on response.
+let pendingBid = null;
+// rejectedBid: persistent banner state — { amount, reason, playerId }.
+// Stays visible until currentAuction.playerId changes (new auction
+// starts) or the user dismisses it.
+let rejectedBid = null;
+// Live connection state from .info/connected. When false, all bid
+// controls are disabled — clicking Bid into a dead socket is the
+// single biggest cause of phantom-lead UIs.
+let isConnected = true;
+
 // ---------------------------------------------------------------------------
 // Boot
 // ---------------------------------------------------------------------------
@@ -101,9 +115,15 @@ let lastBidAt = 0;
   $('roomLabel').textContent = `Room ${roomCode}`;
   watchRoom(roomCode, onUpdate);
   watchConnection((connected) => {
+    isConnected = connected;
     document.body.classList.toggle('offline', !connected);
     const dot = $('connDot');
     if (dot) dot.classList.toggle('offline', !connected);
+    // Re-apply button disabled state when connection changes
+    if (room?.currentAuction) {
+      const isMe = room.currentAuction.leadingBidderId === myId;
+      renderQuickBids(room.currentAuction, isMe);
+    }
   });
 
   $('btnOpenDrawer').addEventListener('click', openDrawer);
@@ -174,12 +194,23 @@ function onUpdate(data) {
       currentLeaderAtKey = null;
       lastBidAt = 0;
       prevAuctionPlayerId = a.playerId;
+      // New auction → drop any stale rejection banner from the prior round
+      if (rejectedBid && rejectedBid.playerId !== a.playerId) {
+        rejectedBid = null;
+        renderRejectionBanner();
+      }
+      // Also drop pending state if the previous auction ended before
+      // placeBid could resolve (shouldn't happen but defensive).
+      if (pendingBid && pendingBid.playerId !== a.playerId) {
+        pendingBid = null;
+        renderPendingOverlay();
+      }
     }
     const key = `${a.leadingBidderId || ''}@${a.currentBid || 0}`;
     if (a.leadingBidderId && a.currentBid > 0 && key !== currentLeaderAtKey) {
       bidsForCurrent++;
       currentLeaderAtKey = key;
-      lastBidAt = Date.now();
+      lastBidAt = serverNow();
     }
   } else if (prevAuctionPlayerId) {
     prevAuctionPlayerId = null;
@@ -269,10 +300,59 @@ function renderBidHero(a, isMe) {
   } else {
     flag.textContent = '▲ Open · awaiting first bid';
   }
-  const sec = Math.max(0, Math.ceil((a.endsAt - Date.now()) / 1000));
+  const sec = Math.max(0, Math.ceil((a.endsAt - serverNow()) / 1000));
   $('timerNum').textContent = formatTime(sec);
   $('bidCount').textContent = `${bidsForCurrent} bid${bidsForCurrent === 1 ? '' : 's'}`;
   $('bidAgo').textContent = lastBidAt ? bidTimeAgo(lastBidAt) : 'just opened';
+
+  // Pending bid overlay — shows "submitting X.XM…" while waiting for the
+  // server. With applyLocally:false, the bid hero won't show the optimistic
+  // state, so this overlay is the only visual confirmation that the bid
+  // was sent. Clears as soon as placeBid resolves.
+  renderPendingOverlay();
+  renderRejectionBanner();
+}
+
+function renderPendingOverlay() {
+  let overlay = document.getElementById('bidPendingOverlay');
+  if (pendingBid) {
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'bidPendingOverlay';
+      overlay.className = 'bp-bid-pending';
+      $('bidHero').appendChild(overlay);
+    }
+    overlay.textContent = `Submitting ${formatMoney(pendingBid.amount)}…`;
+  } else if (overlay) {
+    overlay.remove();
+  }
+}
+
+function renderRejectionBanner() {
+  let banner = document.getElementById('bidRejectBanner');
+  if (rejectedBid) {
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'bidRejectBanner';
+      banner.className = 'bp-bid-reject';
+      $('bidHero').appendChild(banner);
+    }
+    banner.innerHTML = `
+      <div class="head">
+        <span class="ico">●</span>
+        <span class="title">Bid did not register</span>
+        <button class="dismiss" id="dismissReject" aria-label="Dismiss">✕</button>
+      </div>
+      <div class="amt">${formatMoney(rejectedBid.amount)}</div>
+      <div class="reason">${escapeHtml(rejectedBid.reason)}</div>
+    `;
+    document.getElementById('dismissReject')?.addEventListener('click', () => {
+      rejectedBid = null;
+      renderRejectionBanner();
+    });
+  } else if (banner) {
+    banner.remove();
+  }
 }
 
 function renderQuickBids(a, isMe) {
@@ -280,16 +360,25 @@ function renderQuickBids(a, isMe) {
   const cap = maxBidFor(me);
   $('minNextBid').textContent = formatMoney(minNext);
 
+  // Any of these conditions disables ALL bid controls
+  const lockedOutByConn = !isConnected;
+  const lockedOutByPending = !!pendingBid;
+
   document.querySelectorAll('.bp-qb').forEach(b => {
     const delta = Number(b.dataset.delta);
     const target = (a.currentBid || 0) + delta;
     b.textContent = `+${formatMoney(delta)}`;
-    b.disabled = target < minNext || target > cap || a.paused || isMe;
+    b.disabled =
+      target < minNext || target > cap ||
+      a.paused || isMe ||
+      lockedOutByConn || lockedOutByPending;
   });
 
-  $('customBidInput').placeholder = `min ${formatMoney(minNext)} · max ${formatMoney(cap)}`;
-  $('customBidInput').disabled = !!a.paused;
-  $('btnCustomBid').disabled = !!a.paused || isMe;
+  $('customBidInput').placeholder = lockedOutByConn
+    ? 'reconnecting…'
+    : `min ${formatMoney(minNext)} · max ${formatMoney(cap)}`;
+  $('customBidInput').disabled = !!a.paused || lockedOutByConn || lockedOutByPending;
+  $('btnCustomBid').disabled = !!a.paused || isMe || lockedOutByConn || lockedOutByPending;
 }
 
 function renderWarning() {
@@ -373,36 +462,71 @@ function closeDrawer() { $('drawer').classList.remove('open'); $('drawerBackdrop
 
 async function submitBid(amount) {
   if (!room?.currentAuction) return;
+  if (!isConnected) {
+    setRejectedBid(amount, 'Offline — bid not sent. Reconnect and try again.');
+    return;
+  }
+  if (pendingBid) return; // already submitting, prevent double-tap
   const a = room.currentAuction;
   const minNext = nextMinBid(a.currentBid);
   const v = validateBid({ player: me, currentBid: a.currentBid, minNext, amount });
-  if (!v.ok) { showBidStatus(v.reason, true); return; }
-  const res = await placeBid(roomCode, myId, me.name, amount, a.playerId);
-  if (!res.ok) {
-    showBidStatus(res.reason || 'Bid rejected.', true);
-  } else {
-    showBidStatus(`Bid placed: ${formatMoney(amount)}`, false);
-    haptic();
+  if (!v.ok) {
+    setRejectedBid(amount, v.reason);
+    return;
   }
+
+  // Mark pending — disables buttons, shows the "submitting…" overlay
+  pendingBid = { amount, playerId: a.playerId };
+  rejectedBid = null;        // clear any prior rejection
+  renderPendingOverlay();
+  renderRejectionBanner();
+  const isMe = a.leadingBidderId === myId;
+  renderQuickBids(a, isMe);
+
+  let res;
+  try {
+    res = await placeBid(roomCode, myId, me.name, amount, a.playerId);
+  } catch (e) {
+    res = { ok: false, reason: `Network error — ${e?.message || e}` };
+  }
+
+  pendingBid = null;
+  renderPendingOverlay();
+
+  if (res.ok) {
+    haptic();
+    // No success banner — when applyLocally:false fires watchRoom with the
+    // confirmed server state, the bid hero will update to "you are leading"
+    // naturally. That visible flip is the success signal.
+  } else {
+    setRejectedBid(amount, res.reason || 'Bid rejected.');
+  }
+
+  // Restore button state
+  if (room?.currentAuction) {
+    const stillMe = room.currentAuction.leadingBidderId === myId;
+    renderQuickBids(room.currentAuction, stillMe);
+  }
+}
+
+function setRejectedBid(amount, reason) {
+  rejectedBid = {
+    amount,
+    reason,
+    playerId: room?.currentAuction?.playerId,
+  };
+  renderRejectionBanner();
 }
 
 function onCustomBid() {
   const raw = $('customBidInput').value;
   const parsed = parseMoney(raw);
   if (!Number.isFinite(parsed)) {
-    showBidStatus(`Couldn't parse "${raw}". Try 1.5M, 500k, or 2000000.`, true);
+    setRejectedBid(0, `Couldn't parse "${raw}". Try 1.5M, 500k, or 2000000.`);
     return;
   }
   submitBid(parsed);
   $('customBidInput').value = '';
-}
-
-function showBidStatus(msg, isError) {
-  const el = $('bidStatus');
-  el.className = 'bid-status ' + (isError ? 'err' : 'ok');
-  el.textContent = msg;
-  clearTimeout(showBidStatus._t);
-  showBidStatus._t = setTimeout(() => { el.textContent = ''; el.className = 'bid-status'; }, 3000);
 }
 
 function haptic() { if ('vibrate' in navigator) navigator.vibrate(30); }
@@ -422,16 +546,18 @@ function startTicker() {
       return;
     }
     const total = BID_TIMER_SECONDS * 1000;
-    const remaining = Math.max(0, (a.endsAt || 0) - Date.now());
+    const now = serverNow();
+    const remaining = Math.max(0, (a.endsAt || 0) - now);
     const pct = Math.max(0, Math.min(1, remaining / total));
     if (fill) fill.style.transform = `scaleX(${pct})`;
     const sec = Math.ceil(remaining / 1000);
     $('timerNum').textContent = formatTime(sec);
 
-    // Rescue: if the auction is stuck >3s past buzzer, this bidder offers
-    // to finalize. finalizeAuction is atomic — racing clients gracefully
-    // back off. Only matters if the host's tab has died.
-    if (!rescueInFlight && remaining <= 0 && Date.now() > (a.endsAt || 0) + 3000) {
+    // Rescue: if the auction is stuck >5s past buzzer (well past
+    // FINALIZE_DELAY_MS of 2s), this bidder offers to finalize.
+    // finalizeAuction is atomic — racing clients gracefully back off.
+    // Only matters if the host's tab has died.
+    if (!rescueInFlight && remaining <= 0 && now > (a.endsAt || 0) + 5000) {
       rescueInFlight = true;
       finalizeAuction(roomCode)
         .then(res => { if (res) console.warn('[bidder] rescued stuck auction', res); })
@@ -448,7 +574,7 @@ function formatTime(totalSec) {
 }
 
 function bidTimeAgo(ts) {
-  const s = Math.max(0, Math.round((Date.now() - ts) / 1000));
+  const s = Math.max(0, Math.round((serverNow() - ts) / 1000));
   if (s < 1) return 'just now';
   if (s < 60) return `${s}s ago`;
   const m = Math.floor(s / 60);
