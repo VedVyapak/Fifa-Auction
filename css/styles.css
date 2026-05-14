@@ -1509,7 +1509,7 @@ body.offline .bp-conn-dot {
   gap: 36px;
   white-space: nowrap;
   flex-shrink: 0;
-  animation: bpTickerScroll 60s linear infinite;
+  animation: bpTickerScroll 30s linear infinite;
   will-change: transform;
   padding-right: 36px;
 }
