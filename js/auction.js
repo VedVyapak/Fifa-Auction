@@ -235,3 +235,49 @@ export function makeRoomCode() {
 export function makeBidderId() {
   return 'b_' + Math.random().toString(36).slice(2, 10);
 }
+
+// Build the player pool sized for a given bidder count.
+//
+//   total       = bidderCount * SQUAD_SIZE + 10  (10 = buffer for theatre)
+//   min by cat  = { GK: n*2, DEF: n*4, MID: n*4, FWD: n*3 }  → n*13 reserved
+//   remainder   = n*2 + 10 slots, filled with top-OVR regardless of position
+//
+// Always picks the top players by overall — no randomisation. The category
+// minimums guarantee every bidder can theoretically field a balanced squad.
+// If the input doesn't have enough at a category, that category is just
+// capped at what's available (no padding with weaker players).
+export function buildPoolForBidderCount(allPlayers, bidderCount) {
+  const n = Math.max(1, bidderCount | 0);
+  const total = n * SQUAD_SIZE + 10;
+  const mins = { GK: n * 2, DEF: n * 4, MID: n * 4, FWD: n * 3 };
+
+  // Helper — same buckets used everywhere else in the app.
+  const cat = (pos) => {
+    const key = (pos || '').toUpperCase().trim();
+    return POSITION_BUCKETS[key] || 'MID';
+  };
+
+  const sorted = [...(allPlayers || [])].sort((a, b) => (b.overall || 0) - (a.overall || 0));
+  const byCat = { GK: [], DEF: [], MID: [], FWD: [] };
+  for (const p of sorted) byCat[cat(p.position)].push(p);
+
+  const selected = [];
+  const selectedIds = new Set();
+  for (const [c, count] of Object.entries(mins)) {
+    for (const p of byCat[c].slice(0, count)) {
+      if (!selectedIds.has(p.id)) {
+        selected.push(p);
+        selectedIds.add(p.id);
+      }
+    }
+  }
+  // Fill remaining slots with the highest-OVR players not already picked.
+  for (const p of sorted) {
+    if (selected.length >= total) break;
+    if (!selectedIds.has(p.id)) {
+      selected.push(p);
+      selectedIds.add(p.id);
+    }
+  }
+  return selected.sort((a, b) => (b.overall || 0) - (a.overall || 0));
+}

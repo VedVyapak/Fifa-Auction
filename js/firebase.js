@@ -320,6 +320,27 @@ export async function finalizeAuction(roomCode) {
   return { winnerId, winnerName: bidder.name, price, player };
 }
 
+// Reset every "unsold" player in the room back to fresh (sold: false) so
+// they can be auctioned again. Returns the number recycled. Used when the
+// fresh pool runs out but there are unsold leftovers — gives the host a
+// chance to push those players through the auction again.
+export async function recycleUnsoldPlayers(roomCode) {
+  const r = roomRef(roomCode);
+  const snap = await get(r);
+  const room = snap.val();
+  if (!room?.pool) return 0;
+  const updates = {};
+  let count = 0;
+  for (const [id, p] of Object.entries(room.pool)) {
+    if (p?.sold === 'unsold') {
+      updates[`pool/${id}/sold`] = false;
+      count++;
+    }
+  }
+  if (count > 0) await update(r, updates);
+  return count;
+}
+
 export async function undoLastSale(roomCode) {
   const r = roomRef(roomCode);
   const snap = await get(r);

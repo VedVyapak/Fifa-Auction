@@ -2,11 +2,13 @@ import {
   startingBid, makeRoomCode, formatMoney, bucketFor, SQUAD_SIZE, BID_TIMER_SECONDS,
   STARTING_BUDGET, MIN_INCREMENT,
   squadPositionCounts, pickNextPlayer, playerTier, positionWarnings,
+  buildPoolForBidderCount,
 } from './auction.js';
 import {
   createRoom, watchRoom, startAuctionForPlayer, pauseAuction,
   skipCurrentPlayer, finalizeAuction, undoLastSale, setStatus, getRoomOnce,
   watchConnection, serverNow, FINALIZE_DELAY_MS, rebuildPool,
+  recycleUnsoldPlayers,
 } from './firebase.js';
 
 // ---------------------------------------------------------------------------
@@ -388,6 +390,22 @@ function renderLobby() {
 }
 
 async function onStartAuction() {
+  // Resize the pool to fit the joined bidders before the auction goes live.
+  // This swaps the createRoom-time placeholder (the full 200-player JSON)
+  // for the right-sized subset: n*15 + 10 players, with category minimums
+  // of n*2 GK / n*4 DEF / n*4 MID / n*3 FWD, rest filled by top OVR.
+  const joined = Object.values(room?.bidders || {}).filter(b => b.name).length;
+  if (joined < 1) { alert('Need at least one bidder to start.'); return; }
+  try {
+    const newPool = buildPoolForBidderCount(players, joined);
+    await rebuildPool(roomCode, newPool);
+    console.log(`[start] sized pool for ${joined} bidder${joined === 1 ? '' : 's'} → ${newPool.length} players`);
+    // Reset local queue so the next pick draws from the new pool
+    nextQueue = [];
+  } catch (e) {
+    console.error('[start] pool resize failed', e);
+    if (!confirm('Could not resize the player pool. Start anyway with the full 200-player pool?')) return;
+  }
   await setStatus(roomCode, 'live');
 }
 
@@ -842,6 +860,33 @@ function renderSoldRows(rows, withRanks) {
 
 async function onNextPlayer(opts = {}) {
   if (!room) return;
+
+  // If no fresh players remain, recycle the unsold ones (mark them
+  // sold:false so pickNextPlayer can draw them again). One round of
+  // recycling per call so we don't loop forever on an empty room.
+  const freshCount = Object.values(room.pool || {}).filter(p => !p.sold).length;
+  if (freshCount === 0) {
+    const unsoldCount = Object.values(room.pool || {}).filter(p => p.sold === 'unsold').length;
+    if (unsoldCount > 0) {
+      alert(`Pool exhausted. Bringing back ${unsoldCount} unsold player${unsoldCount === 1 ? '' : 's'} for another round.`);
+      try {
+        await recycleUnsoldPlayers(roomCode);
+        // Wait briefly for the firebase watcher to refresh room state so
+        // pickNextPlayer below sees the recycled players as available.
+        await new Promise(r => setTimeout(r, 400));
+      } catch (e) {
+        console.error('[next] recycle failed', e);
+        alert('Could not recycle unsold players: ' + (e?.message || e));
+        return;
+      }
+      // Clear the stale queue so it rebuilds from the now-recycled pool
+      nextQueue = [];
+    } else {
+      alert('All players sold!');
+      return;
+    }
+  }
+
   let pick;
   if (opts.forceTier) {
     // Marquee override bypasses the queue
