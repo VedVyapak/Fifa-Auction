@@ -198,6 +198,8 @@ function wireListeners() {
     nextQueue = buildNextQueue();
     renderUpNext();
     preloadQueueImages();
+    // refresh the ticker so "NEXT · {player}" updates immediately
+    if (room) renderLive();
   });
 
   // squad modal navigation
@@ -413,20 +415,29 @@ function renderLive() {
     $('tickerHighest').textContent = '—';
   }
 
+  // BIDDING segment — adapts to state. During an active auction it shows
+  // bid velocity vs last round (or raw bid count for the first one).
+  // During idle, swap the label to "NEXT · {player}" so the strip has
+  // fresh data instead of a frozen-looking "BIDDING —".
   const a = room.currentAuction;
   const currentBidCount = (bidHistoryByPlayer[a?.playerId] || []).length;
-  const tickerBidding = $('tickerBidding');
   const tickerWrap = $('tickerBiddingWrap');
   if (a && lastRoundBidCount > 0) {
     const pct = Math.round(((currentBidCount - lastRoundBidCount) / Math.max(lastRoundBidCount, 1)) * 100);
     const sign = pct >= 0 ? '+' : '';
-    tickerBidding.textContent = `${sign}${pct}%`;
+    tickerWrap.innerHTML = `BIDDING <strong id="tickerBidding">${sign}${pct}%</strong> vs last`;
     tickerWrap.classList.toggle('down', pct < 0);
   } else if (a) {
-    tickerBidding.textContent = `${currentBidCount}`;
+    tickerWrap.innerHTML = `BIDDING <strong id="tickerBidding">${currentBidCount}</strong> bid${currentBidCount === 1 ? '' : 's'}`;
     tickerWrap.classList.remove('down');
   } else {
-    tickerBidding.textContent = '—';
+    // idle — show what's coming next so the ticker stays alive
+    const nextUp = nextQueue[0];
+    if (nextUp) {
+      tickerWrap.innerHTML = `NEXT <strong id="tickerBidding">${escapeHtml(nextUp.name)}</strong> · ${nextUp.overall} OVR`;
+    } else {
+      tickerWrap.innerHTML = `BIDDING <strong id="tickerBidding">idle</strong>`;
+    }
     tickerWrap.classList.remove('down');
   }
 

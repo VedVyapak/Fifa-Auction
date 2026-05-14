@@ -1566,8 +1566,11 @@ body.offline .bp-conn-dot {
   0%   { box-shadow: 0 0 0 0 rgba(0,230,118,0.55); }
   100% { box-shadow: 0 0 0 24px rgba(0,230,118,0); }
 }
-.bp-feature.idle { background: linear-gradient(180deg, var(--bg-2), var(--bg-1)); grid-template-columns: 1fr; }
+.bp-feature.idle { background: linear-gradient(180deg, var(--bg-2), var(--bg-1)); grid-template-columns: 1fr; min-height: 320px; }
 .bp-feature.idle .bp-player-pane { padding: 64px 32px; align-items: center; text-align: center; justify-content: center; }
+/* Hide the empty bid-pane in idle so its dark gradient + padding don't
+   leave a half-filled column. */
+.bp-feature.idle .bp-bid-pane { display: none; }
 
 .bp-player-pane {
   position: relative; padding: 36px 32px;
