@@ -238,46 +238,59 @@ export function makeBidderId() {
 
 // Build the player pool sized for a given bidder count.
 //
-//   total       = bidderCount * SQUAD_SIZE + 10  (10 = buffer for theatre)
-//   min by cat  = { GK: n*2, DEF: n*4, MID: n*4, FWD: n*3 }  → n*13 reserved
-//   remainder   = n*2 + 10 slots, filled with top-OVR regardless of position
+//   total       = bidderCount * SQUAD_SIZE + 10
+//   minimums    = { GK: n*2, DEF: n*4, MID: n*4, FWD: n*3 }
 //
-// Always picks the top players by overall — no randomisation. The category
-// minimums guarantee every bidder can theoretically field a balanced squad.
-// If the input doesn't have enough at a category, that category is just
-// capped at what's available (no padding with weaker players).
+// Approach: take the TOP X players by overall first (so the pool is
+// densely marquee/star at the top), THEN enforce category minimums by
+// swapping. For any category that's under its minimum, swap in the best
+// unpicked player from that category in exchange for the LOWEST-OVR
+// player in the pool whose category is currently over its minimum.
+// The pool never goes below top-OVR for any swap — only the floor of
+// the pool shifts. No randomisation anywhere.
 export function buildPoolForBidderCount(allPlayers, bidderCount) {
   const n = Math.max(1, bidderCount | 0);
   const total = n * SQUAD_SIZE + 10;
   const mins = { GK: n * 2, DEF: n * 4, MID: n * 4, FWD: n * 3 };
 
-  // Helper — same buckets used everywhere else in the app.
-  const cat = (pos) => {
-    const key = (pos || '').toUpperCase().trim();
+  const cat = (p) => {
+    const key = (p?.position || '').toUpperCase().trim();
     return POSITION_BUCKETS[key] || 'MID';
   };
 
   const sorted = [...(allPlayers || [])].sort((a, b) => (b.overall || 0) - (a.overall || 0));
-  const byCat = { GK: [], DEF: [], MID: [], FWD: [] };
-  for (const p of sorted) byCat[cat(p.position)].push(p);
+  const selected = sorted.slice(0, total);
+  const selectedIds = new Set(selected.map(p => p.id));
 
-  const selected = [];
-  const selectedIds = new Set();
-  for (const [c, count] of Object.entries(mins)) {
-    for (const p of byCat[c].slice(0, count)) {
-      if (!selectedIds.has(p.id)) {
-        selected.push(p);
-        selectedIds.add(p.id);
+  const countCats = (arr) => {
+    const c = { GK: 0, DEF: 0, MID: 0, FWD: 0 };
+    for (const p of arr) c[cat(p)]++;
+    return c;
+  };
+
+  for (const [needCat, needCount] of Object.entries(mins)) {
+    let counts = countCats(selected);
+    while (counts[needCat] < needCount) {
+      // Best unpicked candidate from the missing category
+      const candidate = sorted.find(p => cat(p) === needCat && !selectedIds.has(p.id));
+      if (!candidate) break; // dataset just doesn't have enough at this position
+
+      // Lowest-OVR player in selected from a category that's still over its
+      // minimum (so removing them doesn't break a different minimum).
+      let removeIdx = -1;
+      for (let i = selected.length - 1; i >= 0; i--) {
+        const c = cat(selected[i]);
+        if (counts[c] > mins[c]) { removeIdx = i; break; }
       }
+      if (removeIdx === -1) break; // can't free a slot without breaking another minimum
+
+      const removed = selected[removeIdx];
+      selected[removeIdx] = candidate;
+      selectedIds.delete(removed.id);
+      selectedIds.add(candidate.id);
+      counts = countCats(selected);
     }
   }
-  // Fill remaining slots with the highest-OVR players not already picked.
-  for (const p of sorted) {
-    if (selected.length >= total) break;
-    if (!selectedIds.has(p.id)) {
-      selected.push(p);
-      selectedIds.add(p.id);
-    }
-  }
+
   return selected.sort((a, b) => (b.overall || 0) - (a.overall || 0));
 }

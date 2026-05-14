@@ -196,9 +196,9 @@ function wireListeners() {
     });
   });
 
-  // up-next reshuffle — rebuilds the actual queue (and re-warms image cache)
+  // up-next reshuffle — explicit user action, rebuild from scratch.
   $('btnShuffle').addEventListener('click', () => {
-    nextQueue = buildNextQueue();
+    buildNextQueue(); // wipes and tops up fresh
     renderUpNext();
     preloadQueueImages();
     // refresh the ticker so "NEXT · {player}" updates immediately
@@ -440,14 +440,15 @@ function renderLive() {
   // bidders sidebar
   renderBiddersSidebar(a);
 
-  // up-next queue — keep filled to 3 picks. Rebuild if any queued player has
-  // since been sold (e.g. host force-marqueed) or if it's empty.
-  const queueStale = !nextQueue.length
-    || nextQueue.some(p => !room.pool[p.id] || room.pool[p.id].sold);
-  if (queueStale) {
-    nextQueue = buildNextQueue();
-    preloadQueueImages();
-  }
+  // up-next queue — drop any entries that are no longer pickable
+  // (sold via force-marquee, undone, removed by reload-pool) and top up
+  // the tail. The remaining entries keep their positions — slots 2 and
+  // 3 you see this render are the same ones you saw last render unless
+  // they got knocked out by one of the above.
+  const before = nextQueue.length;
+  nextQueue = nextQueue.filter(p => room.pool[p.id] && !room.pool[p.id].sold);
+  topUpQueue();
+  if (nextQueue.length !== before) preloadQueueImages();
   renderUpNext();
 
   // sold tabs
@@ -733,30 +734,64 @@ function trackBidHistory() {
 }
 
 // =============================================================================
-// Up Next queue — these are the ACTUAL next players. onNextPlayer pops head,
-// btnShuffle rebuilds. Uses the real pickNextPlayer logic with a simulated
-// history so the queue respects pacing (opener marquee, endgame marquees,
-// position anti-cluster).
+// Up Next queue — PERSISTENT. onNextPlayer shifts the head and tops up the
+// tail by one, so slots 2 and 3 you saw a moment ago stay as slots 1 and 2.
+// Only Shuffle button or a stale-entry filter forces a full rebuild.
+//
+// Skipped players go into skipCooldowns for SKIP_COOLDOWN_ROUNDS so they
+// don't immediately reappear as the next pick — the host can intentionally
+// pass on a player and trust they'll come back later, not next round.
 // =============================================================================
 
 const NEXT_QUEUE_SIZE = 3;
+const SKIP_COOLDOWN_ROUNDS = 10;
+let skipCooldowns = new Map(); // playerId → roundCount at which they become pickable again
+let roundCount = 0;            // local monotonic counter, increments each onNextPlayer
 
-function buildNextQueue() {
-  if (!room?.pool) return [];
-  // Clone pool so we can mark queued players "sold" for the simulation
+// Add one pick to the tail of the queue, respecting cooldowns + already-queued.
+function topUpQueueOnce(opts = {}) {
+  if (!room?.pool) return null;
   const simPool = {};
   for (const id in room.pool) simPool[id] = { ...room.pool[id] };
-  const simHistory = [...(room.history || [])];
-  const queue = [];
-  for (let i = 0; i < NEXT_QUEUE_SIZE; i++) {
-    const pick = pickNextPlayer(simPool, simHistory);
-    if (!pick) break;
-    queue.push(pick);
-    // Mark as "sold" in the sim so pickNextPlayer doesn't re-pick
-    simPool[pick.id].sold = 'queued';
-    simHistory.push({ type: 'sold', playerId: pick.id, at: Date.now() + i });
+  // Hide already-queued players
+  for (const q of nextQueue) {
+    if (simPool[q.id]) simPool[q.id].sold = 'queued';
   }
-  return queue;
+  // Hide players still in skip cooldown
+  for (const [id, expiresAfter] of skipCooldowns) {
+    if (expiresAfter > roundCount && simPool[id] && !simPool[id].sold) {
+      simPool[id].sold = 'cooldown';
+    }
+  }
+  const simHistory = [...(room.history || [])];
+  for (let i = 0; i < nextQueue.length; i++) {
+    simHistory.push({ type: 'sold', playerId: nextQueue[i].id, at: Date.now() + i });
+  }
+  const pick = pickNextPlayer(simPool, simHistory, opts);
+  if (pick) nextQueue.push(pick);
+  return pick;
+}
+
+// Fill nextQueue up to NEXT_QUEUE_SIZE without disturbing existing entries.
+function topUpQueue() {
+  while (nextQueue.length < NEXT_QUEUE_SIZE) {
+    const added = topUpQueueOnce();
+    if (!added) break;
+  }
+}
+
+// Full rebuild (Shuffle button + safety net). Clears queue then tops up.
+function buildNextQueue() {
+  nextQueue = [];
+  topUpQueue();
+  return nextQueue;
+}
+
+// Drop expired cooldowns each round so they don't leak memory.
+function decayCooldowns() {
+  for (const [id, expiresAfter] of skipCooldowns) {
+    if (expiresAfter <= roundCount) skipCooldowns.delete(id);
+  }
 }
 
 function renderUpNext() {
@@ -889,18 +924,25 @@ async function onNextPlayer(opts = {}) {
 
   let pick;
   if (opts.forceTier) {
-    // Marquee override bypasses the queue
+    // Marquee override bypasses the queue — but remove the picked
+    // player from the queue if they happened to be in it.
     pick = pickNextPlayer(room.pool, room.history, opts);
+    if (pick) nextQueue = nextQueue.filter(p => p.id !== pick.id);
   } else {
-    // Consume the queue head. If empty (or stale), build it now.
-    if (!nextQueue.length) nextQueue = buildNextQueue();
+    // Consume the queue head. If empty (or stale), top up first.
+    if (!nextQueue.length) topUpQueue();
     pick = nextQueue.shift();
     if (!pick) pick = pickNextPlayer(room.pool, room.history);
   }
   if (!pick) { alert('All players sold!'); return; }
   await startAuctionForPlayer(roomCode, pick, startingBid(pick.overall));
-  // Refill the queue so the panel always shows 3 ahead, and preload images
-  nextQueue = buildNextQueue();
+
+  // Advance the round counter, expire old cooldowns, then top up the
+  // tail. The existing queue entries (slots 2 and 3 from the previous
+  // render) shift up to slots 1 and 2 and only ONE new pick lands.
+  roundCount++;
+  decayCooldowns();
+  topUpQueue();
   preloadQueueImages();
   renderUpNext();
 }
@@ -923,7 +965,23 @@ async function onPause() {
 
 async function onSkip() {
   if (!confirm('Skip this player (no sale)?')) return;
+  const a = room?.currentAuction;
+  // Cooldown: skipped player won't be re-picked for SKIP_COOLDOWN_ROUNDS
+  // calls of "Auction next player". Without this, the picker tends to
+  // pull the same marquee right back because the pacing logic still
+  // sees it as a high-priority unsold candidate.
+  if (a?.playerId) {
+    skipCooldowns.set(a.playerId, roundCount + SKIP_COOLDOWN_ROUNDS);
+  }
   await skipCurrentPlayer(roomCode);
+  // Pop the skipped player out of the queue if it somehow ended up there
+  // mid-cycle, then refill.
+  if (a?.playerId) {
+    nextQueue = nextQueue.filter(p => p.id !== a.playerId);
+  }
+  topUpQueue();
+  preloadQueueImages();
+  renderUpNext();
 }
 
 async function onUndo() {
