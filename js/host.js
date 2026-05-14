@@ -399,6 +399,9 @@ function renderLive() {
 
   trackBidHistory();
 
+  // current auction shorthand — used by feature card, controls, bidders
+  const a = room.currentAuction;
+
   // chrome ticker — multiple metrics that loop horizontally
   renderTicker();
 
