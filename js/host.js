@@ -399,47 +399,8 @@ function renderLive() {
 
   trackBidHistory();
 
-  // chrome ticker
-  const pool = Object.values(room.pool || {});
-  const total = pool.length;
-  const sold = pool.filter(p => p.sold && p.sold !== false && p.sold !== 'unsold').length;
-  $('tickerPool').textContent = `${sold}/${total}`;
-
-  const history = room.history || [];
-  const sales = history.filter(h => h.type === 'sold');
-  const topSale = sales.length ? sales.reduce((m, h) => h.price > m.price ? h : m, sales[0]) : null;
-  if (topSale) {
-    const tp = room.pool[topSale.playerId];
-    $('tickerHighest').textContent = `${formatMoney(topSale.price)}${tp ? ' · ' + tp.name.split(' ').pop() : ''}`;
-  } else {
-    $('tickerHighest').textContent = '—';
-  }
-
-  // BIDDING segment — adapts to state. During an active auction it shows
-  // bid velocity vs last round (or raw bid count for the first one).
-  // During idle, swap the label to "NEXT · {player}" so the strip has
-  // fresh data instead of a frozen-looking "BIDDING —".
-  const a = room.currentAuction;
-  const currentBidCount = (bidHistoryByPlayer[a?.playerId] || []).length;
-  const tickerWrap = $('tickerBiddingWrap');
-  if (a && lastRoundBidCount > 0) {
-    const pct = Math.round(((currentBidCount - lastRoundBidCount) / Math.max(lastRoundBidCount, 1)) * 100);
-    const sign = pct >= 0 ? '+' : '';
-    tickerWrap.innerHTML = `BIDDING <strong id="tickerBidding">${sign}${pct}%</strong> vs last`;
-    tickerWrap.classList.toggle('down', pct < 0);
-  } else if (a) {
-    tickerWrap.innerHTML = `BIDDING <strong id="tickerBidding">${currentBidCount}</strong> bid${currentBidCount === 1 ? '' : 's'}`;
-    tickerWrap.classList.remove('down');
-  } else {
-    // idle — show what's coming next so the ticker stays alive
-    const nextUp = nextQueue[0];
-    if (nextUp) {
-      tickerWrap.innerHTML = `NEXT <strong id="tickerBidding">${escapeHtml(nextUp.name)}</strong> · ${nextUp.overall} OVR`;
-    } else {
-      tickerWrap.innerHTML = `BIDDING <strong id="tickerBidding">idle</strong>`;
-    }
-    tickerWrap.classList.remove('down');
-  }
+  // chrome ticker — multiple metrics that loop horizontally
+  renderTicker();
 
   // live pill
   $('livePill').classList.toggle('hide', room.status !== 'live');
@@ -643,6 +604,71 @@ function renderBiddersSidebar(a) {
   $('hostLeaderboard').querySelectorAll('[data-bidder]').forEach(el => {
     el.addEventListener('click', () => openSquadModal(el.dataset.bidder));
   });
+}
+
+// =============================================================================
+// Top chrome ticker — scrolling marquee of live metrics
+// =============================================================================
+
+function renderTicker() {
+  const track = $('tickerTrack');
+  if (!track || !room) return;
+
+  const pool = Object.values(room.pool || {});
+  const total = pool.length;
+  const sold = pool.filter(p => p.sold && p.sold !== false && p.sold !== 'unsold').length;
+  const history = room.history || [];
+  const sales = history.filter(h => h.type === 'sold');
+  const totalVolume = sales.reduce((s, h) => s + (h.price || 0), 0);
+  const avgPrice = sales.length ? totalVolume / sales.length : 0;
+  const topSale = sales.length ? sales.reduce((m, h) => h.price > m.price ? h : m, sales[0]) : null;
+  const topPlayer = topSale ? room.pool[topSale.playerId] : null;
+  const lastSale = sales.length ? sales[sales.length - 1] : null;
+  const lastPlayer = lastSale ? room.pool[lastSale.playerId] : null;
+  const bidders = Object.values(room.bidders || {}).filter(b => b.name);
+  const topBidder = bidders.length
+    ? bidders.slice().sort((x, y) => (STARTING_BUDGET - (y.budget ?? STARTING_BUDGET)) - (STARTING_BUDGET - (x.budget ?? STARTING_BUDGET)))[0]
+    : null;
+  const a = room.currentAuction;
+  const currentBidCount = (bidHistoryByPlayer[a?.playerId] || []).length;
+  const nextUp = nextQueue[0];
+
+  // Build the list of items
+  const items = [];
+  items.push({ label: 'POOL', value: `${sold}/${total}` });
+  if (topSale && topPlayer) {
+    items.push({ label: 'HIGHEST', value: formatMoney(topSale.price), suffix: topPlayer.name.split(' ').pop(), tone: 'gold' });
+  }
+  if (a) {
+    if (lastRoundBidCount > 0) {
+      const pct = Math.round(((currentBidCount - lastRoundBidCount) / Math.max(lastRoundBidCount, 1)) * 100);
+      const sign = pct >= 0 ? '+' : '';
+      items.push({ label: 'BIDDING', value: `${sign}${pct}%`, suffix: 'vs last', tone: pct < 0 ? 'down' : '' });
+    } else {
+      items.push({ label: 'BIDDING', value: `${currentBidCount}`, suffix: currentBidCount === 1 ? 'bid' : 'bids' });
+    }
+  } else if (nextUp) {
+    items.push({ label: 'NEXT', value: nextUp.name, suffix: `${nextUp.overall} OVR` });
+  }
+  if (sales.length > 0) {
+    items.push({ label: 'AVG', value: formatMoney(Math.round(avgPrice)) });
+    items.push({ label: 'VOL', value: formatMoney(totalVolume), tone: 'gold' });
+  }
+  if (lastPlayer && lastSale) {
+    items.push({ label: 'LAST', value: lastPlayer.name.split(' ').pop(), suffix: `→ ${formatMoney(lastSale.price)}` });
+  }
+  if (topBidder) {
+    items.push({ label: 'LEADER', value: (topBidder.name || '').toUpperCase(), suffix: formatMoney(STARTING_BUDGET - (topBidder.budget ?? STARTING_BUDGET)) });
+  }
+  items.push({ label: 'BIDDERS', value: `${bidders.length}` });
+
+  // Render each item once, then duplicate for seamless looping
+  const itemsHTML = items.map(it => {
+    const cls = it.tone ? ` ${it.tone}` : '';
+    return `<span class="item${cls}"><span class="label">${it.label}</span><strong>${escapeHtml(String(it.value))}</strong>${it.suffix ? `<span class="sep">·</span><span>${escapeHtml(String(it.suffix))}</span>` : ''}</span>`;
+  }).join('');
+  // Duplicate so the -50% translate loop seams perfectly
+  track.innerHTML = itemsHTML + itemsHTML;
 }
 
 // =============================================================================
