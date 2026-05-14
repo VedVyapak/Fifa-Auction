@@ -1084,42 +1084,45 @@ function renderModalPitch() {
   if (!pitch) return;
   const b = room.bidders?.[modalBidderId];
   if (!b) return;
-  renderPitchInto(pitch, b.squad || [], modalFormation);
+  renderPitchInto(pitch, b.squad || [], modalFormation, { benchEl: $('modalBench') });
 }
 
-function renderPitchInto(pitchEl, squad, formationKey) {
-  pitchEl.querySelectorAll('.bp-pitch-player').forEach(n => n.remove());
+// Returns { assignments, bench } where assignments is the player object
+// per slot (or null for empty), and bench is the list of players who
+// didn't make the starting 11. Squad is sorted by OVR desc before
+// assignment so the BEST player at a position wins the exact-match slot.
+function assignFormation(squad, formationKey) {
   const slots = FORMATIONS[formationKey] || FORMATIONS['4-3-3'];
-  const players = [...squad];
+  const players = [...(squad || [])].sort((a, b) => (b.overall || 0) - (a.overall || 0));
   const assignments = new Array(slots.length).fill(null);
   const usedPlayers = new Set();
 
-  // Pass 1 — exact position match across all slots first.
-  // Without this, slot order would matter: e.g. a 4-3-3 lists LW before
-  // ST, so a single-FWD squad (Kane = ST) would get put in LW via the
-  // category fallback before we ever consider the ST slot.
+  // Pass 1 — exact position match. Slot order is irrelevant because
+  // each slot now scans the WHOLE squad (already OVR-sorted) and picks
+  // the best unused player whose position equals the slot's role.
   slots.forEach((slot, slotIdx) => {
-    if (assignments[slotIdx]) return;
     const pIdx = players.findIndex((p, idx) =>
       !usedPlayers.has(idx) && (p.position || '').toUpperCase() === slot.role
     );
-    if (pIdx > -1) {
-      assignments[slotIdx] = players[pIdx];
-      usedPlayers.add(pIdx);
-    }
+    if (pIdx > -1) { assignments[slotIdx] = players[pIdx]; usedPlayers.add(pIdx); }
   });
-  // Pass 2 — fill remaining slots by category (GK/DEF/MID/FWD).
+  // Pass 2 — category fallback (GK/DEF/MID/FWD) for remaining empty slots.
   slots.forEach((slot, slotIdx) => {
     if (assignments[slotIdx]) return;
     const cat = posCat(slot.role);
     const pIdx = players.findIndex((p, idx) =>
       !usedPlayers.has(idx) && posCat(p.position) === cat
     );
-    if (pIdx > -1) {
-      assignments[slotIdx] = players[pIdx];
-      usedPlayers.add(pIdx);
-    }
+    if (pIdx > -1) { assignments[slotIdx] = players[pIdx]; usedPlayers.add(pIdx); }
   });
+
+  const bench = players.filter((_, idx) => !usedPlayers.has(idx));
+  return { slots, assignments, bench };
+}
+
+function renderPitchInto(pitchEl, squad, formationKey, opts = {}) {
+  pitchEl.querySelectorAll('.bp-pitch-player').forEach(n => n.remove());
+  const { slots, assignments, bench } = assignFormation(squad, formationKey);
 
   slots.forEach((slot, slotIdx) => {
     const p = assignments[slotIdx];
@@ -1135,6 +1138,36 @@ function renderPitchInto(pitchEl, squad, formationKey) {
     `;
     pitchEl.appendChild(el);
   });
+
+  if (opts.benchEl) renderBenchInto(opts.benchEl, bench);
+}
+
+// Renders the bench list into a container. Players who didn't make the
+// starting 11 land here so a 14-player squad doesn't appear to be missing
+// 3 people, and so a second ST / second GK is visibly accounted for.
+function renderBenchInto(containerEl, bench) {
+  if (!containerEl) return;
+  if (!bench.length) {
+    containerEl.innerHTML = '';
+    containerEl.classList.add('hide');
+    return;
+  }
+  containerEl.classList.remove('hide');
+  containerEl.innerHTML = `
+    <div class="bp-bench-head">Bench · ${bench.length}</div>
+    <div class="bp-bench-grid">
+      ${bench.map(p => {
+        const cat = posCat(p.position).toLowerCase();
+        return `
+          <div class="bp-bench-card ${cat}">
+            <span class="ovr">${p.overall || '—'}</span>
+            <span class="nm">${escapeHtml((p.name || '?').split(' ').pop())}</span>
+            <span class="pos">${escapeHtml(p.position || '')}</span>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
 }
 
 // ---------------------------------------------------------------------------

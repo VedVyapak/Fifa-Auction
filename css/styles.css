@@ -2074,6 +2074,51 @@ body.offline .bp-conn-dot {
 .bp-pitch-player.empty .badge { background: rgba(255,255,255,0.04); border: 2px dashed rgba(255,255,255,0.18); color: var(--faint); }
 .bp-pitch-player.empty .name-tag { color: var(--faint); background: rgba(0,0,0,0.4); border-color: transparent; }
 
+/* === Bench (players who didn't make the starting 11) === */
+.bp-bench {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.bp-bench.hide { display: none; }
+.bp-bench-head {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 0.2em; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.bp-bench-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
+  gap: 6px;
+}
+.bp-bench-card {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  text-align: center;
+}
+.bp-bench-card .ovr { font-family: var(--display); font-size: 20px; line-height: 1; color: var(--gold); }
+.bp-bench-card .nm { font-size: 11px; font-weight: 600; color: var(--text); word-break: break-word; line-height: 1.1; }
+.bp-bench-card .pos { font-family: var(--mono); font-size: 8px; color: var(--dim); letter-spacing: 0.1em; }
+.bp-bench-card.gk { border-color: rgba(245,197,66,0.28); }
+.bp-bench-card.def { border-color: rgba(76,142,255,0.28); }
+.bp-bench-card.mid { border-color: rgba(0,230,118,0.28); }
+.bp-bench-card.fwd { border-color: rgba(255,46,78,0.28); }
+.bp-bench-card.def .ovr { color: var(--blue); }
+.bp-bench-card.mid .ovr { color: var(--green); }
+.bp-bench-card.fwd .ovr { color: var(--red); }
+
+/* Bench inside the mobile drawer — smaller cards */
+.bp-mobile-drawer .bp-bench { margin-top: 12px; padding-top: 10px; }
+.bp-mobile-drawer .bp-bench-grid { grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); }
+.bp-mobile-drawer .bp-bench-card { padding: 6px 3px; }
+.bp-mobile-drawer .bp-bench-card .ovr { font-size: 16px; }
+.bp-mobile-drawer .bp-bench-card .nm { font-size: 9px; }
+
 .bp-view-full {
   font-family: var(--mono); font-size: 11px; font-weight: 700;
   color: var(--green);

@@ -215,13 +215,12 @@ function renderPitch() {
   pitch.querySelectorAll('.bp-pitch-player').forEach(n => n.remove());
   const slots = FORMATIONS[formation];
   const squad = bidder?.squad || [];
-  const players = [...squad];
+  // Sort by OVR desc so best-at-position wins the exact-match slot.
+  const players = [...squad].sort((a, b) => (b.overall || 0) - (a.overall || 0));
   const assignments = new Array(slots.length).fill(null);
   const usedPlayers = new Set();
-  // Pass 1: exact role match first (prevents ST being placed at LW
-  // just because LW comes earlier in the slot list).
+  // Pass 1: exact role match first.
   slots.forEach((slot, slotIdx) => {
-    if (assignments[slotIdx]) return;
     const pIdx = players.findIndex((p, idx) =>
       !usedPlayers.has(idx) && (p.position || '').toUpperCase() === slot.role
     );
@@ -254,6 +253,33 @@ function renderPitch() {
     pitch.appendChild(el);
   });
   $('filledCount').textContent = filled;
+
+  // Bench
+  const bench = players.filter((_, idx) => !usedPlayers.has(idx));
+  const benchEl = $('bench');
+  if (benchEl) {
+    if (!bench.length) {
+      benchEl.innerHTML = '';
+      benchEl.classList.add('hide');
+    } else {
+      benchEl.classList.remove('hide');
+      benchEl.innerHTML = `
+        <div class="bp-bench-head">Bench · ${bench.length}</div>
+        <div class="bp-bench-grid">
+          ${bench.map(p => {
+            const cat = posCat(p.position).toLowerCase();
+            return `
+              <div class="bp-bench-card ${cat}">
+                <span class="ovr">${p.overall || '—'}</span>
+                <span class="nm">${escapeHtml((p.name || '?').split(' ').pop())}</span>
+                <span class="pos">${escapeHtml(p.position || '')}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+  }
 }
 
 function posCount(squad) {
