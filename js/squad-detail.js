@@ -15,6 +15,18 @@ const POS_CATEGORY = {
 };
 const posCat = (p) => POS_CATEGORY[(p || '').toUpperCase()] || 'MID';
 
+// Strict slot fallback — ST never lands at LW.
+const SLOT_FALLBACK_POSITIONS = {
+  GK:  ['GK'],
+  CB:  ['CB'],
+  LB:  ['LB', 'LWB'], RB: ['RB', 'RWB'],
+  LWB: ['LWB', 'LB'], RWB: ['RWB', 'RB'],
+  CDM: ['CDM', 'CM'], CM: ['CM', 'CDM', 'CAM'], CAM: ['CAM', 'CM'],
+  LM:  ['LM'], RM: ['RM'],
+  LW:  ['LW'], RW: ['RW'],
+  ST:  ['ST', 'CF'], CF: ['CF', 'ST'],
+};
+
 const FORMATIONS = {
   '4-3-3': [
     { x: 50, y: 92, role: 'GK' },
@@ -226,12 +238,12 @@ function renderPitch() {
     );
     if (pIdx > -1) { assignments[slotIdx] = players[pIdx]; usedPlayers.add(pIdx); }
   });
-  // Pass 2: category fallback.
+  // Pass 2: strict per-slot fallback (ST/CF; CDM↔CM↔CAM; back/wing-back).
   slots.forEach((slot, slotIdx) => {
     if (assignments[slotIdx]) return;
-    const cat = posCat(slot.role);
+    const accepted = SLOT_FALLBACK_POSITIONS[slot.role] || [slot.role];
     const pIdx = players.findIndex((p, idx) =>
-      !usedPlayers.has(idx) && posCat(p.position) === cat
+      !usedPlayers.has(idx) && accepted.includes((p.position || '').toUpperCase())
     );
     if (pIdx > -1) { assignments[slotIdx] = players[pIdx]; usedPlayers.add(pIdx); }
   });

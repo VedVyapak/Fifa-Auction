@@ -111,6 +111,10 @@ let bidHistoryByPlayer = {};
 let modalBidderId = null;
 let modalActiveTab = 'list';
 let modalFormation = '4-3-3';
+// Per-(bidder, formation) manual overrides for bench↔pitch swaps. Clicking
+// a bench card adds an override. Reset on modal close so it doesn't leak
+// across views. Keyed as `${bidderId}|${formation}`.
+const formationOverrides = new Map();
 
 // image-preload state
 const preloadedUrls = new Set();
@@ -1068,6 +1072,12 @@ function openSquadModal(bidderId) {
   $('squadModal').classList.remove('hidden');
 }
 function closeSquadModal() {
+  // Drop any swap overrides for this bidder so the next open starts clean.
+  if (modalBidderId) {
+    for (const key of [...formationOverrides.keys()]) {
+      if (key.startsWith(`${modalBidderId}|`)) formationOverrides.delete(key);
+    }
+  }
   modalBidderId = null;
   $('squadModal').classList.add('hidden');
 }
@@ -1153,34 +1163,113 @@ function renderModalPitch() {
   if (!pitch) return;
   const b = room.bidders?.[modalBidderId];
   if (!b) return;
-  renderPitchInto(pitch, b.squad || [], modalFormation, { benchEl: $('modalBench') });
+  const key = `${modalBidderId}|${modalFormation}`;
+  const overrides = formationOverrides.get(key) || {};
+  renderPitchInto(pitch, b.squad || [], modalFormation, {
+    benchEl: $('modalBench'),
+    overrides,
+    onSwap: (playerId) => swapBenchIntoPitch(playerId),
+  });
 }
 
-// Returns { assignments, bench } where assignments is the player object
-// per slot (or null for empty), and bench is the list of players who
-// didn't make the starting 11. Squad is sorted by OVR desc before
-// assignment so the BEST player at a position wins the exact-match slot.
-function assignFormation(squad, formationKey) {
+// Click on a bench card → swap that player into the lowest-OVR pitch
+// slot whose role accepts their position (per SLOT_FALLBACK_POSITIONS).
+// Existing manual overrides get refreshed so clicking the displaced
+// player on the bench reverses the swap.
+function swapBenchIntoPitch(playerId) {
+  const b = room.bidders?.[modalBidderId];
+  if (!b) return;
+  const squad = b.squad || [];
+  const benchPlayer = squad.find(p => p.id === playerId);
+  if (!benchPlayer) return;
+
+  const key = `${modalBidderId}|${modalFormation}`;
+  const overrides = { ...(formationOverrides.get(key) || {}) };
+  const { slots, assignments } = assignFormation(squad, modalFormation, overrides);
+
+  // Slots whose role accepts the bench player's position
+  const pos = (benchPlayer.position || '').toUpperCase();
+  const candidates = [];
+  slots.forEach((slot, slotIdx) => {
+    const accepted = SLOT_FALLBACK_POSITIONS[slot.role] || [slot.role];
+    if (accepted.includes(pos)) candidates.push(slotIdx);
+  });
+  if (!candidates.length) {
+    alert('No starting slot in this formation accepts a ' + pos + '.');
+    return;
+  }
+  // Prefer empty slots; otherwise the slot with lowest-OVR occupant.
+  let target = candidates[0];
+  let lowestOvr = Infinity;
+  for (const slotIdx of candidates) {
+    const o = assignments[slotIdx];
+    const ovr = o ? (o.overall || 0) : -1; // -1 ranks empty as lowest
+    if (ovr < lowestOvr) { lowestOvr = ovr; target = slotIdx; }
+  }
+  overrides[target] = playerId;
+  formationOverrides.set(key, overrides);
+  renderModalPitch();
+}
+
+// Strict slot fallback map. A slot only accepts the listed positions —
+// e.g. an LW slot only takes an actual LW (no ST→LW shuffling). The
+// MID and full-back equivalences allow CDM↔CM↔CAM and LB↔LWB to fill
+// each other since those are structurally the same role.
+const SLOT_FALLBACK_POSITIONS = {
+  GK:  ['GK'],
+  CB:  ['CB'],
+  LB:  ['LB', 'LWB'],
+  RB:  ['RB', 'RWB'],
+  LWB: ['LWB', 'LB'],
+  RWB: ['RWB', 'RB'],
+  CDM: ['CDM', 'CM'],
+  CM:  ['CM', 'CDM', 'CAM'],
+  CAM: ['CAM', 'CM'],
+  LM:  ['LM'],
+  RM:  ['RM'],
+  LW:  ['LW'],
+  RW:  ['RW'],
+  ST:  ['ST', 'CF'],
+  CF:  ['CF', 'ST'],
+};
+
+// Returns { slots, assignments, bench }. Squad pre-sorted by OVR desc so
+// the BEST player at each position wins the exact-match slot. Optional
+// `overrides` maps slotIdx → playerId for manual bench-to-pitch swaps;
+// those are applied before any auto-assignment.
+function assignFormation(squad, formationKey, overrides = {}) {
   const slots = FORMATIONS[formationKey] || FORMATIONS['4-3-3'];
   const players = [...(squad || [])].sort((a, b) => (b.overall || 0) - (a.overall || 0));
   const assignments = new Array(slots.length).fill(null);
   const usedPlayers = new Set();
 
-  // Pass 1 — exact position match. Slot order is irrelevant because
-  // each slot now scans the WHOLE squad (already OVR-sorted) and picks
-  // the best unused player whose position equals the slot's role.
+  // Apply manual overrides first so they take precedence over auto-fill.
+  for (const [slotIdxStr, playerId] of Object.entries(overrides)) {
+    const slotIdx = Number(slotIdxStr);
+    if (slotIdx < 0 || slotIdx >= slots.length) continue;
+    const pIdx = players.findIndex(p => p.id === playerId);
+    if (pIdx > -1 && !usedPlayers.has(pIdx)) {
+      assignments[slotIdx] = players[pIdx];
+      usedPlayers.add(pIdx);
+    }
+  }
+
+  // Pass 1 — exact role match (OVR-sorted squad picks best first).
   slots.forEach((slot, slotIdx) => {
+    if (assignments[slotIdx]) return;
     const pIdx = players.findIndex((p, idx) =>
       !usedPlayers.has(idx) && (p.position || '').toUpperCase() === slot.role
     );
     if (pIdx > -1) { assignments[slotIdx] = players[pIdx]; usedPlayers.add(pIdx); }
   });
-  // Pass 2 — category fallback (GK/DEF/MID/FWD) for remaining empty slots.
+  // Pass 2 — strict per-slot fallback list. ST slot accepts ST/CF only;
+  // LW slot accepts only LW. So a 2nd ST stays on the bench instead of
+  // being shoved into a winger slot.
   slots.forEach((slot, slotIdx) => {
     if (assignments[slotIdx]) return;
-    const cat = posCat(slot.role);
+    const accepted = SLOT_FALLBACK_POSITIONS[slot.role] || [slot.role];
     const pIdx = players.findIndex((p, idx) =>
-      !usedPlayers.has(idx) && posCat(p.position) === cat
+      !usedPlayers.has(idx) && accepted.includes((p.position || '').toUpperCase())
     );
     if (pIdx > -1) { assignments[slotIdx] = players[pIdx]; usedPlayers.add(pIdx); }
   });
@@ -1191,7 +1280,8 @@ function assignFormation(squad, formationKey) {
 
 function renderPitchInto(pitchEl, squad, formationKey, opts = {}) {
   pitchEl.querySelectorAll('.bp-pitch-player').forEach(n => n.remove());
-  const { slots, assignments, bench } = assignFormation(squad, formationKey);
+  const overrides = opts.overrides || {};
+  const { slots, assignments, bench } = assignFormation(squad, formationKey, overrides);
 
   slots.forEach((slot, slotIdx) => {
     const p = assignments[slotIdx];
@@ -1208,13 +1298,13 @@ function renderPitchInto(pitchEl, squad, formationKey, opts = {}) {
     pitchEl.appendChild(el);
   });
 
-  if (opts.benchEl) renderBenchInto(opts.benchEl, bench);
+  if (opts.benchEl) renderBenchInto(opts.benchEl, bench, opts.onSwap);
 }
 
-// Renders the bench list into a container. Players who didn't make the
-// starting 11 land here so a 14-player squad doesn't appear to be missing
-// 3 people, and so a second ST / second GK is visibly accounted for.
-function renderBenchInto(containerEl, bench) {
+// Renders the bench list into a container. Clicking a bench card invokes
+// onSwap(playerId) so the host can put them into the starting 11. Cards
+// stay compact (flex-wrap, max 88px each) regardless of bench count.
+function renderBenchInto(containerEl, bench, onSwap) {
   if (!containerEl) return;
   if (!bench.length) {
     containerEl.innerHTML = '';
@@ -1222,13 +1312,20 @@ function renderBenchInto(containerEl, bench) {
     return;
   }
   containerEl.classList.remove('hide');
+  const interactive = typeof onSwap === 'function';
   containerEl.innerHTML = `
-    <div class="bp-bench-head">Bench · ${bench.length}</div>
+    <div class="bp-bench-head">
+      <span>Bench · ${bench.length}</span>
+      ${interactive ? '<span class="bp-bench-hint">tap to swap in</span>' : ''}
+    </div>
     <div class="bp-bench-grid">
       ${bench.map(p => {
         const cat = posCat(p.position).toLowerCase();
         return `
-          <div class="bp-bench-card ${cat}">
+          <div class="bp-bench-card ${cat}"
+               ${interactive ? 'role="button" tabindex="0"' : ''}
+               data-player-id="${escapeHtml(p.id)}"
+               title="${escapeHtml(p.name)} · ${escapeHtml(p.position || '')}">
             <span class="ovr">${p.overall || '—'}</span>
             <span class="nm">${escapeHtml((p.name || '?').split(' ').pop())}</span>
             <span class="pos">${escapeHtml(p.position || '')}</span>
@@ -1237,6 +1334,14 @@ function renderBenchInto(containerEl, bench) {
       }).join('')}
     </div>
   `;
+  if (interactive) {
+    containerEl.querySelectorAll('[data-player-id]').forEach(el => {
+      el.addEventListener('click', () => onSwap(el.dataset.playerId));
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSwap(el.dataset.playerId); }
+      });
+    });
+  }
 }
 
 // ---------------------------------------------------------------------------

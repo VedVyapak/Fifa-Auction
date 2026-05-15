@@ -1961,7 +1961,15 @@ body.offline .bp-conn-dot {
 .bp-squad-summary .stat.fwd .val { color: var(--red); }
 .bp-squad-summary .stat .val.zero { color: var(--faint); }
 
-.bp-modal-tabs { display: flex; padding: 0 18px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.bp-modal-tabs {
+  display: flex;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--line);
+  /* overflow-x: auto was reserving vertical scrollbar space in some
+     browsers, padding the row taller than the buttons need. Tabs fit
+     well within the 720px modal anyway. */
+  flex-wrap: nowrap;
+}
 .bp-modal-tabs button {
   padding: 12px 16px;
   font-family: var(--mono); font-size: 11px; font-weight: 700;
@@ -2082,28 +2090,45 @@ body.offline .bp-conn-dot {
 }
 .bp-bench.hide { display: none; }
 .bp-bench-head {
+  display: flex; align-items: baseline; justify-content: space-between;
   font-family: var(--mono); font-size: 10px;
   color: var(--dim);
   letter-spacing: 0.2em; text-transform: uppercase;
   margin-bottom: 8px;
 }
+.bp-bench-hint {
+  font-family: var(--mono); font-size: 9px;
+  color: var(--faint);
+  letter-spacing: 0.15em; text-transform: uppercase;
+}
 .bp-bench-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
+  /* Flex-wrap keeps each card at its natural ~76px regardless of count.
+     With auto-fit/auto-fill the lone card was stretching the full row. */
+  display: flex;
+  flex-wrap: wrap;
   gap: 6px;
 }
 .bp-bench-card {
   display: flex; flex-direction: column; align-items: center;
   gap: 2px;
+  width: 76px;
   padding: 8px 4px;
   background: rgba(255,255,255,0.02);
   border: 1px solid var(--line);
   border-radius: 6px;
   text-align: center;
+  transition: background .12s, border-color .12s, transform .08s;
 }
+.bp-bench-card[role="button"] { cursor: pointer; }
+.bp-bench-card[role="button"]:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: var(--line-2);
+  transform: translateY(-1px);
+}
+.bp-bench-card[role="button"]:active { transform: translateY(0); }
 .bp-bench-card .ovr { font-family: var(--display); font-size: 20px; line-height: 1; color: var(--gold); }
 .bp-bench-card .nm { font-size: 11px; font-weight: 600; color: var(--text); word-break: break-word; line-height: 1.1; }
-.bp-bench-card .pos { font-family: var(--mono); font-size: 8px; color: var(--dim); letter-spacing: 0.1em; }
+.bp-bench-card .pos { font-family: var(--mono); font-size: 9px; color: var(--dim); letter-spacing: 0.12em; }
 .bp-bench-card.gk { border-color: rgba(245,197,66,0.28); }
 .bp-bench-card.def { border-color: rgba(76,142,255,0.28); }
 .bp-bench-card.mid { border-color: rgba(0,230,118,0.28); }
@@ -2112,12 +2137,12 @@ body.offline .bp-conn-dot {
 .bp-bench-card.mid .ovr { color: var(--green); }
 .bp-bench-card.fwd .ovr { color: var(--red); }
 
-/* Bench inside the mobile drawer — smaller cards */
+/* Bench inside the mobile drawer — even smaller cards */
 .bp-mobile-drawer .bp-bench { margin-top: 12px; padding-top: 10px; }
-.bp-mobile-drawer .bp-bench-grid { grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); }
-.bp-mobile-drawer .bp-bench-card { padding: 6px 3px; }
+.bp-mobile-drawer .bp-bench-card { width: 64px; padding: 6px 3px; }
 .bp-mobile-drawer .bp-bench-card .ovr { font-size: 16px; }
-.bp-mobile-drawer .bp-bench-card .nm { font-size: 9px; }
+.bp-mobile-drawer .bp-bench-card .nm { font-size: 10px; }
+.bp-mobile-drawer .bp-bench-card .pos { font-size: 8px; }
 
 .bp-view-full {
   font-family: var(--mono); font-size: 11px; font-weight: 700;
